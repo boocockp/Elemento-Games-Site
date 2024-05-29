@@ -1,0 +1,140 @@
+{
+  "id": "project_1",
+  "name": "Elemento Games Site",
+  "properties": {},
+  "elements": [
+    {
+      "id": "app_1",
+      "name": "Main App",
+      "properties": {},
+      "elements": [
+        {
+          "id": "page_1",
+          "name": "Main Page",
+          "properties": {},
+          "elements": [
+            {
+              "id": "text_1",
+              "name": "Page Title",
+              "properties": {
+                "content": "Puzzle Teams",
+                "styles": {
+                  "fontSize": "48",
+                  "fontFamily": "Tahoma",
+                  "fontWeight": "bold",
+                  "fontStyle": "italic",
+                  "color": "green",
+                  "backgroundColor": "orange",
+                  "padding": "0.0em 0.5em",
+                  "border": "3px solid green !important;",
+                  "borderRadius": "0.2em",
+                  "marginLeft": "auto",
+                  "marginRight": "auto"
+                }
+              },
+              "kind": "Text"
+            },
+            {
+              "id": "text_4",
+              "name": "Heading 1",
+              "properties": {
+                "content": "The No Boredom puzzle site!",
+                "styles": {
+                  "fontFamily": "Tahoma",
+                  "fontSize": "20"
+                }
+              },
+              "kind": "Text"
+            },
+            {
+              "id": "text_2",
+              "name": "Para 1",
+              "properties": {
+                "content": "Challenge your mind with a fresh puzzle every day.\nWord puzzles, number games, visual brainteasers - a different one every morning.\nEach takes less than 5 minutes, so you can fit it in whenever you want."
+              },
+              "kind": "Text"
+            },
+            {
+              "id": "text_5",
+              "name": "Heading 2",
+              "properties": {
+                "content": "Team up with your friends",
+                "styles": {
+                  "fontFamily": "Tahoma",
+                  "fontSize": "20"
+                }
+              },
+              "kind": "Text"
+            },
+            {
+              "id": "text_6",
+              "name": "Para 2",
+              "properties": {
+                "content": "You're welcome to play by yourself, but the real fun begins when you  start a team.  \nTeams compete with each other in leagues and one-off showdowns.  \nThe more people you get in your team, the better your chances!"
+              },
+              "kind": "Text"
+            },
+            {
+              "id": "text_8",
+              "name": "Heading 3",
+              "properties": {
+                "content": "Showcase your ideas",
+                "styles": {
+                  "fontFamily": "Tahoma",
+                  "fontSize": "20"
+                }
+              },
+              "kind": "Text"
+            },
+            {
+              "id": "text_9",
+              "name": "Text 9",
+              "properties": {
+                "content": "Puzzle Teams runs off your creativity.\nIf you have an idea for a great puzzle, send it to us and you could see it on the site in a few days.\nEven better - program it yourself with the easy to use Elemento tool and get everyone playing the puzzle YOU created!"
+              },
+              "kind": "Text"
+            }
+          ],
+          "kind": "Page"
+        },
+        {
+          "id": "appbar_1",
+          "name": "App Bar 1",
+          "properties": {
+            "styles": {
+              "backgroundColor": "green"
+            }
+          },
+          "elements": [
+            {
+              "id": "text_7",
+              "name": "Text 7",
+              "properties": {
+                "content": "Coming soon!",
+                "styles": {
+                  "margin": "-10px"
+                }
+              },
+              "kind": "Text"
+            }
+          ],
+          "kind": "AppBar"
+        }
+      ],
+      "kind": "App"
+    },
+    {
+      "id": "_TOOLS",
+      "name": "Tools",
+      "properties": {},
+      "kind": "ToolFolder"
+    },
+    {
+      "id": "_COMPONENTS",
+      "name": "Components",
+      "properties": {},
+      "kind": "ComponentFolder"
+    }
+  ],
+  "kind": "Project"
+}
