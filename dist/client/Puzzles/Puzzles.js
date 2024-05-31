@@ -12,6 +12,9 @@ function HomePage(props) {
     const PuzzleLink1_action = React.useCallback(async () => {
         await ShowPage(PuzzlePage1)
     }, [])
+    const PuzzleLink2_action = React.useCallback(async () => {
+        await ShowPage(PuzzlePage2)
+    }, [])
     Elemento.elementoDebug(eval(Elemento.useDebugExpr()))
 
     return React.createElement(Page, {path: props.path},
@@ -27,9 +30,10 @@ The more people you get in your team, the better your chances!`),
         React.createElement(TextElement, {path: pathWith('Text9')}, `Puzzle Teams runs off your creativity.
 If you have an idea for a great puzzle, send it to us and you could see it on the site in a few days.
 Even better - program it yourself with the easy to use Elemento tool and get everyone playing the puzzle YOU created!`),
-        React.createElement(TextElement, {path: pathWith('Heading4'), styles: {fontFamily: 'Tahoma', fontSize: '20', color: 'green'}}, 'Preview puzzles'),
+        React.createElement(TextElement, {path: pathWith('Heading4'), styles: {fontFamily: 'Tahoma', fontSize: '20', color: 'green'}}, 'Sneaky previews'),
         React.createElement(TextElement, {path: pathWith('Text11')}, 'Here are some examples of the puzzles you will be seeing when we launch'),
         React.createElement(Button, {path: pathWith('PuzzleLink1'), content: 'Photo Jigsaw', appearance: 'link', action: PuzzleLink1_action, styles: {fontSize: '20'}}),
+        React.createElement(Button, {path: pathWith('PuzzleLink2'), content: 'Anagram Race', appearance: 'link', action: PuzzleLink2_action, styles: {fontSize: '20'}}),
     )
 }
 
@@ -51,11 +55,29 @@ function PuzzlePage1(props) {
     )
 }
 
+// PuzzlePage2.js
+function PuzzlePage2(props) {
+    const pathWith = name => props.path + '.' + name
+    const {Page, Button, Frame} = Elemento.components
+    const _state = Elemento.useGetStore()
+    const app = _state.useObject('Puzzles')
+    const {ShowPage} = app
+    const BackButton_action = React.useCallback(async () => {
+        await ShowPage(HomePage)
+    }, [])
+    Elemento.elementoDebug(eval(Elemento.useDebugExpr()))
+
+    return React.createElement(Page, {path: props.path},
+        React.createElement(Button, {path: pathWith('BackButton'), content: '<- Back to home page', appearance: 'link', action: BackButton_action}),
+        React.createElement(Frame, {path: pathWith('Frame1'), source: 'https://elemento.online/run/gh/boocockp/anagram-race/AnagramRace', styles: {height: '100%', width: '100%'}}),
+    )
+}
+
 // appMain.js
 export default function Puzzles(props) {
     const pathWith = name => 'Puzzles' + '.' + name
     const {App, AppBar, TextElement} = Elemento.components
-    const pages = {HomePage, PuzzlePage1}
+    const pages = {HomePage, PuzzlePage1, PuzzlePage2}
     const appContext = Elemento.useGetAppContext()
     const _state = Elemento.useGetStore()
     const app = _state.setObject('Puzzles', new App.State({pages, appContext}))

@@ -110,7 +110,7 @@
               "id": "text_10",
               "name": "Heading 4",
               "properties": {
-                "content": "Preview puzzles",
+                "content": "Sneaky previews",
                 "styles": {
                   "fontFamily": "Tahoma",
                   "fontSize": "20",
@@ -135,6 +135,21 @@
                 "content": "Photo Jigsaw",
                 "action": {
                   "expr": "ShowPage(PuzzlePage1)"
+                },
+                "styles": {
+                  "fontSize": "20"
+                }
+              },
+              "kind": "Button"
+            },
+            {
+              "id": "button_4",
+              "name": "Puzzle Link 2",
+              "properties": {
+                "appearance": "link",
+                "content": "Anagram Race",
+                "action": {
+                  "expr": "ShowPage(PuzzlePage2)"
                 },
                 "styles": {
                   "fontSize": "20"
@@ -167,6 +182,38 @@
               "name": "Frame 1",
               "properties": {
                 "source": "https://elemento.online/run/gh/boocockp/photo-jigsaw/MainApp",
+                "styles": {
+                  "height": "100%",
+                  "width": "100%"
+                }
+              },
+              "kind": "Frame"
+            }
+          ],
+          "kind": "Page"
+        },
+        {
+          "id": "page_3",
+          "name": "Puzzle Page 2",
+          "properties": {},
+          "elements": [
+            {
+              "id": "button_3",
+              "name": "Back Button",
+              "properties": {
+                "content": "<- Back to home page",
+                "appearance": "link",
+                "action": {
+                  "expr": "ShowPage(HomePage)"
+                }
+              },
+              "kind": "Button"
+            },
+            {
+              "id": "frame_2",
+              "name": "Frame 1",
+              "properties": {
+                "source": "https://elemento.online/run/gh/boocockp/anagram-race/AnagramRace",
                 "styles": {
                   "height": "100%",
                   "width": "100%"
