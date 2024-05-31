@@ -51,7 +51,7 @@ function PuzzlePage1(props) {
 
     return React.createElement(Page, {path: props.path},
         React.createElement(Button, {path: pathWith('BackButton'), content: '<- Back to home page', appearance: 'link', action: BackButton_action}),
-        React.createElement(Frame, {path: pathWith('Frame1'), source: 'https://elemento.online/run/gh/boocockp/photo-jigsaw/MainApp', styles: {height: '100%', width: '100%'}}),
+        React.createElement(Frame, {path: pathWith('Frame1'), source: 'https://elemento.online/run/gh/boocockp/photo-jigsaw/PhotoJigsaw', styles: {height: '100%', width: '100%'}}),
     )
 }
 

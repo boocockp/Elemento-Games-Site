@@ -181,7 +181,7 @@
               "id": "frame_1",
               "name": "Frame 1",
               "properties": {
-                "source": "https://elemento.online/run/gh/boocockp/photo-jigsaw/MainApp",
+                "source": "https://elemento.online/run/gh/boocockp/photo-jigsaw/PhotoJigsaw",
                 "styles": {
                   "height": "100%",
                   "width": "100%"
