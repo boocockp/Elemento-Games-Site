@@ -6,7 +6,9 @@
     {
       "id": "app_1",
       "name": "Puzzles",
-      "properties": {},
+      "properties": {
+        "fonts": "Road Rage\nGrape Nuts"
+      },
       "elements": [
         {
           "id": "appbar_1",
@@ -15,8 +17,8 @@
             "styles": {
               "backgroundColor": "orange",
               "color": "green",
-              "fontFamily": "tahoma",
-              "fontSize": "32"
+              "fontSize": "32",
+              "fontFamily": "Road Rage"
             },
             "title": "Puzzle Teams"
           },
@@ -63,6 +65,37 @@
                 "content": "Challenge your mind with a fresh puzzle every day.\nWord puzzles, number games, visual brainteasers - a different one every morning.\nEach takes less than 5 minutes, so you can fit it in whenever you want."
               },
               "kind": "Text"
+            },
+            {
+              "id": "button_6",
+              "name": "Todays Puzzle Button",
+              "properties": {
+                "content": "Play Today's Puzzle",
+                "styles": {
+                  "backgroundColor": "orange",
+                  "color": "white",
+                  "fontSize": "32",
+                  "textTransform": "inherit"
+                },
+                "action": {
+                  "expr": "ShowPage(TodaysPuzzle)"
+                }
+              },
+              "kind": "Button"
+            },
+            {
+              "id": "button_7",
+              "name": "Previous Puzzles",
+              "properties": {
+                "appearance": "link",
+                "action": {
+                  "expr": "ShowPage(PuzzleArchive)"
+                },
+                "styles": {
+                  "fontSize": "20"
+                }
+              },
+              "kind": "Button"
             },
             {
               "id": "text_5",
@@ -156,6 +189,16 @@
                 }
               },
               "kind": "Button"
+            },
+            {
+              "id": "text_12",
+              "name": "Text 12",
+              "properties": {
+                "content": {
+                  "expr": "Get(Puzzles, '2024-07-31').url"
+                }
+              },
+              "kind": "Text"
             }
           ],
           "kind": "Page"
@@ -223,6 +266,160 @@
             }
           ],
           "kind": "Page"
+        },
+        {
+          "id": "webfiledatastore_1",
+          "name": "Site Data Store",
+          "properties": {
+            "url": "https://firebasestorage.googleapis.com/v0/b/elemento-games-site.appspot.com/o/public%2FsiteData.json?alt=media"
+          },
+          "kind": "WebFileDataStore"
+        },
+        {
+          "id": "page_4",
+          "name": "Todays Puzzle",
+          "properties": {},
+          "elements": [
+            {
+              "id": "calculation_1",
+              "name": "Todays Date",
+              "properties": {
+                "calculation": {
+                  "expr": "DateFormat(Today(), 'yyyy-MM-dd')"
+                },
+                "show": false
+              },
+              "kind": "Calculation"
+            },
+            {
+              "id": "text_13",
+              "name": "Title",
+              "properties": {
+                "content": {
+                  "expr": "'Today\\'s Puzzle - ' + DateFormat(Today(), 'd MMM yyyy')"
+                },
+                "styles": {
+                  "color": "green",
+                  "width": "100%",
+                  "textAlign": "right",
+                  "marginTop": "0"
+                }
+              },
+              "kind": "Text"
+            },
+            {
+              "id": "frame_3",
+              "name": "Puzzle Frame",
+              "properties": {
+                "source": {
+                  "expr": "Get(Puzzles, TodaysDate).url"
+                },
+                "styles": {
+                  "height": "100%",
+                  "width": "100%",
+                  "marginTop": "3"
+                }
+              },
+              "kind": "Frame"
+            },
+            {
+              "id": "button_5",
+              "name": "Back Button",
+              "properties": {
+                "content": "<< Back to home page",
+                "appearance": "link",
+                "action": {
+                  "expr": "ShowPage(HomePage)"
+                }
+              },
+              "kind": "Button"
+            }
+          ],
+          "kind": "Page"
+        },
+        {
+          "id": "page_5",
+          "name": "Puzzle Archive",
+          "properties": {},
+          "elements": [
+            {
+              "id": "text_14",
+              "name": "Title",
+              "properties": {
+                "content": "Previous Puzzles",
+                "styles": {
+                  "fontSize": "20"
+                }
+              },
+              "kind": "Text"
+            },
+            {
+              "id": "itemset_1",
+              "name": "Puzzle Item Set",
+              "properties": {
+                "selectable": "none",
+                "items": {
+                  "expr": "Query(Puzzles, {})"
+                }
+              },
+              "elements": [
+                {
+                  "id": "block_1",
+                  "name": "Block 1",
+                  "properties": {
+                    "layout": "horizontal wrapped",
+                    "styles": {
+                      "fontSize": "18"
+                    }
+                  },
+                  "elements": [
+                    {
+                      "id": "text_15",
+                      "name": "Puzzle Date",
+                      "properties": {
+                        "content": {
+                          "expr": "DateFormat(DateVal($item.id), 'dd MMM yyyy')"
+                        },
+                        "styles": {
+                          "fontSize": "inherit",
+                          "marginRight": "3em"
+                        }
+                      },
+                      "kind": "Text"
+                    },
+                    {
+                      "id": "button_8",
+                      "name": "Puzzle Link",
+                      "properties": {
+                        "content": {
+                          "expr": "$item.name"
+                        },
+                        "appearance": "link",
+                        "styles": {
+                          "fontSize": "inherit"
+                        }
+                      },
+                      "kind": "Button"
+                    }
+                  ],
+                  "kind": "Block"
+                }
+              ],
+              "kind": "ItemSet"
+            }
+          ],
+          "kind": "Page"
+        },
+        {
+          "id": "collection_1",
+          "name": "Puzzles",
+          "properties": {
+            "dataStore": {
+              "expr": "SiteDataStore"
+            },
+            "collectionName": "Puzzles"
+          },
+          "kind": "Collection"
         }
       ],
       "kind": "App"
