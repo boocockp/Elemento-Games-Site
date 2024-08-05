@@ -7,9 +7,29 @@
       "id": "app_1",
       "name": "Puzzles",
       "properties": {
-        "fonts": "Road Rage\nGrape Nuts"
+        "fonts": "Road Rage\nGrape Nuts",
+        "maxWidth": "600px"
       },
       "elements": [
+        {
+          "id": "webfiledatastore_1",
+          "name": "Site Data Store",
+          "properties": {
+            "url": "https://firebasestorage.googleapis.com/v0/b/elemento-games-site.appspot.com/o/public%2FsiteData.json?alt=media"
+          },
+          "kind": "WebFileDataStore"
+        },
+        {
+          "id": "collection_1",
+          "name": "Puzzles",
+          "properties": {
+            "dataStore": {
+              "expr": "SiteDataStore"
+            },
+            "collectionName": "Puzzles"
+          },
+          "kind": "Collection"
+        },
         {
           "id": "appbar_1",
           "name": "Main App Bar",
@@ -24,18 +44,47 @@
           },
           "elements": [
             {
-              "id": "text_7",
-              "name": "Text 7",
+              "id": "button_15",
+              "name": "Home",
               "properties": {
-                "content": "Coming soon!",
+                "appearance": "filled",
                 "styles": {
-                  "position": "absolute",
-                  "top": "50%",
-                  "right": "10",
-                  "translate": "0 -50%"
+                  "backgroundColor": "orange"
+                },
+                "action": {
+                  "expr": "ShowPage(HomePage)"
                 }
               },
-              "kind": "Text"
+              "kind": "Button"
+            },
+            {
+              "id": "button_17",
+              "name": "Todays Puzzle",
+              "properties": {
+                "appearance": "filled",
+                "styles": {
+                  "backgroundColor": "orange"
+                },
+                "content": "Today's Puzzle",
+                "action": {
+                  "expr": "ShowPage(TodaysPuzzle)"
+                }
+              },
+              "kind": "Button"
+            },
+            {
+              "id": "button_16",
+              "name": "Archive",
+              "properties": {
+                "appearance": "filled",
+                "styles": {
+                  "backgroundColor": "orange"
+                },
+                "action": {
+                  "expr": "ShowPage(PuzzleArchive)"
+                }
+              },
+              "kind": "Button"
             }
           ],
           "kind": "AppBar"
@@ -85,7 +134,7 @@
             },
             {
               "id": "button_7",
-              "name": "Previous Puzzles",
+              "name": "Puzzle Archive",
               "properties": {
                 "appearance": "link",
                 "action": {
@@ -98,7 +147,51 @@
               "kind": "Button"
             },
             {
-              "id": "text_5",
+              "id": "button_14",
+              "name": "About Link",
+              "properties": {
+                "appearance": "link",
+                "action": {
+                  "expr": "ShowPage(AboutPage)"
+                },
+                "styles": {
+                  "fontSize": "20"
+                },
+                "content": "About Puzzle Teams"
+              },
+              "kind": "Button"
+            }
+          ],
+          "kind": "Page"
+        },
+        {
+          "id": "page_7",
+          "name": "About Page",
+          "properties": {},
+          "elements": [
+            {
+              "id": "text_17",
+              "name": "Heading 1",
+              "properties": {
+                "content": "The No Boredom puzzle site!",
+                "styles": {
+                  "fontFamily": "Tahoma",
+                  "fontSize": "20",
+                  "color": "green"
+                }
+              },
+              "kind": "Text"
+            },
+            {
+              "id": "text_18",
+              "name": "Para 1",
+              "properties": {
+                "content": "Challenge your mind with a fresh puzzle every day.\nWord puzzles, number games, visual brainteasers - a different one every morning.\nEach takes less than 5 minutes, so you can fit it in whenever you want."
+              },
+              "kind": "Text"
+            },
+            {
+              "id": "text_19",
               "name": "Heading 2",
               "properties": {
                 "content": "Team up with your friends",
@@ -111,7 +204,7 @@
               "kind": "Text"
             },
             {
-              "id": "text_6",
+              "id": "text_20",
               "name": "Para 2",
               "properties": {
                 "content": "You're welcome to play by yourself, but the real fun begins when you  start a team.  \nTeams compete with each other in leagues and one-off showdowns.  \nThe more people you get in your team, the better your chances!"
@@ -119,7 +212,7 @@
               "kind": "Text"
             },
             {
-              "id": "text_8",
+              "id": "text_21",
               "name": "Heading 3",
               "properties": {
                 "content": "Showcase your ideas",
@@ -132,7 +225,7 @@
               "kind": "Text"
             },
             {
-              "id": "text_9",
+              "id": "text_22",
               "name": "Text 9",
               "properties": {
                 "content": "Puzzle Teams runs off your creativity.\nIf you have an idea for a great puzzle, send it to us and you could see it on the site in a few days.\nEven better - program it yourself with the easy to use Elemento tool and get everyone playing the puzzle YOU created!"
@@ -140,140 +233,38 @@
               "kind": "Text"
             },
             {
-              "id": "text_10",
-              "name": "Heading 4",
+              "id": "button_10",
+              "name": "Todays Puzzle Button",
               "properties": {
-                "content": "Sneaky previews",
+                "content": "Play Today's Puzzle",
                 "styles": {
-                  "fontFamily": "Tahoma",
+                  "backgroundColor": "orange",
+                  "color": "white",
                   "fontSize": "20",
-                  "color": "green"
+                  "textTransform": "inherit"
+                },
+                "action": {
+                  "expr": "ShowPage(TodaysPuzzle)"
                 }
               },
-              "kind": "Text"
+              "kind": "Button"
             },
             {
-              "id": "text_11",
-              "name": "Text 11",
-              "properties": {
-                "content": "Here are some examples of the puzzles you will be seeing when we launch"
-              },
-              "kind": "Text"
-            },
-            {
-              "id": "button_1",
-              "name": "Puzzle Link 1",
+              "id": "button_11",
+              "name": "Puzzle Archive",
               "properties": {
                 "appearance": "link",
-                "content": "Photo Jigsaw",
                 "action": {
-                  "expr": "ShowPage(PuzzlePage1)"
+                  "expr": "ShowPage(PuzzleArchive)"
                 },
                 "styles": {
                   "fontSize": "20"
                 }
               },
               "kind": "Button"
-            },
-            {
-              "id": "button_4",
-              "name": "Puzzle Link 2",
-              "properties": {
-                "appearance": "link",
-                "content": "Anagram Race",
-                "action": {
-                  "expr": "ShowPage(PuzzlePage2)"
-                },
-                "styles": {
-                  "fontSize": "20"
-                }
-              },
-              "kind": "Button"
-            },
-            {
-              "id": "text_12",
-              "name": "Text 12",
-              "properties": {
-                "content": {
-                  "expr": "Get(Puzzles, '2024-07-31').url"
-                }
-              },
-              "kind": "Text"
             }
           ],
           "kind": "Page"
-        },
-        {
-          "id": "page_2",
-          "name": "Puzzle Page 1",
-          "properties": {},
-          "elements": [
-            {
-              "id": "button_2",
-              "name": "Back Button",
-              "properties": {
-                "content": "<- Back to home page",
-                "appearance": "link",
-                "action": {
-                  "expr": "ShowPage(HomePage)"
-                }
-              },
-              "kind": "Button"
-            },
-            {
-              "id": "frame_1",
-              "name": "Frame 1",
-              "properties": {
-                "source": "https://elemento.online/run/gh/boocockp/photo-jigsaw/PhotoJigsaw",
-                "styles": {
-                  "height": "100%",
-                  "width": "100%"
-                }
-              },
-              "kind": "Frame"
-            }
-          ],
-          "kind": "Page"
-        },
-        {
-          "id": "page_3",
-          "name": "Puzzle Page 2",
-          "properties": {},
-          "elements": [
-            {
-              "id": "button_3",
-              "name": "Back Button",
-              "properties": {
-                "content": "<- Back to home page",
-                "appearance": "link",
-                "action": {
-                  "expr": "ShowPage(HomePage)"
-                }
-              },
-              "kind": "Button"
-            },
-            {
-              "id": "frame_2",
-              "name": "Frame 1",
-              "properties": {
-                "source": "https://elemento.online/run/gh/boocockp/anagram-race/AnagramRace",
-                "styles": {
-                  "height": "100%",
-                  "width": "100%"
-                }
-              },
-              "kind": "Frame"
-            }
-          ],
-          "kind": "Page"
-        },
-        {
-          "id": "webfiledatastore_1",
-          "name": "Site Data Store",
-          "properties": {
-            "url": "https://firebasestorage.googleapis.com/v0/b/elemento-games-site.appspot.com/o/public%2FsiteData.json?alt=media"
-          },
-          "kind": "WebFileDataStore"
         },
         {
           "id": "page_4",
@@ -321,18 +312,56 @@
                 }
               },
               "kind": "Frame"
+            }
+          ],
+          "kind": "Page"
+        },
+        {
+          "id": "page_6",
+          "name": "Archived Puzzle",
+          "properties": {},
+          "elements": [
+            {
+              "id": "calculation_2",
+              "name": "Puzzle Date",
+              "properties": {
+                "calculation": {
+                  "expr": "CurrentUrl().pathSections[0]"
+                },
+                "show": false
+              },
+              "kind": "Calculation"
             },
             {
-              "id": "button_5",
-              "name": "Back Button",
+              "id": "text_16",
+              "name": "Title",
               "properties": {
-                "content": "<< Back to home page",
-                "appearance": "link",
-                "action": {
-                  "expr": "ShowPage(HomePage)"
+                "content": {
+                  "expr": "'Puzzle Archive - ' + DateFormat(DateVal(PuzzleDate), 'd MMMM yyyy')"
+                },
+                "styles": {
+                  "color": "green",
+                  "width": "100%",
+                  "textAlign": "right",
+                  "marginTop": "0"
                 }
               },
-              "kind": "Button"
+              "kind": "Text"
+            },
+            {
+              "id": "frame_4",
+              "name": "Puzzle Frame",
+              "properties": {
+                "source": {
+                  "expr": "Get(Puzzles, PuzzleDate).url"
+                },
+                "styles": {
+                  "height": "100%",
+                  "width": "100%",
+                  "marginTop": "3"
+                }
+              },
+              "kind": "Frame"
             }
           ],
           "kind": "Page"
@@ -346,9 +375,10 @@
               "id": "text_14",
               "name": "Title",
               "properties": {
-                "content": "Previous Puzzles",
+                "content": "Puzzle Archive",
                 "styles": {
-                  "fontSize": "20"
+                  "fontSize": "20",
+                  "color": "green"
                 }
               },
               "kind": "Text"
@@ -378,7 +408,7 @@
                       "name": "Puzzle Date",
                       "properties": {
                         "content": {
-                          "expr": "DateFormat(DateVal($item.id), 'dd MMM yyyy')"
+                          "expr": "DateFormat(DateVal($item.id), 'dd MMMM yyyy')"
                         },
                         "styles": {
                           "fontSize": "inherit",
@@ -397,6 +427,9 @@
                         "appearance": "link",
                         "styles": {
                           "fontSize": "inherit"
+                        },
+                        "action": {
+                          "expr": "ShowPage(ArchivedPuzzle, $item.id)"
                         }
                       },
                       "kind": "Button"
@@ -409,17 +442,6 @@
             }
           ],
           "kind": "Page"
-        },
-        {
-          "id": "collection_1",
-          "name": "Puzzles",
-          "properties": {
-            "dataStore": {
-              "expr": "SiteDataStore"
-            },
-            "collectionName": "Puzzles"
-          },
-          "kind": "Collection"
         }
       ],
       "kind": "App"
