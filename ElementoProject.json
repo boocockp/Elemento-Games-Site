@@ -307,8 +307,10 @@
                 },
                 "styles": {
                   "height": "100%",
-                  "width": "100%",
-                  "marginTop": "3"
+                  "width": "calc(100% + 8px)",
+                  "marginTop": "3",
+                  "marginLeft": "-4px",
+                  "marginRight": "-4px"
                 }
               },
               "kind": "Frame"
@@ -319,7 +321,12 @@
         {
           "id": "page_6",
           "name": "Archived Puzzle",
-          "properties": {},
+          "properties": {
+            "styles": {
+              "paddingLeft": "0",
+              "paddingRight": "0"
+            }
+          },
           "elements": [
             {
               "id": "calculation_2",
@@ -341,7 +348,7 @@
                 },
                 "styles": {
                   "color": "green",
-                  "width": "100%",
+                  "width": "98%",
                   "textAlign": "right",
                   "marginTop": "0"
                 }
@@ -357,8 +364,10 @@
                 },
                 "styles": {
                   "height": "100%",
-                  "width": "100%",
-                  "marginTop": "3"
+                  "width": "calc(100% + 8px)",
+                  "marginTop": "3",
+                  "marginLeft": "-4px",
+                  "marginRight": "-4px"
                 }
               },
               "kind": "Frame"
