@@ -31,6 +31,26 @@
           "kind": "Collection"
         },
         {
+          "id": "function_2",
+          "name": "Latest Puzzle Url",
+          "properties": {
+            "calculation": {
+              "expr": "let allPuzzles = Query(Puzzles, {})\nLast(Sort(allPuzzles, $item.id))?.url"
+            }
+          },
+          "kind": "Function"
+        },
+        {
+          "id": "function_1",
+          "name": "Todays Puzzle Url",
+          "properties": {
+            "calculation": {
+              "expr": "let todayId = DateFormat(Today(), 'yyyy-MM-dd')\nlet puzzle = First(Query(Puzzles, {id: todayId}))\npuzzle?.url\n"
+            }
+          },
+          "kind": "Function"
+        },
+        {
           "id": "appbar_1",
           "name": "Main App Bar",
           "properties": {
@@ -82,6 +102,20 @@
                 },
                 "action": {
                   "expr": "ShowPage(PuzzleArchive)"
+                }
+              },
+              "kind": "Button"
+            },
+            {
+              "id": "button_18",
+              "name": "About",
+              "properties": {
+                "appearance": "filled",
+                "styles": {
+                  "backgroundColor": "orange"
+                },
+                "action": {
+                  "expr": "ShowPage(AboutPage)"
                 }
               },
               "kind": "Button"
@@ -303,7 +337,7 @@
               "name": "Puzzle Frame",
               "properties": {
                 "source": {
-                  "expr": "Get(Puzzles, TodaysDate).url"
+                  "expr": "FirstNotNull(TodaysPuzzleUrl(), LatestPuzzleUrl())"
                 },
                 "styles": {
                   "height": "100%",

@@ -68,17 +68,17 @@ Even better - program it yourself with the easy to use Elemento tool and get eve
 function TodaysPuzzle(props) {
     const pathTo = name => props.path + '.' + name
     const {Page, Calculation, TextElement, Frame} = Elemento.components
-    const {DateFormat, Today} = Elemento.globalFunctions
-    const {Get} = Elemento.appFunctions
+    const {DateFormat, Today, FirstNotNull} = Elemento.globalFunctions
     const _state = Elemento.useGetStore()
-    const Puzzles = _state.useObject('Puzzles.Puzzles')
+    const TodaysPuzzleUrl = _state.useObject('Puzzles.TodaysPuzzleUrl')
+    const LatestPuzzleUrl = _state.useObject('Puzzles.LatestPuzzleUrl')
     const TodaysDate = _state.setObject(pathTo('TodaysDate'), new Calculation.State(stateProps(pathTo('TodaysDate')).value(DateFormat(Today(), 'yyyy-MM-dd')).props))
     Elemento.elementoDebug(() => eval(Elemento.useDebugExpr()))
 
     return React.createElement(Page, elProps(props.path).props,
         React.createElement(Calculation, elProps(pathTo('TodaysDate')).show(false).props),
         React.createElement(TextElement, elProps(pathTo('Title')).styles(elProps(pathTo('Title.Styles')).color('green').width('100%').textAlign('right').marginTop('0').props).content('Today\'s Puzzle - ' + DateFormat(Today(), 'd MMM yyyy')).props),
-        React.createElement(Frame, elProps(pathTo('PuzzleFrame')).source(Get(Puzzles, TodaysDate).url).styles(elProps(pathTo('PuzzleFrame.Styles')).height('100%').width('calc(100% + 8px)').marginTop('3').marginLeft('-4px').marginRight('-4px').props).props),
+        React.createElement(Frame, elProps(pathTo('PuzzleFrame')).source(FirstNotNull(TodaysPuzzleUrl(), LatestPuzzleUrl())).styles(elProps(pathTo('PuzzleFrame.Styles')).height('100%').width('calc(100% + 8px)').marginTop('3').marginLeft('-4px').marginRight('-4px').props).props),
     )
 }
 
@@ -106,7 +106,7 @@ function ArchivedPuzzle(props) {
 const PuzzleArchive_PuzzleItemSetItem = React.memo(function PuzzleArchive_PuzzleItemSetItem(props) {
     const pathTo = name => props.path + '.' + name
     const parentPathWith = name => Elemento.parentPath(props.path) + '.' + name
-    const {$item, $itemId, $selected, onClick} = props
+    const {$item, $itemId, $index, $selected, onClick} = props
     const {ItemSetItem, Block, TextElement, Button} = Elemento.components
     const {DateFormat, DateVal} = Elemento.globalFunctions
     const _state = Elemento.useGetStore()
@@ -119,7 +119,7 @@ const PuzzleArchive_PuzzleItemSetItem = React.memo(function PuzzleArchive_Puzzle
     const canDragItem = undefined
     const styles = undefined
 
-    return React.createElement(ItemSetItem, {path: props.path, item: $item, itemId: $itemId, onClick, canDragItem, styles},
+    return React.createElement(ItemSetItem, {path: props.path, item: $item, itemId: $itemId, index: $index, onClick, canDragItem, styles},
         React.createElement(Block, elProps(pathTo('Block1')).layout('horizontal wrapped').styles(elProps(pathTo('Block1.Styles')).fontSize('18').props).props,
             React.createElement(TextElement, elProps(pathTo('PuzzleDate')).styles(elProps(pathTo('PuzzleDate.Styles')).fontSize('inherit').marginRight('3em').props).content(DateFormat(DateVal($item.id), 'dd MMMM yyyy')).props),
             React.createElement(Button, elProps(pathTo('PuzzleLink')).content($item.name).appearance('link').action(PuzzleLink_action).styles(elProps(pathTo('PuzzleLink.Styles')).fontSize('inherit').props).props),
@@ -147,13 +147,24 @@ function PuzzleArchive(props) {
 export default function Puzzles(props) {
     const pathTo = name => 'Puzzles' + '.' + name
     const {App, WebFileDataStore, Collection, AppBar, Button} = Elemento.components
+    const {Last, Sort, DateFormat, Today, First} = Elemento.globalFunctions
     const pages = {HomePage, AboutPage, TodaysPuzzle, ArchivedPuzzle, PuzzleArchive}
     const appContext = Elemento.useGetAppContext()
+    const {Query} = Elemento.appFunctions
     const _state = Elemento.useGetStore()
     const app = _state.setObject('Puzzles', new App.State({pages, appContext}))
     const {ShowPage} = app
     const SiteDataStore = _state.setObject('Puzzles.SiteDataStore', new WebFileDataStore.State(stateProps('Puzzles.SiteDataStore').url('https://firebasestorage.googleapis.com/v0/b/elemento-games-site.appspot.com/o/public%2FsiteData.json?alt=media').props))
     const Puzzles = _state.setObject('Puzzles.Puzzles', new Collection.State(stateProps('Puzzles.Puzzles').dataStore(SiteDataStore).collectionName('Puzzles').props))
+    const LatestPuzzleUrl = _state.setObject('Puzzles.LatestPuzzleUrl', React.useCallback(wrapFn(pathTo('LatestPuzzleUrl'), 'calculation', () => {
+        let allPuzzles = Query(Puzzles, {})
+        return Last(Sort(allPuzzles, $item => $item.id))?.url
+    }), [Puzzles]))
+    const TodaysPuzzleUrl = _state.setObject('Puzzles.TodaysPuzzleUrl', React.useCallback(wrapFn(pathTo('TodaysPuzzleUrl'), 'calculation', () => {
+        let todayId = DateFormat(Today(), 'yyyy-MM-dd')
+        let puzzle = First(Query(Puzzles, {id: todayId}))
+        return puzzle?.url
+    }), [Puzzles]))
     const Home_action = React.useCallback(wrapFn(pathTo('Home'), 'action', async () => {
         await ShowPage(HomePage)
     }), [])
@@ -163,11 +174,15 @@ export default function Puzzles(props) {
     const Archive_action = React.useCallback(wrapFn(pathTo('Archive'), 'action', async () => {
         await ShowPage(PuzzleArchive)
     }), [])
+    const About_action = React.useCallback(wrapFn(pathTo('About'), 'action', async () => {
+        await ShowPage(AboutPage)
+    }), [])
 
     return React.createElement(App, {...elProps('Puzzles').maxWidth('600px').fonts(['Road Rage', 'Grape Nuts']).props, topChildren: React.createElement( React.Fragment, null, React.createElement(AppBar, elProps(pathTo('MainAppBar')).title('Puzzle Teams').styles(elProps(pathTo('MainAppBar.Styles')).backgroundColor('orange').color('green').fontSize('32').fontFamily('Road Rage').props).props,
             React.createElement(Button, elProps(pathTo('Home')).content('Home').appearance('filled').action(Home_action).styles(elProps(pathTo('Home.Styles')).backgroundColor('orange').props).props),
             React.createElement(Button, elProps(pathTo('TodaysPuzzle')).content('Today\'s Puzzle').appearance('filled').action(TodaysPuzzle_action).styles(elProps(pathTo('TodaysPuzzle.Styles')).backgroundColor('orange').props).props),
             React.createElement(Button, elProps(pathTo('Archive')).content('Archive').appearance('filled').action(Archive_action).styles(elProps(pathTo('Archive.Styles')).backgroundColor('orange').props).props),
+            React.createElement(Button, elProps(pathTo('About')).content('About').appearance('filled').action(About_action).styles(elProps(pathTo('About.Styles')).backgroundColor('orange').props).props),
     ))
     },
         React.createElement(WebFileDataStore, elProps(pathTo('SiteDataStore')).props),
