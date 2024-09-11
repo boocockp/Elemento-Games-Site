@@ -7,18 +7,22 @@ Solo MVP
 - ✅ Focused home page - blurb to about, CTA to Today's puzzle
 - ✅ Today's Puzzle page - inc fallback
 - ✅ Puzzle archive page
-- Logo, favicon
-- Official stuff
+- ✅ Logo, favicon
+- ✅ Official stuff - T&C, P&C, contact
+- ✅ Cookie consent
+- ✅ Nav to legal stuff etc
 - ✅ Consistent scoring and timing across puzzles
 - ✅ Instructions for all puzzles
 - ✅ Solid set of starter puzzles
 - All text reviewed
 - Design reviewed
+- First puzzles in place
 
 
 Teams MVP
 ---------
 
+- Google Analytics
 - Login
 - Personal stats - collect, simple display
 - Create a Team
@@ -27,3 +31,8 @@ Teams MVP
 - Leave Team
 - View team scores
 - League tables by day
+
+Future stuff
+------------
+
+- Report abuse or offensive content

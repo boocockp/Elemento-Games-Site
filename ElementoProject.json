@@ -8,7 +8,9 @@
       "name": "Puzzles",
       "properties": {
         "fonts": "Road Rage\nGrape Nuts",
-        "maxWidth": "600px"
+        "maxWidth": "600px",
+        "cookieMessage": "We use cookies for the usual things - to make the site work properly and learn how people use it.",
+        "faviconUrl": "puzzleteams_icon_plain.svg"
       },
       "elements": [
         {
@@ -59,10 +61,33 @@
               "color": "green",
               "fontSize": "32",
               "fontFamily": "Road Rage"
-            },
-            "title": "Puzzle Teams"
+            }
           },
           "elements": [
+            {
+              "id": "image_1",
+              "name": "Logo",
+              "properties": {
+                "source": "puzzleteams_icon_plain.svg",
+                "styles": {
+                  "width": "40",
+                  "borderRadius": "3"
+                }
+              },
+              "kind": "Image"
+            },
+            {
+              "id": "text_24",
+              "name": "App Title",
+              "properties": {
+                "content": "Puzzle Teams",
+                "styles": {
+                  "fontFamily": "Road Rage",
+                  "fontSize": "32"
+                }
+              },
+              "kind": "Text"
+            },
             {
               "id": "button_15",
               "name": "Home",
@@ -107,18 +132,47 @@
               "kind": "Button"
             },
             {
-              "id": "button_18",
-              "name": "About",
+              "id": "menu_2",
+              "name": "Menu 2",
               "properties": {
-                "appearance": "filled",
-                "styles": {
-                  "backgroundColor": "orange"
-                },
-                "action": {
-                  "expr": "ShowPage(AboutPage)"
-                }
+                "label": "More..."
               },
-              "kind": "Button"
+              "elements": [
+                {
+                  "id": "menuitem_1",
+                  "name": "About Item",
+                  "properties": {
+                    "action": {
+                      "expr": "ShowPage(AboutPage)"
+                    },
+                    "label": "About"
+                  },
+                  "kind": "MenuItem"
+                },
+                {
+                  "id": "menuitem_2",
+                  "name": "Terms",
+                  "properties": {
+                    "action": {
+                      "expr": "ShowPage(Terms)"
+                    },
+                    "label": "Terms & Conditions"
+                  },
+                  "kind": "MenuItem"
+                },
+                {
+                  "id": "menuitem_3",
+                  "name": "Privacy",
+                  "properties": {
+                    "action": {
+                      "expr": "ShowPage(Privacy)"
+                    },
+                    "label": "Privacy & Cookies"
+                  },
+                  "kind": "MenuItem"
+                }
+              ],
+              "kind": "Menu"
             }
           ],
           "kind": "AppBar"
@@ -482,6 +536,60 @@
                 }
               ],
               "kind": "ItemSet"
+            }
+          ],
+          "kind": "Page"
+        },
+        {
+          "id": "page_8",
+          "name": "Terms",
+          "properties": {},
+          "elements": [
+            {
+              "id": "webfile_1",
+              "name": "Terms File",
+              "properties": {
+                "url": "../files/terms.html"
+              },
+              "kind": "WebFile"
+            },
+            {
+              "id": "text_23",
+              "name": "Terms Text",
+              "properties": {
+                "content": {
+                  "expr": "TermsFile"
+                },
+                "allowHtml": true
+              },
+              "kind": "Text"
+            }
+          ],
+          "kind": "Page"
+        },
+        {
+          "id": "page_9",
+          "name": "Privacy",
+          "properties": {},
+          "elements": [
+            {
+              "id": "webfile_2",
+              "name": "Privacy File",
+              "properties": {
+                "url": "../files/privacycookies.html"
+              },
+              "kind": "WebFile"
+            },
+            {
+              "id": "text_25",
+              "name": "Terms Text",
+              "properties": {
+                "content": {
+                  "expr": "PrivacyFile"
+                },
+                "allowHtml": true
+              },
+              "kind": "Text"
             }
           ],
           "kind": "Page"

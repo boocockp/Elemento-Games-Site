@@ -143,12 +143,40 @@ function PuzzleArchive(props) {
     )
 }
 
+// Terms.js
+function Terms(props) {
+    const pathTo = name => props.path + '.' + name
+    const {Page, WebFile, TextElement} = Elemento.components
+    const _state = Elemento.useGetStore()
+    const TermsFile = _state.setObject(pathTo('TermsFile'), new WebFile.State(stateProps(pathTo('TermsFile')).url('../files/terms.html').props))
+    Elemento.elementoDebug(() => eval(Elemento.useDebugExpr()))
+
+    return React.createElement(Page, elProps(props.path).props,
+        React.createElement(WebFile, elProps(pathTo('TermsFile')).props),
+        React.createElement(TextElement, elProps(pathTo('TermsText')).allowHtml(true).content(TermsFile).props),
+    )
+}
+
+// Privacy.js
+function Privacy(props) {
+    const pathTo = name => props.path + '.' + name
+    const {Page, WebFile, TextElement} = Elemento.components
+    const _state = Elemento.useGetStore()
+    const PrivacyFile = _state.setObject(pathTo('PrivacyFile'), new WebFile.State(stateProps(pathTo('PrivacyFile')).url('../files/privacycookies.html').props))
+    Elemento.elementoDebug(() => eval(Elemento.useDebugExpr()))
+
+    return React.createElement(Page, elProps(props.path).props,
+        React.createElement(WebFile, elProps(pathTo('PrivacyFile')).props),
+        React.createElement(TextElement, elProps(pathTo('TermsText')).allowHtml(true).content(PrivacyFile).props),
+    )
+}
+
 // appMain.js
 export default function Puzzles(props) {
     const pathTo = name => 'Puzzles' + '.' + name
-    const {App, WebFileDataStore, Collection, AppBar, Button} = Elemento.components
+    const {App, WebFileDataStore, Collection, AppBar, Image, TextElement, Button, Menu, MenuItem} = Elemento.components
     const {Last, Sort, DateFormat, Today, First} = Elemento.globalFunctions
-    const pages = {HomePage, AboutPage, TodaysPuzzle, ArchivedPuzzle, PuzzleArchive}
+    const pages = {HomePage, AboutPage, TodaysPuzzle, ArchivedPuzzle, PuzzleArchive, Terms, Privacy}
     const appContext = Elemento.useGetAppContext()
     const {Query} = Elemento.appFunctions
     const _state = Elemento.useGetStore()
@@ -174,15 +202,27 @@ export default function Puzzles(props) {
     const Archive_action = React.useCallback(wrapFn(pathTo('Archive'), 'action', async () => {
         await ShowPage(PuzzleArchive)
     }), [])
-    const About_action = React.useCallback(wrapFn(pathTo('About'), 'action', async () => {
+    const AboutItem_action = React.useCallback(wrapFn(pathTo('AboutItem'), 'action', async () => {
         await ShowPage(AboutPage)
     }), [])
+    const Terms_action = React.useCallback(wrapFn(pathTo('Terms'), 'action', async () => {
+        await ShowPage(Terms)
+    }), [])
+    const Privacy_action = React.useCallback(wrapFn(pathTo('Privacy'), 'action', async () => {
+        await ShowPage(Privacy)
+    }), [])
 
-    return React.createElement(App, {...elProps('Puzzles').maxWidth('600px').fonts(['Road Rage', 'Grape Nuts']).props, topChildren: React.createElement( React.Fragment, null, React.createElement(AppBar, elProps(pathTo('MainAppBar')).title('Puzzle Teams').styles(elProps(pathTo('MainAppBar.Styles')).backgroundColor('orange').color('green').fontSize('32').fontFamily('Road Rage').props).props,
+    return React.createElement(App, {...elProps('Puzzles').maxWidth('600px').cookieMessage('We use cookies for the usual things - to make the site work properly and learn how people use it.').faviconUrl('puzzleteams_icon_plain.svg').fonts(['Road Rage', 'Grape Nuts']).props, topChildren: React.createElement( React.Fragment, null, React.createElement(AppBar, elProps(pathTo('MainAppBar')).styles(elProps(pathTo('MainAppBar.Styles')).backgroundColor('orange').color('green').fontSize('32').fontFamily('Road Rage').props).props,
+            React.createElement(Image, elProps(pathTo('Logo')).source('puzzleteams_icon_plain.svg').styles(elProps(pathTo('Logo.Styles')).width('40').borderRadius('3').props).props),
+            React.createElement(TextElement, elProps(pathTo('AppTitle')).styles(elProps(pathTo('AppTitle.Styles')).fontFamily('Road Rage').fontSize('32').props).content('Puzzle Teams').props),
             React.createElement(Button, elProps(pathTo('Home')).content('Home').appearance('filled').action(Home_action).styles(elProps(pathTo('Home.Styles')).backgroundColor('orange').props).props),
             React.createElement(Button, elProps(pathTo('TodaysPuzzle')).content('Today\'s Puzzle').appearance('filled').action(TodaysPuzzle_action).styles(elProps(pathTo('TodaysPuzzle.Styles')).backgroundColor('orange').props).props),
             React.createElement(Button, elProps(pathTo('Archive')).content('Archive').appearance('filled').action(Archive_action).styles(elProps(pathTo('Archive.Styles')).backgroundColor('orange').props).props),
-            React.createElement(Button, elProps(pathTo('About')).content('About').appearance('filled').action(About_action).styles(elProps(pathTo('About.Styles')).backgroundColor('orange').props).props),
+            React.createElement(Menu, elProps(pathTo('Menu2')).label('More...').props,
+            React.createElement(MenuItem, elProps(pathTo('AboutItem')).label('About').action(AboutItem_action).props),
+            React.createElement(MenuItem, elProps(pathTo('Terms')).label('Terms & Conditions').action(Terms_action).props),
+            React.createElement(MenuItem, elProps(pathTo('Privacy')).label('Privacy & Cookies').action(Privacy_action).props),
+    ),
     ))
     },
         React.createElement(WebFileDataStore, elProps(pathTo('SiteDataStore')).props),
