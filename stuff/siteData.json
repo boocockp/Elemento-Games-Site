@@ -1,6 +1,12 @@
 {
   "Puzzles": [
-    {"id":  "2024-07-31", "name": "Photo Jigsaw", "url": "https://elemento.online/run/gh/boocockp/photo-jigsaw/PhotoJigsaw"},
-    {"id":  "2024-07-30", "name": "Anagram Race", "url": "https://elemento.online/run/gh/boocockp/anagram-race/AnagramRace"}
+    {"id": "2024-09-11", "name": "Photo Jigsaw", "url": "https://elemento.online/run/gh/boocockp/photo-jigsaw/PhotoJigsaw"},
+    {"id": "2024-09-10", "name": "Mubjled Words", "url": "https://elemento.online/run/gh/boocockp/anagram-race/AnagramRace"},
+    {"id": "2024-09-09", "name": "Sum Mix-up", "url": "https://elemento.online/run/gh/boocockp/jumbled-arithmetic/MainApp"},
+    {"id": "2024-09-08", "name": "Jig-Maze", "url": "https://elemento.online/run/gh/boocockp/maze-jigsaw/MainApp"},
+    {"id": "2024-09-07", "name": "Hidden Words", "url": "https://elemento.online/run/gh/boocockp/hidden-words/HiddenWords"},
+    {"id": "2024-09-06", "name": "Moving Maze", "url": "https://elemento.online/run/gh/boocockp/moving-maze/MainApp"},
+    {"id": "2024-09-05", "name": "Missing Letters", "url": "https://elemento.online/run/gh/boocockp/missing-letters/MainApp"},
+    {"id": "2024-09-04", "name": "Tile Diamonds", "url": "https://elemento.online/run/gh/boocockp/tile-diamonds/MainApp"}
   ]
 }

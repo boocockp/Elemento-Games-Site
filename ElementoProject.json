@@ -385,22 +385,6 @@
               "kind": "Calculation"
             },
             {
-              "id": "text_13",
-              "name": "Title",
-              "properties": {
-                "content": {
-                  "expr": "'Today\\'s Puzzle - ' + DateFormat(Today(), 'd MMM yyyy')"
-                },
-                "styles": {
-                  "color": "green",
-                  "width": "100%",
-                  "textAlign": "right",
-                  "marginTop": "0"
-                }
-              },
-              "kind": "Text"
-            },
-            {
               "id": "frame_3",
               "name": "Puzzle Frame",
               "properties": {
@@ -416,6 +400,22 @@
                 }
               },
               "kind": "Frame"
+            },
+            {
+              "id": "text_13",
+              "name": "Title",
+              "properties": {
+                "content": {
+                  "expr": "'Today\\'s Puzzle - ' + DateFormat(Today(), 'd MMM yyyy')"
+                },
+                "styles": {
+                  "color": "green",
+                  "width": "100%",
+                  "textAlign": "right",
+                  "marginTop": "0"
+                }
+              },
+              "kind": "Text"
             }
           ],
           "kind": "Page"
@@ -442,22 +442,6 @@
               "kind": "Calculation"
             },
             {
-              "id": "text_16",
-              "name": "Title",
-              "properties": {
-                "content": {
-                  "expr": "'Puzzle Archive - ' + DateFormat(DateVal(PuzzleDate), 'd MMMM yyyy')"
-                },
-                "styles": {
-                  "color": "green",
-                  "width": "98%",
-                  "textAlign": "right",
-                  "marginTop": "0"
-                }
-              },
-              "kind": "Text"
-            },
-            {
               "id": "frame_4",
               "name": "Puzzle Frame",
               "properties": {
@@ -473,6 +457,22 @@
                 }
               },
               "kind": "Frame"
+            },
+            {
+              "id": "text_16",
+              "name": "Title",
+              "properties": {
+                "content": {
+                  "expr": "'Puzzle Archive - ' + DateFormat(DateVal(PuzzleDate), 'd MMMM yyyy')"
+                },
+                "styles": {
+                  "color": "green",
+                  "width": "98%",
+                  "textAlign": "right",
+                  "marginTop": "0"
+                }
+              },
+              "kind": "Text"
             }
           ],
           "kind": "Page"

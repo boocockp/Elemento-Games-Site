@@ -67,7 +67,7 @@ Even better - program it yourself with the easy to use Elemento tool and get eve
 // TodaysPuzzle.js
 function TodaysPuzzle(props) {
     const pathTo = name => props.path + '.' + name
-    const {Page, Calculation, TextElement, Frame} = Elemento.components
+    const {Page, Calculation, Frame, TextElement} = Elemento.components
     const {DateFormat, Today, FirstNotNull} = Elemento.globalFunctions
     const _state = Elemento.useGetStore()
     const TodaysPuzzleUrl = _state.useObject('Puzzles.TodaysPuzzleUrl')
@@ -77,15 +77,15 @@ function TodaysPuzzle(props) {
 
     return React.createElement(Page, elProps(props.path).props,
         React.createElement(Calculation, elProps(pathTo('TodaysDate')).show(false).props),
-        React.createElement(TextElement, elProps(pathTo('Title')).styles(elProps(pathTo('Title.Styles')).color('green').width('100%').textAlign('right').marginTop('0').props).content('Today\'s Puzzle - ' + DateFormat(Today(), 'd MMM yyyy')).props),
         React.createElement(Frame, elProps(pathTo('PuzzleFrame')).source(FirstNotNull(TodaysPuzzleUrl(), LatestPuzzleUrl())).styles(elProps(pathTo('PuzzleFrame.Styles')).height('100%').width('calc(100% + 8px)').marginTop('3').marginLeft('-4px').marginRight('-4px').props).props),
+        React.createElement(TextElement, elProps(pathTo('Title')).styles(elProps(pathTo('Title.Styles')).color('green').width('100%').textAlign('right').marginTop('0').props).content('Today\'s Puzzle - ' + DateFormat(Today(), 'd MMM yyyy')).props),
     )
 }
 
 // ArchivedPuzzle.js
 function ArchivedPuzzle(props) {
     const pathTo = name => props.path + '.' + name
-    const {Page, Calculation, TextElement, Frame} = Elemento.components
+    const {Page, Calculation, Frame, TextElement} = Elemento.components
     const {DateFormat, DateVal} = Elemento.globalFunctions
     const {Get} = Elemento.appFunctions
     const _state = Elemento.useGetStore()
@@ -97,8 +97,8 @@ function ArchivedPuzzle(props) {
 
     return React.createElement(Page, elProps(props.path).styles(elProps(pathTo('ArchivedPuzzle.Styles')).paddingLeft('0').paddingRight('0').props).props,
         React.createElement(Calculation, elProps(pathTo('PuzzleDate')).show(false).props),
-        React.createElement(TextElement, elProps(pathTo('Title')).styles(elProps(pathTo('Title.Styles')).color('green').width('98%').textAlign('right').marginTop('0').props).content('Puzzle Archive - ' + DateFormat(DateVal(PuzzleDate), 'd MMMM yyyy')).props),
         React.createElement(Frame, elProps(pathTo('PuzzleFrame')).source(Get(Puzzles, PuzzleDate).url).styles(elProps(pathTo('PuzzleFrame.Styles')).height('100%').width('calc(100% + 8px)').marginTop('3').marginLeft('-4px').marginRight('-4px').props).props),
+        React.createElement(TextElement, elProps(pathTo('Title')).styles(elProps(pathTo('Title.Styles')).color('green').width('98%').textAlign('right').marginTop('0').props).content('Puzzle Archive - ' + DateFormat(DateVal(PuzzleDate), 'd MMMM yyyy')).props),
     )
 }
 
