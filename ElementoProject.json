@@ -89,90 +89,104 @@
               "kind": "Text"
             },
             {
-              "id": "button_15",
-              "name": "Home",
+              "id": "block_2",
+              "name": "Nav Items",
               "properties": {
-                "appearance": "filled",
-                "styles": {
-                  "backgroundColor": "orange"
-                },
-                "action": {
-                  "expr": "ShowPage(HomePage)"
-                }
-              },
-              "kind": "Button"
-            },
-            {
-              "id": "button_17",
-              "name": "Todays Puzzle",
-              "properties": {
-                "appearance": "filled",
-                "styles": {
-                  "backgroundColor": "orange"
-                },
-                "content": "Today's Puzzle",
-                "action": {
-                  "expr": "ShowPage(TodaysPuzzle)"
-                }
-              },
-              "kind": "Button"
-            },
-            {
-              "id": "button_16",
-              "name": "Archive",
-              "properties": {
-                "appearance": "filled",
-                "styles": {
-                  "backgroundColor": "orange"
-                },
-                "action": {
-                  "expr": "ShowPage(PuzzleArchive)"
-                }
-              },
-              "kind": "Button"
-            },
-            {
-              "id": "menu_2",
-              "name": "Menu 2",
-              "properties": {
-                "label": "More..."
+                "layout": "horizontal"
               },
               "elements": [
                 {
-                  "id": "menuitem_1",
-                  "name": "About Item",
+                  "id": "button_17",
+                  "name": "Home",
                   "properties": {
-                    "action": {
-                      "expr": "ShowPage(AboutPage)"
+                    "appearance": "filled",
+                    "styles": {
+                      "backgroundColor": "orange",
+                      "marginTop": "5"
                     },
-                    "label": "About"
+                    "action": {
+                      "expr": "ShowPage(HomePage)"
+                    }
                   },
-                  "kind": "MenuItem"
+                  "kind": "Button"
                 },
                 {
-                  "id": "menuitem_2",
-                  "name": "Terms",
+                  "id": "button_16",
+                  "name": "Todays Puzzle",
                   "properties": {
-                    "action": {
-                      "expr": "ShowPage(Terms)"
+                    "appearance": "filled",
+                    "styles": {
+                      "backgroundColor": "orange",
+                      "textWrap": "nowrap",
+                      "marginTop": "5"
                     },
-                    "label": "Terms & Conditions"
+                    "content": "Today's Puzzle",
+                    "action": {
+                      "expr": "ShowPage(TodaysPuzzle)"
+                    }
                   },
-                  "kind": "MenuItem"
+                  "kind": "Button"
                 },
                 {
-                  "id": "menuitem_3",
-                  "name": "Privacy",
+                  "id": "button_15",
+                  "name": "Archive",
                   "properties": {
-                    "action": {
-                      "expr": "ShowPage(Privacy)"
+                    "appearance": "filled",
+                    "styles": {
+                      "backgroundColor": "orange",
+                      "marginTop": "5"
                     },
-                    "label": "Privacy & Cookies"
+                    "action": {
+                      "expr": "ShowPage(PuzzleArchive)"
+                    }
                   },
-                  "kind": "MenuItem"
+                  "kind": "Button"
+                },
+                {
+                  "id": "menu_1",
+                  "name": "More Menu",
+                  "properties": {
+                    "label": "More..."
+                  },
+                  "elements": [
+                    {
+                      "id": "menuitem_1",
+                      "name": "About Item",
+                      "properties": {
+                        "action": {
+                          "expr": "ShowPage(AboutPage)"
+                        },
+                        "label": "About"
+                      },
+                      "kind": "MenuItem"
+                    },
+                    {
+                      "id": "menuitem_2",
+                      "name": "Terms",
+                      "properties": {
+                        "action": {
+                          "expr": "ShowPage(Terms)"
+                        },
+                        "label": "Terms & Conditions"
+                      },
+                      "kind": "MenuItem"
+                    },
+                    {
+                      "id": "menuitem_3",
+                      "name": "Privacy",
+                      "properties": {
+                        "action": {
+                          "expr": "ShowPage(Privacy)"
+                        },
+                        "label": "Privacy & Cookies"
+                      },
+                      "kind": "MenuItem"
+                    }
+                  ],
+                  "kind": "Menu"
                 }
               ],
-              "kind": "Menu"
+              "kind": "Block"
             }
           ],
           "kind": "AppBar"

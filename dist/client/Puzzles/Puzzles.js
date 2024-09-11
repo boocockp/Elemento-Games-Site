@@ -174,7 +174,7 @@ function Privacy(props) {
 // appMain.js
 export default function Puzzles(props) {
     const pathTo = name => 'Puzzles' + '.' + name
-    const {App, WebFileDataStore, Collection, AppBar, Image, TextElement, Button, Menu, MenuItem} = Elemento.components
+    const {App, WebFileDataStore, Collection, AppBar, Image, TextElement, Block, Button, Menu, MenuItem} = Elemento.components
     const {Last, Sort, DateFormat, Today, First} = Elemento.globalFunctions
     const pages = {HomePage, AboutPage, TodaysPuzzle, ArchivedPuzzle, PuzzleArchive, Terms, Privacy}
     const appContext = Elemento.useGetAppContext()
@@ -193,6 +193,7 @@ export default function Puzzles(props) {
         let puzzle = First(Query(Puzzles, {id: todayId}))
         return puzzle?.url
     }), [Puzzles]))
+    const NavItems = _state.setObject('Puzzles.NavItems', new Block.State(stateProps('Puzzles.NavItems').props))
     const Home_action = React.useCallback(wrapFn(pathTo('Home'), 'action', async () => {
         await ShowPage(HomePage)
     }), [])
@@ -215,13 +216,15 @@ export default function Puzzles(props) {
     return React.createElement(App, {...elProps('Puzzles').maxWidth('600px').cookieMessage('We use cookies for the usual things - to make the site work properly and learn how people use it.').faviconUrl('puzzleteams_icon_plain.svg').fonts(['Road Rage', 'Grape Nuts']).props, topChildren: React.createElement( React.Fragment, null, React.createElement(AppBar, elProps(pathTo('MainAppBar')).styles(elProps(pathTo('MainAppBar.Styles')).backgroundColor('orange').color('green').fontSize('32').fontFamily('Road Rage').props).props,
             React.createElement(Image, elProps(pathTo('Logo')).source('puzzleteams_icon_plain.svg').styles(elProps(pathTo('Logo.Styles')).width('40').borderRadius('3').props).props),
             React.createElement(TextElement, elProps(pathTo('AppTitle')).styles(elProps(pathTo('AppTitle.Styles')).fontFamily('Road Rage').fontSize('32').props).content('Puzzle Teams').props),
-            React.createElement(Button, elProps(pathTo('Home')).content('Home').appearance('filled').action(Home_action).styles(elProps(pathTo('Home.Styles')).backgroundColor('orange').props).props),
-            React.createElement(Button, elProps(pathTo('TodaysPuzzle')).content('Today\'s Puzzle').appearance('filled').action(TodaysPuzzle_action).styles(elProps(pathTo('TodaysPuzzle.Styles')).backgroundColor('orange').props).props),
-            React.createElement(Button, elProps(pathTo('Archive')).content('Archive').appearance('filled').action(Archive_action).styles(elProps(pathTo('Archive.Styles')).backgroundColor('orange').props).props),
-            React.createElement(Menu, elProps(pathTo('Menu2')).label('More...').props,
+            React.createElement(Block, elProps(pathTo('NavItems')).layout('horizontal').props,
+            React.createElement(Button, elProps(pathTo('Home')).content('Home').appearance('filled').action(Home_action).styles(elProps(pathTo('Home.Styles')).backgroundColor('orange').marginTop('5').props).props),
+            React.createElement(Button, elProps(pathTo('TodaysPuzzle')).content('Today\'s Puzzle').appearance('filled').action(TodaysPuzzle_action).styles(elProps(pathTo('TodaysPuzzle.Styles')).backgroundColor('orange').textWrap('nowrap').marginTop('5').props).props),
+            React.createElement(Button, elProps(pathTo('Archive')).content('Archive').appearance('filled').action(Archive_action).styles(elProps(pathTo('Archive.Styles')).backgroundColor('orange').marginTop('5').props).props),
+            React.createElement(Menu, elProps(pathTo('MoreMenu')).label('More...').props,
             React.createElement(MenuItem, elProps(pathTo('AboutItem')).label('About').action(AboutItem_action).props),
             React.createElement(MenuItem, elProps(pathTo('Terms')).label('Terms & Conditions').action(Terms_action).props),
             React.createElement(MenuItem, elProps(pathTo('Privacy')).label('Privacy & Cookies').action(Privacy_action).props),
+    ),
     ),
     ))
     },
