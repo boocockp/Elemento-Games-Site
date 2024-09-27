@@ -17,6 +17,7 @@ Solo MVP
 - All text reviewed
 - Design reviewed
 - First puzzles in place
+- Works on small phones
 
 
 Teams MVP

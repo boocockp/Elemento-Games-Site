@@ -21,7 +21,7 @@ function HomePage(props) {
     Elemento.elementoDebug(() => eval(Elemento.useDebugExpr()))
 
     return React.createElement(Page, elProps(props.path).props,
-        React.createElement(TextElement, elProps(pathTo('Heading1')).styles(elProps(pathTo('Heading1.Styles')).fontFamily('Tahoma').fontSize('20').color('green').props).content('The No Boredom puzzle site!').props),
+        React.createElement(TextElement, elProps(pathTo('Heading1')).styles(elProps(pathTo('Heading1.Styles')).fontFamily('Tahoma').fontSize('20').color('green').marginTop('20px').props).content('The No Boredom puzzle site!').props),
         React.createElement(TextElement, elProps(pathTo('Para1')).content(`Challenge your mind with a fresh puzzle every day.
 Word puzzles, number games, visual brainteasers - a different one every morning.
 Each takes less than 5 minutes, so you can fit it in whenever you want.`).props),
@@ -75,9 +75,9 @@ function TodaysPuzzle(props) {
     const TodaysDate = _state.setObject(pathTo('TodaysDate'), new Calculation.State(stateProps(pathTo('TodaysDate')).value(DateFormat(Today(), 'yyyy-MM-dd')).props))
     Elemento.elementoDebug(() => eval(Elemento.useDebugExpr()))
 
-    return React.createElement(Page, elProps(props.path).props,
+    return React.createElement(Page, elProps(props.path).styles(elProps(pathTo('TodaysPuzzle.Styles')).paddingLeft('0').paddingRight('0').paddingTop('0').paddingBottom('0').props).props,
         React.createElement(Calculation, elProps(pathTo('TodaysDate')).show(false).props),
-        React.createElement(Frame, elProps(pathTo('PuzzleFrame')).source(FirstNotNull(TodaysPuzzleUrl(), LatestPuzzleUrl())).styles(elProps(pathTo('PuzzleFrame.Styles')).height('100%').width('calc(100% + 8px)').marginTop('3').marginLeft('-4px').marginRight('-4px').props).props),
+        React.createElement(Frame, elProps(pathTo('PuzzleFrame')).source(FirstNotNull(TodaysPuzzleUrl(), LatestPuzzleUrl())).styles(elProps(pathTo('PuzzleFrame.Styles')).height('calc(100% + 16px)').width('calc(100% + 8px)').marginLeft('-4px').marginRight('-4px').marginTop('-8px').props).props),
         React.createElement(TextElement, elProps(pathTo('Title')).styles(elProps(pathTo('Title.Styles')).color('green').width('100%').textAlign('right').marginTop('0').props).content('Today\'s Puzzle - ' + DateFormat(Today(), 'd MMM yyyy')).props),
     )
 }
@@ -95,10 +95,10 @@ function ArchivedPuzzle(props) {
     const PuzzleDate = _state.setObject(pathTo('PuzzleDate'), new Calculation.State(stateProps(pathTo('PuzzleDate')).value(CurrentUrl().pathSections[0]).props))
     Elemento.elementoDebug(() => eval(Elemento.useDebugExpr()))
 
-    return React.createElement(Page, elProps(props.path).styles(elProps(pathTo('ArchivedPuzzle.Styles')).paddingLeft('0').paddingRight('0').props).props,
+    return React.createElement(Page, elProps(props.path).styles(elProps(pathTo('ArchivedPuzzle.Styles')).paddingLeft('0').paddingRight('0').paddingTop('0').padding('0').props).props,
         React.createElement(Calculation, elProps(pathTo('PuzzleDate')).show(false).props),
-        React.createElement(Frame, elProps(pathTo('PuzzleFrame')).source(Get(Puzzles, PuzzleDate).url).styles(elProps(pathTo('PuzzleFrame.Styles')).height('100%').width('calc(100% + 8px)').marginTop('3').marginLeft('-4px').marginRight('-4px').props).props),
-        React.createElement(TextElement, elProps(pathTo('Title')).styles(elProps(pathTo('Title.Styles')).color('green').width('98%').textAlign('right').marginTop('0').props).content('Puzzle Archive - ' + DateFormat(DateVal(PuzzleDate), 'd MMMM yyyy')).props),
+        React.createElement(Frame, elProps(pathTo('PuzzleFrame')).source(Get(Puzzles, PuzzleDate).url).styles(elProps(pathTo('PuzzleFrame.Styles')).height('calc(100% + 16px)').width('calc(100% + 8px)').marginTop('-8px').marginLeft('-4px').marginRight('-4px').props).props),
+        React.createElement(TextElement, elProps(pathTo('Title')).show(document.documentElement.clientHeight > 600).styles(elProps(pathTo('Title.Styles')).color('green').width('98%').textAlign('right').marginTop('0').props).content('Puzzle Archive - ' + DateFormat(DateVal(PuzzleDate), 'd MMMM yyyy')).props),
     )
 }
 
@@ -174,14 +174,14 @@ function Privacy(props) {
 // appMain.js
 export default function Puzzles(props) {
     const pathTo = name => 'Puzzles' + '.' + name
-    const {App, WebFileDataStore, Collection, AppBar, Image, TextElement, Block, Button, Menu, MenuItem} = Elemento.components
-    const {Last, Sort, DateFormat, Today, First} = Elemento.globalFunctions
+    const {App, WebFileDataStore, Collection, AppBar, Image, TextElement, Block, Button, Menu, MenuItem, Calculation} = Elemento.components
+    const {Last, Sort, DateFormat, Today, First, Not} = Elemento.globalFunctions
     const pages = {HomePage, AboutPage, TodaysPuzzle, ArchivedPuzzle, PuzzleArchive, Terms, Privacy}
     const appContext = Elemento.useGetAppContext()
     const {Query} = Elemento.appFunctions
     const _state = Elemento.useGetStore()
     const app = _state.setObject('Puzzles', new App.State({pages, appContext}))
-    const {ShowPage} = app
+    const {ShowPage, AppWidth} = app
     const SiteDataStore = _state.setObject('Puzzles.SiteDataStore', new WebFileDataStore.State(stateProps('Puzzles.SiteDataStore').url('https://firebasestorage.googleapis.com/v0/b/elemento-games-site.appspot.com/o/public%2FsiteData.json?alt=media').props))
     const Puzzles = _state.setObject('Puzzles.Puzzles', new Collection.State(stateProps('Puzzles.Puzzles').dataStore(SiteDataStore).collectionName('Puzzles').props))
     const LatestPuzzleUrl = _state.setObject('Puzzles.LatestPuzzleUrl', React.useCallback(wrapFn(pathTo('LatestPuzzleUrl'), 'calculation', () => {
@@ -194,6 +194,7 @@ export default function Puzzles(props) {
         return puzzle?.url
     }), [Puzzles]))
     const NavItems = _state.setObject('Puzzles.NavItems', new Block.State(stateProps('Puzzles.NavItems').props))
+    const NarrowScreen = _state.setObject('Puzzles.NarrowScreen', new Calculation.State(stateProps('Puzzles.NarrowScreen').value(AppWidth() < 630).props))
     const Home_action = React.useCallback(wrapFn(pathTo('Home'), 'action', async () => {
         await ShowPage(HomePage)
     }), [])
@@ -212,20 +213,47 @@ export default function Puzzles(props) {
     const Privacy_action = React.useCallback(wrapFn(pathTo('Privacy'), 'action', async () => {
         await ShowPage(Privacy)
     }), [])
+    const Home2_action = React.useCallback(wrapFn(pathTo('Home2'), 'action', async () => {
+        await ShowPage(HomePage)
+    }), [])
+    const TodaysPuzzle2_action = React.useCallback(wrapFn(pathTo('TodaysPuzzle2'), 'action', async () => {
+        await ShowPage(TodaysPuzzle)
+    }), [])
+    const Archive2_action = React.useCallback(wrapFn(pathTo('Archive2'), 'action', async () => {
+        await ShowPage(PuzzleArchive)
+    }), [])
+    const AboutItem2_action = React.useCallback(wrapFn(pathTo('AboutItem2'), 'action', async () => {
+        await ShowPage(AboutPage)
+    }), [])
+    const Terms2_action = React.useCallback(wrapFn(pathTo('Terms2'), 'action', async () => {
+        await ShowPage(Terms)
+    }), [])
+    const Privacy2_action = React.useCallback(wrapFn(pathTo('Privacy2'), 'action', async () => {
+        await ShowPage(Privacy)
+    }), [])
 
     return React.createElement(App, {...elProps('Puzzles').maxWidth('600px').cookieMessage('We use cookies for the usual things - to make the site work properly and learn how people use it.').faviconUrl('puzzleteams_icon_plain.svg').fonts(['Road Rage', 'Grape Nuts']).props, topChildren: React.createElement( React.Fragment, null, React.createElement(AppBar, elProps(pathTo('MainAppBar')).styles(elProps(pathTo('MainAppBar.Styles')).backgroundColor('orange').color('green').fontSize('32').fontFamily('Road Rage').props).props,
             React.createElement(Image, elProps(pathTo('Logo')).source('puzzleteams_icon_plain.svg').styles(elProps(pathTo('Logo.Styles')).width('40').borderRadius('3').props).props),
             React.createElement(TextElement, elProps(pathTo('AppTitle')).styles(elProps(pathTo('AppTitle.Styles')).fontFamily('Road Rage').fontSize('32').props).content('Puzzle Teams').props),
-            React.createElement(Block, elProps(pathTo('NavItems')).layout('horizontal').props,
+            React.createElement(Block, elProps(pathTo('NavItems')).layout('horizontal').show(Not(NarrowScreen)).props,
             React.createElement(Button, elProps(pathTo('Home')).content('Home').appearance('filled').action(Home_action).styles(elProps(pathTo('Home.Styles')).backgroundColor('orange').marginTop('5').props).props),
             React.createElement(Button, elProps(pathTo('TodaysPuzzle')).content('Today\'s Puzzle').appearance('filled').action(TodaysPuzzle_action).styles(elProps(pathTo('TodaysPuzzle.Styles')).backgroundColor('orange').textWrap('nowrap').marginTop('5').props).props),
             React.createElement(Button, elProps(pathTo('Archive')).content('Archive').appearance('filled').action(Archive_action).styles(elProps(pathTo('Archive.Styles')).backgroundColor('orange').marginTop('5').props).props),
-            React.createElement(Menu, elProps(pathTo('MoreMenu')).label('More...').props,
+            React.createElement(Menu, elProps(pathTo('MoreMenu')).label('More...').buttonStyles(elProps(pathTo('MoreMenu.Styles')).color('white').props).props,
             React.createElement(MenuItem, elProps(pathTo('AboutItem')).label('About').action(AboutItem_action).props),
             React.createElement(MenuItem, elProps(pathTo('Terms')).label('Terms & Conditions').action(Terms_action).props),
             React.createElement(MenuItem, elProps(pathTo('Privacy')).label('Privacy & Cookies').action(Privacy_action).props),
     ),
     ),
+            React.createElement(Menu, elProps(pathTo('HamburgerMenu')).label('Menu').iconName('menu').show(NarrowScreen).buttonStyles(elProps(pathTo('HamburgerMenu.Styles')).color('white').props).props,
+            React.createElement(MenuItem, elProps(pathTo('Home2')).label('Home').action(Home2_action).props),
+            React.createElement(MenuItem, elProps(pathTo('TodaysPuzzle2')).label('Today\'s Puzzle').action(TodaysPuzzle2_action).props),
+            React.createElement(MenuItem, elProps(pathTo('Archive2')).label('Archive').action(Archive2_action).props),
+            React.createElement(MenuItem, elProps(pathTo('AboutItem2')).label('About').action(AboutItem2_action).props),
+            React.createElement(MenuItem, elProps(pathTo('Terms2')).label('Terms & Conditions').action(Terms2_action).props),
+            React.createElement(MenuItem, elProps(pathTo('Privacy2')).label('Privacy & Cookies').action(Privacy2_action).props),
+    ),
+            React.createElement(Calculation, elProps(pathTo('NarrowScreen')).props),
     ))
     },
         React.createElement(WebFileDataStore, elProps(pathTo('SiteDataStore')).props),

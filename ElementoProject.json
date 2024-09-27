@@ -92,7 +92,10 @@
               "id": "block_2",
               "name": "Nav Items",
               "properties": {
-                "layout": "horizontal"
+                "layout": "horizontal",
+                "show": {
+                  "expr": "Not(NarrowScreen)"
+                }
               },
               "elements": [
                 {
@@ -146,7 +149,10 @@
                   "id": "menu_1",
                   "name": "More Menu",
                   "properties": {
-                    "label": "More..."
+                    "label": "More...",
+                    "buttonStyles": {
+                      "color": "white"
+                    }
                   },
                   "elements": [
                     {
@@ -187,6 +193,99 @@
                 }
               ],
               "kind": "Block"
+            },
+            {
+              "id": "menu_2",
+              "name": "Hamburger Menu",
+              "properties": {
+                "label": "Menu",
+                "buttonStyles": {
+                  "color": "white"
+                },
+                "iconName": "menu",
+                "show": {
+                  "expr": "NarrowScreen"
+                }
+              },
+              "elements": [
+                {
+                  "id": "menuitem_7",
+                  "name": "Home 2",
+                  "properties": {
+                    "label": "Home",
+                    "action": {
+                      "expr": "ShowPage(HomePage)"
+                    }
+                  },
+                  "kind": "MenuItem"
+                },
+                {
+                  "id": "menuitem_8",
+                  "name": "Todays Puzzle 2",
+                  "properties": {
+                    "label": "Today's Puzzle",
+                    "action": {
+                      "expr": "ShowPage(TodaysPuzzle)"
+                    }
+                  },
+                  "kind": "MenuItem"
+                },
+                {
+                  "id": "menuitem_9",
+                  "name": "Archive 2",
+                  "properties": {
+                    "label": "Archive",
+                    "action": {
+                      "expr": "ShowPage(PuzzleArchive)"
+                    }
+                  },
+                  "kind": "MenuItem"
+                },
+                {
+                  "id": "menuitem_4",
+                  "name": "About Item 2",
+                  "properties": {
+                    "action": {
+                      "expr": "ShowPage(AboutPage)"
+                    },
+                    "label": "About"
+                  },
+                  "kind": "MenuItem"
+                },
+                {
+                  "id": "menuitem_5",
+                  "name": "Terms 2",
+                  "properties": {
+                    "action": {
+                      "expr": "ShowPage(Terms)"
+                    },
+                    "label": "Terms & Conditions"
+                  },
+                  "kind": "MenuItem"
+                },
+                {
+                  "id": "menuitem_6",
+                  "name": "Privacy 2",
+                  "properties": {
+                    "action": {
+                      "expr": "ShowPage(Privacy)"
+                    },
+                    "label": "Privacy & Cookies"
+                  },
+                  "kind": "MenuItem"
+                }
+              ],
+              "kind": "Menu"
+            },
+            {
+              "id": "calculation_3",
+              "name": "Narrow Screen",
+              "properties": {
+                "calculation": {
+                  "expr": "AppWidth() < 630"
+                }
+              },
+              "kind": "Calculation"
             }
           ],
           "kind": "AppBar"
@@ -204,7 +303,8 @@
                 "styles": {
                   "fontFamily": "Tahoma",
                   "fontSize": "20",
-                  "color": "green"
+                  "color": "green",
+                  "marginTop": "20px"
                 }
               },
               "kind": "Text"
@@ -371,7 +471,14 @@
         {
           "id": "page_4",
           "name": "Todays Puzzle",
-          "properties": {},
+          "properties": {
+            "styles": {
+              "paddingLeft": "0",
+              "paddingRight": "0",
+              "paddingTop": "0",
+              "paddingBottom": "0"
+            }
+          },
           "elements": [
             {
               "id": "calculation_1",
@@ -392,11 +499,11 @@
                   "expr": "FirstNotNull(TodaysPuzzleUrl(), LatestPuzzleUrl())"
                 },
                 "styles": {
-                  "height": "100%",
+                  "height": "calc(100% + 16px)",
                   "width": "calc(100% + 8px)",
-                  "marginTop": "3",
                   "marginLeft": "-4px",
-                  "marginRight": "-4px"
+                  "marginRight": "-4px",
+                  "marginTop": "-8px"
                 }
               },
               "kind": "Frame"
@@ -426,7 +533,9 @@
           "properties": {
             "styles": {
               "paddingLeft": "0",
-              "paddingRight": "0"
+              "paddingRight": "0",
+              "paddingTop": "0",
+              "padding": "0"
             }
           },
           "elements": [
@@ -449,9 +558,9 @@
                   "expr": "Get(Puzzles, PuzzleDate).url"
                 },
                 "styles": {
-                  "height": "100%",
+                  "height": "calc(100% + 16px)",
                   "width": "calc(100% + 8px)",
-                  "marginTop": "3",
+                  "marginTop": "-8px",
                   "marginLeft": "-4px",
                   "marginRight": "-4px"
                 }
@@ -470,6 +579,9 @@
                   "width": "98%",
                   "textAlign": "right",
                   "marginTop": "0"
+                },
+                "show": {
+                  "expr": "document.documentElement.clientHeight > 600"
                 }
               },
               "kind": "Text"
