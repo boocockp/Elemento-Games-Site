@@ -10,7 +10,10 @@
         "fonts": "Road Rage\nGrape Nuts",
         "maxWidth": "600px",
         "cookieMessage": "We use cookies for the usual things - to make the site work properly and learn how people use it.",
-        "faviconUrl": "puzzleteams_icon_plain.svg"
+        "faviconUrl": "puzzleteams_icon_plain.svg",
+        "messageAction": {
+          "expr": "If(And($message.score, CurrentUser()), StoreGamePlay($message))\n"
+        }
       },
       "elements": [
         {
@@ -22,6 +25,14 @@
           "kind": "WebFileDataStore"
         },
         {
+          "id": "firestoredatastore_1",
+          "name": "Player Data Store",
+          "properties": {
+            "collections": "GamePlays"
+          },
+          "kind": "FirestoreDataStore"
+        },
+        {
           "id": "collection_1",
           "name": "Puzzles",
           "properties": {
@@ -31,6 +42,29 @@
             "collectionName": "Puzzles"
           },
           "kind": "Collection"
+        },
+        {
+          "id": "collection_2",
+          "name": "Game Plays",
+          "properties": {
+            "dataStore": {
+              "expr": "PlayerDataStore"
+            },
+            "collectionName": "GamePlays"
+          },
+          "kind": "Collection"
+        },
+        {
+          "id": "function_3",
+          "name": "Store Game Play",
+          "properties": {
+            "input1": "data",
+            "action": true,
+            "calculation": {
+              "expr": "let puzzleUrl = data.url\nlet puzzleResult = await Query(Puzzles, {url: puzzleUrl})\nlet puzzle = puzzleResult[0]\nlet score = data.score\nLog(CurrentUser().uid, puzzle.id, score)\nAdd(GamePlays, Record('DateTime', Now(), 'UserId', CurrentUser().uid, 'PuzzleId', puzzle.id, 'Score', score))"
+            }
+          },
+          "kind": "Function"
         },
         {
           "id": "function_2",
@@ -80,7 +114,7 @@
               "id": "text_24",
               "name": "App Title",
               "properties": {
-                "content": "Puzzle Teams",
+                "content": "The Games Place",
                 "styles": {
                   "fontFamily": "Road Rage",
                   "fontSize": "32"
@@ -123,7 +157,7 @@
                       "textWrap": "nowrap",
                       "marginTop": "5"
                     },
-                    "content": "Today's Puzzle",
+                    "content": "Today's Game",
                     "action": {
                       "expr": "ShowPage(TodaysPuzzle)"
                     }
@@ -141,7 +175,8 @@
                     },
                     "action": {
                       "expr": "ShowPage(PuzzleArchive)"
-                    }
+                    },
+                    "content": "All the Games"
                   },
                   "kind": "Button"
                 },
@@ -155,6 +190,17 @@
                     }
                   },
                   "elements": [
+                    {
+                      "id": "menuitem_10",
+                      "name": "Games Played",
+                      "properties": {
+                        "action": {
+                          "expr": "ShowPage(GamesPlayed)"
+                        },
+                        "label": "Games Played"
+                      },
+                      "kind": "MenuItem"
+                    },
                     {
                       "id": "menuitem_1",
                       "name": "About Item",
@@ -223,7 +269,7 @@
                   "id": "menuitem_8",
                   "name": "Todays Puzzle 2",
                   "properties": {
-                    "label": "Today's Puzzle",
+                    "label": "Today's Game",
                     "action": {
                       "expr": "ShowPage(TodaysPuzzle)"
                     }
@@ -234,10 +280,21 @@
                   "id": "menuitem_9",
                   "name": "Archive 2",
                   "properties": {
-                    "label": "Archive",
+                    "label": "All the Games",
                     "action": {
                       "expr": "ShowPage(PuzzleArchive)"
                     }
+                  },
+                  "kind": "MenuItem"
+                },
+                {
+                  "id": "menuitem_11",
+                  "name": "Games Played 2",
+                  "properties": {
+                    "action": {
+                      "expr": "ShowPage(GamesPlayed)"
+                    },
+                    "label": "Games Played"
                   },
                   "kind": "MenuItem"
                 },
@@ -278,6 +335,12 @@
               "kind": "Menu"
             },
             {
+              "id": "userlogon_1",
+              "name": "User Logon 1",
+              "properties": {},
+              "kind": "UserLogon"
+            },
+            {
               "id": "calculation_3",
               "name": "Narrow Screen",
               "properties": {
@@ -299,7 +362,7 @@
               "id": "text_4",
               "name": "Heading 1",
               "properties": {
-                "content": "The No Boredom puzzle site!",
+                "content": "The No Boredom games and puzzles site!",
                 "styles": {
                   "fontFamily": "Tahoma",
                   "fontSize": "20",
@@ -313,7 +376,7 @@
               "id": "text_2",
               "name": "Para 1",
               "properties": {
-                "content": "Challenge your mind with a fresh puzzle every day.\nWord puzzles, number games, visual brainteasers - a different one every morning.\nEach takes less than 5 minutes, so you can fit it in whenever you want."
+                "content": "Word puzzles, number games, visual brainteasers - try a different one every day.\n\nMany take less than 5 minutes, so you can fit them in whenever you want."
               },
               "kind": "Text"
             },
@@ -321,11 +384,11 @@
               "id": "button_6",
               "name": "Todays Puzzle Button",
               "properties": {
-                "content": "Play Today's Puzzle",
+                "content": "Today's Featured Game",
                 "styles": {
                   "backgroundColor": "orange",
                   "color": "white",
-                  "fontSize": "32",
+                  "fontSize": "28",
                   "textTransform": "inherit"
                 },
                 "action": {
@@ -336,7 +399,7 @@
             },
             {
               "id": "button_7",
-              "name": "Puzzle Archive",
+              "name": "Game Archive",
               "properties": {
                 "appearance": "link",
                 "action": {
@@ -344,7 +407,8 @@
                 },
                 "styles": {
                   "fontSize": "20"
-                }
+                },
+                "content": "All the Games"
               },
               "kind": "Button"
             },
@@ -359,7 +423,7 @@
                 "styles": {
                   "fontSize": "20"
                 },
-                "content": "About Puzzle Teams"
+                "content": "About The Games Place"
               },
               "kind": "Button"
             }
@@ -388,7 +452,7 @@
               "id": "text_18",
               "name": "Para 1",
               "properties": {
-                "content": "Challenge your mind with a fresh puzzle every day.\nWord puzzles, number games, visual brainteasers - a different one every morning.\nEach takes less than 5 minutes, so you can fit it in whenever you want."
+                "content": "Challenge your mind with a fresh game or puzzle every day.\nWord puzzles, number games, visual brainteasers and more.\nEach takes less than 5 minutes, so you can fit it in whenever you want."
               },
               "kind": "Text"
             },
@@ -430,7 +494,7 @@
               "id": "text_22",
               "name": "Text 9",
               "properties": {
-                "content": "Puzzle Teams runs off your creativity.\nIf you have an idea for a great puzzle, send it to us and you could see it on the site in a few days.\nEven better - program it yourself with the easy to use Elemento tool and get everyone playing the puzzle YOU created!"
+                "content": "The Games Place runs off your creativity.\nIf you have an idea for a great puzzle, send it to us and you could see it on the site in a few days.\nEven better - program it yourself with the easy to use Elemento tool and get everyone playing the puzzle YOU created!"
               },
               "kind": "Text"
             },
@@ -438,7 +502,7 @@
               "id": "button_10",
               "name": "Todays Puzzle Button",
               "properties": {
-                "content": "Play Today's Puzzle",
+                "content": "Today's Featured Game",
                 "styles": {
                   "backgroundColor": "orange",
                   "color": "white",
@@ -461,7 +525,8 @@
                 },
                 "styles": {
                   "fontSize": "20"
-                }
+                },
+                "content": "All the Games"
               },
               "kind": "Button"
             }
@@ -481,19 +546,8 @@
           },
           "elements": [
             {
-              "id": "calculation_1",
-              "name": "Todays Date",
-              "properties": {
-                "calculation": {
-                  "expr": "DateFormat(Today(), 'yyyy-MM-dd')"
-                },
-                "show": false
-              },
-              "kind": "Calculation"
-            },
-            {
               "id": "frame_3",
-              "name": "Puzzle Frame",
+              "name": "Game Frame",
               "properties": {
                 "source": {
                   "expr": "FirstNotNull(TodaysPuzzleUrl(), LatestPuzzleUrl())"
@@ -507,22 +561,6 @@
                 }
               },
               "kind": "Frame"
-            },
-            {
-              "id": "text_13",
-              "name": "Title",
-              "properties": {
-                "content": {
-                  "expr": "'Today\\'s Puzzle - ' + DateFormat(Today(), 'd MMM yyyy')"
-                },
-                "styles": {
-                  "color": "green",
-                  "width": "100%",
-                  "textAlign": "right",
-                  "marginTop": "0"
-                }
-              },
-              "kind": "Text"
             }
           ],
           "kind": "Page"
@@ -541,7 +579,7 @@
           "elements": [
             {
               "id": "calculation_2",
-              "name": "Puzzle Date",
+              "name": "Puzzle Id",
               "properties": {
                 "calculation": {
                   "expr": "CurrentUrl().pathSections[0]"
@@ -552,10 +590,10 @@
             },
             {
               "id": "frame_4",
-              "name": "Puzzle Frame",
+              "name": "Game Frame",
               "properties": {
                 "source": {
-                  "expr": "Get(Puzzles, PuzzleDate).url"
+                  "expr": "Get(Puzzles, PuzzleId).url"
                 },
                 "styles": {
                   "height": "calc(100% + 16px)",
@@ -566,25 +604,6 @@
                 }
               },
               "kind": "Frame"
-            },
-            {
-              "id": "text_16",
-              "name": "Title",
-              "properties": {
-                "content": {
-                  "expr": "'Puzzle Archive - ' + DateFormat(DateVal(PuzzleDate), 'd MMMM yyyy')"
-                },
-                "styles": {
-                  "color": "green",
-                  "width": "98%",
-                  "textAlign": "right",
-                  "marginTop": "0"
-                },
-                "show": {
-                  "expr": "document.documentElement.clientHeight > 600"
-                }
-              },
-              "kind": "Text"
             }
           ],
           "kind": "Page"
@@ -598,7 +617,7 @@
               "id": "text_14",
               "name": "Title",
               "properties": {
-                "content": "Puzzle Archive",
+                "content": "All the Games",
                 "styles": {
                   "fontSize": "20",
                   "color": "green"
@@ -620,26 +639,13 @@
                   "id": "block_1",
                   "name": "Block 1",
                   "properties": {
-                    "layout": "horizontal wrapped",
+                    "layout": "vertical",
                     "styles": {
-                      "fontSize": "18"
+                      "fontSize": "18",
+                      "gap": "0"
                     }
                   },
                   "elements": [
-                    {
-                      "id": "text_15",
-                      "name": "Puzzle Date",
-                      "properties": {
-                        "content": {
-                          "expr": "DateFormat(DateVal($item.id), 'dd MMMM yyyy')"
-                        },
-                        "styles": {
-                          "fontSize": "inherit",
-                          "marginRight": "3em"
-                        }
-                      },
-                      "kind": "Text"
-                    },
                     {
                       "id": "button_8",
                       "name": "Puzzle Link",
@@ -656,6 +662,114 @@
                         }
                       },
                       "kind": "Button"
+                    },
+                    {
+                      "id": "text_26",
+                      "name": "Puzzle Description",
+                      "properties": {
+                        "content": {
+                          "expr": "$item.description"
+                        }
+                      },
+                      "kind": "Text"
+                    }
+                  ],
+                  "kind": "Block"
+                }
+              ],
+              "kind": "ItemSet"
+            }
+          ],
+          "kind": "Page"
+        },
+        {
+          "id": "page_10",
+          "name": "Games Played",
+          "properties": {},
+          "elements": [
+            {
+              "id": "text_27",
+              "name": "Title",
+              "properties": {
+                "content": "Games Played",
+                "styles": {
+                  "fontSize": "20",
+                  "color": "green"
+                }
+              },
+              "kind": "Text"
+            },
+            {
+              "id": "itemset_2",
+              "name": "Plays Item Set",
+              "properties": {
+                "selectable": "none",
+                "items": {
+                  "expr": "Query(GamePlays, {UserId: CurrentUser().uid})"
+                },
+                "itemStyles": {
+                  "width": "100%"
+                }
+              },
+              "elements": [
+                {
+                  "id": "block_3",
+                  "name": "Block 1",
+                  "properties": {
+                    "layout": "horizontal wrapped",
+                    "styles": {
+                      "fontSize": "18",
+                      "gap": "0",
+                      "width": "100%"
+                    }
+                  },
+                  "elements": [
+                    {
+                      "id": "text_29",
+                      "name": "Date Played",
+                      "properties": {
+                        "content": {
+                          "expr": "DateFormat($item.DateTime, 'dd MMM yyyy')"
+                        },
+                        "styles": {
+                          "fontSize": "inherit",
+                          "width": "7em"
+                        }
+                      },
+                      "kind": "Text"
+                    },
+                    {
+                      "id": "button_18",
+                      "name": "Puzzle Name",
+                      "properties": {
+                        "content": {
+                          "expr": "Get(Puzzles, $item.PuzzleId).name"
+                        },
+                        "appearance": "link",
+                        "styles": {
+                          "fontSize": "inherit",
+                          "flexGrow": "1"
+                        },
+                        "action": {
+                          "expr": "ShowPage(ArchivedPuzzle, $item.PuzzleId)"
+                        }
+                      },
+                      "kind": "Button"
+                    },
+                    {
+                      "id": "text_28",
+                      "name": "Score",
+                      "properties": {
+                        "content": {
+                          "expr": "$item.Score"
+                        },
+                        "styles": {
+                          "fontSize": "inherit",
+                          "width": "3em",
+                          "textAlign": "right"
+                        }
+                      },
+                      "kind": "Text"
                     }
                   ],
                   "kind": "Block"

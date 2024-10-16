@@ -23,17 +23,19 @@ Solo MVP
 Teams MVP
 ---------
 
-- Google Analytics
-- Login
-- Personal stats - collect, simple display
+- ✅ Basic Login
+- ✅ Personal stats - collect, simple display
 - Create a Team
 - Invite someone to a Team
 - Accept invitation
 - Leave Team
 - View team scores
 - League tables by day
+- Google Analytics
+- Facebook Login
 
 Future stuff
 ------------
 
+- Secure score recording
 - Report abuse or offensive content
