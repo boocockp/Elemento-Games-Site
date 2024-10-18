@@ -33,6 +33,16 @@
           "kind": "FirestoreDataStore"
         },
         {
+          "id": "serverappconnector_1",
+          "name": "Puzzles Server App",
+          "properties": {
+            "serverApp": {
+              "expr": "PuzzlesServer"
+            }
+          },
+          "kind": "ServerAppConnector"
+        },
+        {
           "id": "collection_1",
           "name": "Puzzles",
           "properties": {
@@ -198,6 +208,16 @@
                           "expr": "ShowPage(GamesPlayed)"
                         },
                         "label": "Games Played"
+                      },
+                      "kind": "MenuItem"
+                    },
+                    {
+                      "id": "menuitem_12",
+                      "name": "New Team",
+                      "properties": {
+                        "action": {
+                          "expr": "ShowPage(NewTeam)"
+                        }
                       },
                       "kind": "MenuItem"
                     },
@@ -781,6 +801,55 @@
           "kind": "Page"
         },
         {
+          "id": "page_11",
+          "name": "New Team",
+          "properties": {},
+          "elements": [
+            {
+              "id": "text_30",
+              "name": "Title",
+              "properties": {
+                "content": "New Team",
+                "styles": {
+                  "fontSize": "20",
+                  "color": "green"
+                }
+              },
+              "kind": "Text"
+            },
+            {
+              "id": "form_1",
+              "name": "New Team Form",
+              "properties": {
+                "submitAction": {
+                  "expr": "Log('Creating team', $form.value)\nPuzzlesServerApp.NewTeam($form)"
+                },
+                "label": " "
+              },
+              "elements": [
+                {
+                  "id": "textinput_1",
+                  "name": "Team Name",
+                  "properties": {},
+                  "kind": "TextInput"
+                },
+                {
+                  "id": "button_19",
+                  "name": "Save",
+                  "properties": {
+                    "action": {
+                      "expr": "$form.Submit()"
+                    }
+                  },
+                  "kind": "Button"
+                }
+              ],
+              "kind": "Form"
+            }
+          ],
+          "kind": "Page"
+        },
+        {
           "id": "page_8",
           "name": "Terms",
           "properties": {},
@@ -836,6 +905,80 @@
         }
       ],
       "kind": "App"
+    },
+    {
+      "id": "serverapp_1",
+      "name": "Puzzles Server",
+      "properties": {},
+      "elements": [
+        {
+          "id": "firestoredatastore_2",
+          "name": "Server Data Store",
+          "properties": {
+            "collections": "Teams\nUsers"
+          },
+          "kind": "FirestoreDataStore"
+        },
+        {
+          "id": "collection_3",
+          "name": "Teams",
+          "properties": {
+            "dataStore": {
+              "expr": "ServerDataStore"
+            },
+            "collectionName": "Teams"
+          },
+          "kind": "Collection"
+        },
+        {
+          "id": "collection_4",
+          "name": "Users",
+          "properties": {
+            "dataStore": {
+              "expr": "ServerDataStore"
+            },
+            "collectionName": "Users"
+          },
+          "kind": "Collection"
+        },
+        {
+          "id": "function_5",
+          "name": "Update User",
+          "properties": {
+            "input1": "changes",
+            "action": true,
+            "calculation": {
+              "expr": "let user = await GetUser()\nIf(user, await Update(Users, user.id, changes), await Add(Users, Record(changes, 'id', user.id)))"
+            }
+          },
+          "kind": "Function"
+        },
+        {
+          "id": "function_6",
+          "name": "Get User",
+          "properties": {
+            "input1": "changes",
+            "action": false,
+            "calculation": {
+              "expr": "let userId = CurrentUser().uid\nlet userResult = await Query(Users, {id: userId})\nuserResult[0]"
+            }
+          },
+          "kind": "Function"
+        },
+        {
+          "id": "function_4",
+          "name": "New Team",
+          "properties": {
+            "input1": "teamData",
+            "action": true,
+            "calculation": {
+              "expr": "Log('In NewTeam', teamData)\nlet user = await GetUser()\nCheck(Not(user?.TeamId), 'Cannot create new team as already a member of a team')\nlet team = await Add(Teams, Record('Name', teamData.TeamName, 'OwnerId', CurrentUser().uid))\nawait UpdateUser(Record('TeamId', team.id))\nLog('Done NewTeam')"
+            }
+          },
+          "kind": "Function"
+        }
+      ],
+      "kind": "ServerApp"
     },
     {
       "id": "_TOOLS",

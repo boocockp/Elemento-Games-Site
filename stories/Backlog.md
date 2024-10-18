@@ -25,7 +25,7 @@ Teams MVP
 
 - ✅ Basic Login
 - ✅ Personal stats - collect, simple display
-- Create a Team
+- ✅ Create a Team
 - Invite someone to a Team
 - Accept invitation
 - Leave Team

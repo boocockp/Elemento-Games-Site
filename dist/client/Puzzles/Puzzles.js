@@ -181,6 +181,49 @@ function GamesPlayed(props) {
     )
 }
 
+// NewTeam.js
+function NewTeam_NewTeamForm(props) {
+    const pathTo = name => props.path + '.' + name
+    const {Form, TextInput, Button} = Elemento.components
+    const _state = Elemento.useGetStore()
+    const $form = _state.useObject(props.path)
+    const TeamName = _state.setObject(pathTo('TeamName'), new TextInput.State(stateProps(pathTo('TeamName')).value($form.originalValue?.TeamName).props))
+    $form._updateValue()
+    const Save_action = React.useCallback(wrapFn(pathTo('Save'), 'action', async () => {
+        await $form.Submit()
+    }), [$form])
+
+    return React.createElement(Form, props,
+        React.createElement(TextInput, elProps(pathTo('TeamName')).label('Team Name').props),
+        React.createElement(Button, elProps(pathTo('Save')).content('Save').appearance('outline').action(Save_action).props),
+    )
+}
+
+
+NewTeam_NewTeamForm.State = class NewTeam_NewTeamForm_State extends Elemento.components.BaseFormState {
+    ownFieldNames = ['TeamName']
+}
+
+
+function NewTeam(props) {
+    const pathTo = name => props.path + '.' + name
+    const {Page, TextElement} = Elemento.components
+    const {Log} = Elemento.globalFunctions
+    const _state = Elemento.useGetStore()
+    const PuzzlesServerApp = _state.useObject('Puzzles.PuzzlesServerApp')
+    const NewTeamForm_submitAction = React.useCallback(wrapFn(pathTo('NewTeamForm'), 'submitAction', async ($form, $data) => {
+        Log('Creating team', $form.value)
+        await PuzzlesServerApp.NewTeam($form)
+    }), [])
+    const NewTeamForm = _state.setObject(pathTo('NewTeamForm'), new NewTeam_NewTeamForm.State(stateProps(pathTo('NewTeamForm')).submitAction(NewTeamForm_submitAction).props))
+    Elemento.elementoDebug(() => eval(Elemento.useDebugExpr()))
+
+    return React.createElement(Page, elProps(props.path).props,
+        React.createElement(TextElement, elProps(pathTo('Title')).styles(elProps(pathTo('Title.Styles')).fontSize('20').color('green').props).content('New Team').props),
+        React.createElement(NewTeam_NewTeamForm, elProps(pathTo('NewTeamForm')).label(' ').horizontal(false).wrap(false).props),
+    )
+}
+
 // Terms.js
 function Terms(props) {
     const pathTo = name => props.path + '.' + name
@@ -210,11 +253,34 @@ function Privacy(props) {
 }
 
 // appMain.js
+function configPuzzlesServer() {
+    return {
+        appName: 'Puzzles Server',
+        url: '/capi/:versionId/PuzzlesServer',
+
+        functions: {
+            UpdateUser: {
+                params: ['changes'],
+                action: true
+            },
+
+            GetUser: {
+                params: ['changes']
+            },
+
+            NewTeam: {
+                params: ['teamData'],
+                action: true
+            }
+        }
+    };
+}
+
 export default function Puzzles(props) {
     const pathTo = name => 'Puzzles' + '.' + name
-    const {App, WebFileDataStore, FirestoreDataStore, Collection, AppBar, Image, TextElement, Block, Button, Menu, MenuItem, UserLogon, Calculation} = Elemento.components
+    const {App, WebFileDataStore, FirestoreDataStore, ServerAppConnector, Collection, AppBar, Image, TextElement, Block, Button, Menu, MenuItem, UserLogon, Calculation} = Elemento.components
     const {If, And, Log, Record, Now, Last, Sort, DateFormat, Today, First, Not} = Elemento.globalFunctions
-    const pages = {HomePage, AboutPage, TodaysPuzzle, ArchivedPuzzle, PuzzleArchive, GamesPlayed, Terms, Privacy}
+    const pages = {HomePage, AboutPage, TodaysPuzzle, ArchivedPuzzle, PuzzleArchive, GamesPlayed, NewTeam, Terms, Privacy}
     const appContext = Elemento.useGetAppContext()
     const {CurrentUser, Query, Add} = Elemento.appFunctions
     const _state = Elemento.useGetStore()
@@ -222,6 +288,7 @@ export default function Puzzles(props) {
     const {ShowPage, AppWidth} = app
     const SiteDataStore = _state.setObject('Puzzles.SiteDataStore', new WebFileDataStore.State(stateProps('Puzzles.SiteDataStore').url('https://firebasestorage.googleapis.com/v0/b/elemento-games-site.appspot.com/o/public%2FsiteData.json?alt=media').props))
     const PlayerDataStore = _state.setObject('Puzzles.PlayerDataStore', new FirestoreDataStore.State(stateProps('Puzzles.PlayerDataStore').collections('GamePlays').props))
+    const PuzzlesServerApp = _state.setObject('Puzzles.PuzzlesServerApp', new ServerAppConnector.State({configuration: configPuzzlesServer()}))
     const Puzzles = _state.setObject('Puzzles.Puzzles', new Collection.State(stateProps('Puzzles.Puzzles').dataStore(SiteDataStore).collectionName('Puzzles').props))
     const GamePlays = _state.setObject('Puzzles.GamePlays', new Collection.State(stateProps('Puzzles.GamePlays').dataStore(PlayerDataStore).collectionName('GamePlays').props))
     const StoreGamePlay = _state.setObject('Puzzles.StoreGamePlay', React.useCallback(wrapFn(pathTo('StoreGamePlay'), 'calculation', async (data) => {
@@ -257,6 +324,9 @@ export default function Puzzles(props) {
     }), [])
     const GamesPlayed_action = React.useCallback(wrapFn(pathTo('GamesPlayed'), 'action', async () => {
         await ShowPage(GamesPlayed)
+    }), [])
+    const NewTeam_action = React.useCallback(wrapFn(pathTo('NewTeam'), 'action', async () => {
+        await ShowPage(NewTeam)
     }), [])
     const AboutItem_action = React.useCallback(wrapFn(pathTo('AboutItem'), 'action', async () => {
         await ShowPage(AboutPage)
@@ -298,6 +368,7 @@ export default function Puzzles(props) {
             React.createElement(Button, elProps(pathTo('Archive')).content('All the Games').appearance('filled').action(Archive_action).styles(elProps(pathTo('Archive.Styles')).backgroundColor('orange').marginTop('5').props).props),
             React.createElement(Menu, elProps(pathTo('MoreMenu')).label('More...').buttonStyles(elProps(pathTo('MoreMenu.Styles')).color('white').props).props,
             React.createElement(MenuItem, elProps(pathTo('GamesPlayed')).label('Games Played').action(GamesPlayed_action).props),
+            React.createElement(MenuItem, elProps(pathTo('NewTeam')).label('New Team').action(NewTeam_action).props),
             React.createElement(MenuItem, elProps(pathTo('AboutItem')).label('About').action(AboutItem_action).props),
             React.createElement(MenuItem, elProps(pathTo('Terms')).label('Terms & Conditions').action(Terms_action).props),
             React.createElement(MenuItem, elProps(pathTo('Privacy')).label('Privacy & Cookies').action(Privacy_action).props),
