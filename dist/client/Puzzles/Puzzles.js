@@ -224,6 +224,39 @@ function NewTeam(props) {
     )
 }
 
+// NewInvite.js
+function NewInvite(props) {
+    const pathTo = name => props.path + '.' + name
+    const {Page, TextElement, Data, Block, Calculation, Button} = Elemento.components
+    const {NotNull, Log} = Elemento.globalFunctions
+    const {GetRandomId, Set} = Elemento.appFunctions
+    const _state = Elemento.useGetStore()
+    const PuzzlesServerApp = _state.useObject('Puzzles.PuzzlesServerApp')
+    const InviteId = _state.setObject(pathTo('InviteId'), new Data.State(stateProps(pathTo('InviteId')).props))
+    const LinkBlock = _state.setObject(pathTo('LinkBlock'), new Block.State(stateProps(pathTo('LinkBlock')).props))
+    const InviteLink = _state.setObject(pathTo('InviteLink'), new Calculation.State(stateProps(pathTo('InviteLink')).value(InviteId ? window.location.origin + '/AcceptInvite/' + InviteId : null).props))
+    const Copy_action = React.useCallback(wrapFn(pathTo('Copy'), 'action', async () => {
+        await window.navigator.clipboard.writeText(InviteLink.value)
+    }), [InviteLink])
+    const Create_action = React.useCallback(wrapFn(pathTo('Create'), 'action', async () => {
+        let inviteId = GetRandomId()
+        Log('Creating invite', inviteId)
+        await PuzzlesServerApp.InviteTeamMember(inviteId)
+        Set(InviteId, inviteId)
+    }), [InviteId])
+    Elemento.elementoDebug(() => eval(Elemento.useDebugExpr()))
+
+    return React.createElement(Page, elProps(props.path).props,
+        React.createElement(TextElement, elProps(pathTo('Title')).styles(elProps(pathTo('Title.Styles')).fontSize('20').color('green').props).content('Invite a Team Member').props),
+        React.createElement(Data, elProps(pathTo('InviteId')).display(false).props),
+        React.createElement(Block, elProps(pathTo('LinkBlock')).layout('horizontal').styles(elProps(pathTo('LinkBlock.Styles')).width('100%').props).props,
+            React.createElement(Calculation, elProps(pathTo('InviteLink')).label('Invite Link').show(NotNull(InviteId)).styles(elProps(pathTo('InviteLink.Styles')).width('calc(100% - 5em)').maxWidth('30em').props).props),
+            React.createElement(Button, elProps(pathTo('Copy')).content('Copy').iconName('content_copy').appearance('outline').show(NotNull(InviteId)).action(Copy_action).styles(elProps(pathTo('Copy.Styles')).height('40').props).props),
+    ),
+        React.createElement(Button, elProps(pathTo('Create')).content('New Invite').appearance('filled').action(Create_action).props),
+    )
+}
+
 // Terms.js
 function Terms(props) {
     const pathTo = name => props.path + '.' + name
@@ -271,6 +304,11 @@ function configPuzzlesServer() {
             NewTeam: {
                 params: ['teamData'],
                 action: true
+            },
+
+            InviteTeamMember: {
+                params: ['inviteId'],
+                action: true
             }
         }
     };
@@ -280,17 +318,21 @@ export default function Puzzles(props) {
     const pathTo = name => 'Puzzles' + '.' + name
     const {App, WebFileDataStore, FirestoreDataStore, ServerAppConnector, Collection, AppBar, Image, TextElement, Block, Button, Menu, MenuItem, UserLogon, Calculation} = Elemento.components
     const {If, And, Log, Record, Now, Last, Sort, DateFormat, Today, First, Not} = Elemento.globalFunctions
-    const pages = {HomePage, AboutPage, TodaysPuzzle, ArchivedPuzzle, PuzzleArchive, GamesPlayed, NewTeam, Terms, Privacy}
+    const pages = {HomePage, AboutPage, TodaysPuzzle, ArchivedPuzzle, PuzzleArchive, GamesPlayed, NewTeam, NewInvite, Terms, Privacy}
     const appContext = Elemento.useGetAppContext()
-    const {CurrentUser, Query, Add} = Elemento.appFunctions
+    const {CurrentUser, Query, Add, Get} = Elemento.appFunctions
     const _state = Elemento.useGetStore()
     const app = _state.setObject('Puzzles', new App.State({pages, appContext}))
     const {ShowPage, AppWidth} = app
     const SiteDataStore = _state.setObject('Puzzles.SiteDataStore', new WebFileDataStore.State(stateProps('Puzzles.SiteDataStore').url('https://firebasestorage.googleapis.com/v0/b/elemento-games-site.appspot.com/o/public%2FsiteData.json?alt=media').props))
-    const PlayerDataStore = _state.setObject('Puzzles.PlayerDataStore', new FirestoreDataStore.State(stateProps('Puzzles.PlayerDataStore').collections('GamePlays').props))
+    const PlayerDataStore = _state.setObject('Puzzles.PlayerDataStore', new FirestoreDataStore.State(stateProps('Puzzles.PlayerDataStore').collections(`GamePlays
+Users
+Teams`).props))
     const PuzzlesServerApp = _state.setObject('Puzzles.PuzzlesServerApp', new ServerAppConnector.State({configuration: configPuzzlesServer()}))
     const Puzzles = _state.setObject('Puzzles.Puzzles', new Collection.State(stateProps('Puzzles.Puzzles').dataStore(SiteDataStore).collectionName('Puzzles').props))
     const GamePlays = _state.setObject('Puzzles.GamePlays', new Collection.State(stateProps('Puzzles.GamePlays').dataStore(PlayerDataStore).collectionName('GamePlays').props))
+    const Users = _state.setObject('Puzzles.Users', new Collection.State(stateProps('Puzzles.Users').dataStore(PlayerDataStore).collectionName('Users').props))
+    const Teams = _state.setObject('Puzzles.Teams', new Collection.State(stateProps('Puzzles.Teams').dataStore(PlayerDataStore).collectionName('Teams').props))
     const StoreGamePlay = _state.setObject('Puzzles.StoreGamePlay', React.useCallback(wrapFn(pathTo('StoreGamePlay'), 'calculation', async (data) => {
         let puzzleUrl = data.url
         let puzzleResult = await Query(Puzzles, {url: puzzleUrl})
@@ -308,6 +350,16 @@ export default function Puzzles(props) {
         let puzzle = First(Query(Puzzles, {id: todayId}))
         return puzzle?.url
     }), [Puzzles]))
+    const UserData = _state.setObject('Puzzles.UserData', React.useCallback(wrapFn(pathTo('UserData'), 'calculation', () => {
+        return If(CurrentUser(), () => Get(Users, CurrentUser().uid), null)
+    }), [Users]))
+    const UsersTeam = _state.setObject('Puzzles.UsersTeam', React.useCallback(wrapFn(pathTo('UsersTeam'), 'calculation', () => {
+        let teamId = UserData()?.TeamId
+        return If(teamId, () => Get(Teams, teamId))
+    }), [UserData, Teams]))
+    const IsTeamOwner = _state.setObject('Puzzles.IsTeamOwner', React.useCallback(wrapFn(pathTo('IsTeamOwner'), 'calculation', () => {
+        return UsersTeam()?.OwnerId == CurrentUser()?.uid
+    }), [UsersTeam]))
     const NavItems = _state.setObject('Puzzles.NavItems', new Block.State(stateProps('Puzzles.NavItems').props))
     const NarrowScreen = _state.setObject('Puzzles.NarrowScreen', new Calculation.State(stateProps('Puzzles.NarrowScreen').value(AppWidth() < 630).props))
     const Puzzles_messageAction = React.useCallback(wrapFn(pathTo('Puzzles'), 'messageAction', async ($sender, $message) => {
@@ -327,6 +379,9 @@ export default function Puzzles(props) {
     }), [])
     const NewTeam_action = React.useCallback(wrapFn(pathTo('NewTeam'), 'action', async () => {
         await ShowPage(NewTeam)
+    }), [])
+    const InviteTeamMember_action = React.useCallback(wrapFn(pathTo('InviteTeamMember'), 'action', async () => {
+        await ShowPage(NewInvite)
     }), [])
     const AboutItem_action = React.useCallback(wrapFn(pathTo('AboutItem'), 'action', async () => {
         await ShowPage(AboutPage)
@@ -349,6 +404,12 @@ export default function Puzzles(props) {
     const GamesPlayed2_action = React.useCallback(wrapFn(pathTo('GamesPlayed2'), 'action', async () => {
         await ShowPage(GamesPlayed)
     }), [])
+    const NewTeam2_action = React.useCallback(wrapFn(pathTo('NewTeam2'), 'action', async () => {
+        await ShowPage(NewTeam)
+    }), [])
+    const InviteTeamMember2_action = React.useCallback(wrapFn(pathTo('InviteTeamMember2'), 'action', async () => {
+        await ShowPage(NewInvite)
+    }), [])
     const AboutItem2_action = React.useCallback(wrapFn(pathTo('AboutItem2'), 'action', async () => {
         await ShowPage(AboutPage)
     }), [])
@@ -369,6 +430,7 @@ export default function Puzzles(props) {
             React.createElement(Menu, elProps(pathTo('MoreMenu')).label('More...').buttonStyles(elProps(pathTo('MoreMenu.Styles')).color('white').props).props,
             React.createElement(MenuItem, elProps(pathTo('GamesPlayed')).label('Games Played').action(GamesPlayed_action).props),
             React.createElement(MenuItem, elProps(pathTo('NewTeam')).label('New Team').action(NewTeam_action).props),
+            React.createElement(MenuItem, elProps(pathTo('InviteTeamMember')).label('Invite Team Member').action(InviteTeamMember_action).show(IsTeamOwner()).props),
             React.createElement(MenuItem, elProps(pathTo('AboutItem')).label('About').action(AboutItem_action).props),
             React.createElement(MenuItem, elProps(pathTo('Terms')).label('Terms & Conditions').action(Terms_action).props),
             React.createElement(MenuItem, elProps(pathTo('Privacy')).label('Privacy & Cookies').action(Privacy_action).props),
@@ -379,6 +441,8 @@ export default function Puzzles(props) {
             React.createElement(MenuItem, elProps(pathTo('TodaysPuzzle2')).label('Today\'s Game').action(TodaysPuzzle2_action).props),
             React.createElement(MenuItem, elProps(pathTo('Archive2')).label('All the Games').action(Archive2_action).props),
             React.createElement(MenuItem, elProps(pathTo('GamesPlayed2')).label('Games Played').action(GamesPlayed2_action).props),
+            React.createElement(MenuItem, elProps(pathTo('NewTeam2')).label('New Team').action(NewTeam2_action).props),
+            React.createElement(MenuItem, elProps(pathTo('InviteTeamMember2')).label('Invite Team Member').action(InviteTeamMember2_action).show(IsTeamOwner()).props),
             React.createElement(MenuItem, elProps(pathTo('AboutItem2')).label('About').action(AboutItem2_action).props),
             React.createElement(MenuItem, elProps(pathTo('Terms2')).label('Terms & Conditions').action(Terms2_action).props),
             React.createElement(MenuItem, elProps(pathTo('Privacy2')).label('Privacy & Cookies').action(Privacy2_action).props),
@@ -389,6 +453,8 @@ export default function Puzzles(props) {
     },
         React.createElement(WebFileDataStore, elProps(pathTo('SiteDataStore')).props),
         React.createElement(Collection, elProps(pathTo('Puzzles')).display(false).props),
-        React.createElement(Collection, elProps(pathTo('GamePlays')).display(false).props)
+        React.createElement(Collection, elProps(pathTo('GamePlays')).display(false).props),
+        React.createElement(Collection, elProps(pathTo('Users')).display(false).props),
+        React.createElement(Collection, elProps(pathTo('Teams')).display(false).props)
     )
 }

@@ -28,7 +28,7 @@
           "id": "firestoredatastore_1",
           "name": "Player Data Store",
           "properties": {
-            "collections": "GamePlays"
+            "collections": "GamePlays\nUsers\nTeams"
           },
           "kind": "FirestoreDataStore"
         },
@@ -65,6 +65,30 @@
           "kind": "Collection"
         },
         {
+          "id": "collection_5",
+          "name": "Users",
+          "notes": "Read-only version of data in Server Data Store",
+          "properties": {
+            "dataStore": {
+              "expr": "PlayerDataStore"
+            },
+            "collectionName": "Users"
+          },
+          "kind": "Collection"
+        },
+        {
+          "id": "collection_6",
+          "name": "Teams",
+          "notes": "Read-only version of data in Server Data Store",
+          "properties": {
+            "dataStore": {
+              "expr": "PlayerDataStore"
+            },
+            "collectionName": "Teams"
+          },
+          "kind": "Collection"
+        },
+        {
           "id": "function_3",
           "name": "Store Game Play",
           "properties": {
@@ -92,6 +116,38 @@
           "properties": {
             "calculation": {
               "expr": "let todayId = DateFormat(Today(), 'yyyy-MM-dd')\nlet puzzle = First(Query(Puzzles, {id: todayId}))\npuzzle?.url\n"
+            }
+          },
+          "kind": "Function"
+        },
+        {
+          "id": "function_7",
+          "name": "User Data",
+          "properties": {
+            "calculation": {
+              "expr": "If(CurrentUser(), Get(Users, CurrentUser().uid), null)"
+            }
+          },
+          "kind": "Function"
+        },
+        {
+          "id": "function_9",
+          "name": "Users Team",
+          "properties": {
+            "action": false,
+            "calculation": {
+              "expr": "let teamId = UserData()?.TeamId\nIf(teamId, Get(Teams, teamId))"
+            }
+          },
+          "kind": "Function"
+        },
+        {
+          "id": "function_8",
+          "name": "Is Team Owner",
+          "properties": {
+            "action": false,
+            "calculation": {
+              "expr": "UsersTeam()?.OwnerId == CurrentUser()?.uid"
             }
           },
           "kind": "Function"
@@ -222,6 +278,19 @@
                       "kind": "MenuItem"
                     },
                     {
+                      "id": "menuitem_13",
+                      "name": "Invite Team Member",
+                      "properties": {
+                        "show": {
+                          "expr": "IsTeamOwner()"
+                        },
+                        "action": {
+                          "expr": "ShowPage(NewInvite)"
+                        }
+                      },
+                      "kind": "MenuItem"
+                    },
+                    {
                       "id": "menuitem_1",
                       "name": "About Item",
                       "properties": {
@@ -315,6 +384,31 @@
                       "expr": "ShowPage(GamesPlayed)"
                     },
                     "label": "Games Played"
+                  },
+                  "kind": "MenuItem"
+                },
+                {
+                  "id": "menuitem_14",
+                  "name": "New Team 2",
+                  "properties": {
+                    "action": {
+                      "expr": "ShowPage(NewTeam)"
+                    },
+                    "label": "New Team"
+                  },
+                  "kind": "MenuItem"
+                },
+                {
+                  "id": "menuitem_15",
+                  "name": "Invite Team Member 2",
+                  "properties": {
+                    "show": {
+                      "expr": "IsTeamOwner()"
+                    },
+                    "action": {
+                      "expr": "ShowPage(NewInvite)"
+                    },
+                    "label": "Invite Team Member"
                   },
                   "kind": "MenuItem"
                 },
@@ -850,6 +944,92 @@
           "kind": "Page"
         },
         {
+          "id": "page_12",
+          "name": "New Invite",
+          "properties": {},
+          "elements": [
+            {
+              "id": "text_31",
+              "name": "Title",
+              "properties": {
+                "content": "Invite a Team Member",
+                "styles": {
+                  "fontSize": "20",
+                  "color": "green"
+                }
+              },
+              "kind": "Text"
+            },
+            {
+              "id": "data_1",
+              "name": "Invite Id",
+              "properties": {},
+              "kind": "Data"
+            },
+            {
+              "id": "block_4",
+              "name": "Link Block",
+              "properties": {
+                "layout": "horizontal",
+                "styles": {
+                  "width": "100%"
+                }
+              },
+              "elements": [
+                {
+                  "id": "calculation_4",
+                  "name": "Invite Link",
+                  "properties": {
+                    "calculation": {
+                      "expr": "InviteId ? window.location.origin + '/AcceptInvite/' + InviteId : null"
+                    },
+                    "show": {
+                      "expr": "NotNull(InviteId)"
+                    },
+                    "label": "Invite Link",
+                    "styles": {
+                      "width": "calc(100% - 5em)",
+                      "maxWidth": "30em"
+                    }
+                  },
+                  "kind": "Calculation"
+                },
+                {
+                  "id": "button_21",
+                  "name": "Copy",
+                  "properties": {
+                    "iconName": "content_copy",
+                    "styles": {
+                      "height": "40"
+                    },
+                    "action": {
+                      "expr": "window.navigator.clipboard.writeText(InviteLink.value)"
+                    },
+                    "show": {
+                      "expr": "NotNull(InviteId)"
+                    }
+                  },
+                  "kind": "Button"
+                }
+              ],
+              "kind": "Block"
+            },
+            {
+              "id": "button_20",
+              "name": "Create",
+              "properties": {
+                "action": {
+                  "expr": "let inviteId = GetRandomId()\nLog('Creating invite', inviteId)\nPuzzlesServerApp.InviteTeamMember(inviteId)\nSet(InviteId, inviteId)"
+                },
+                "content": "New Invite",
+                "appearance": "filled"
+              },
+              "kind": "Button"
+            }
+          ],
+          "kind": "Page"
+        },
+        {
           "id": "page_8",
           "name": "Terms",
           "properties": {},
@@ -915,7 +1095,7 @@
           "id": "firestoredatastore_2",
           "name": "Server Data Store",
           "properties": {
-            "collections": "Teams\nUsers"
+            "collections": "Teams\nUsers\nInvites"
           },
           "kind": "FirestoreDataStore"
         },
@@ -942,13 +1122,24 @@
           "kind": "Collection"
         },
         {
+          "id": "collection_7",
+          "name": "Invites",
+          "properties": {
+            "dataStore": {
+              "expr": "ServerDataStore"
+            },
+            "collectionName": "Invites"
+          },
+          "kind": "Collection"
+        },
+        {
           "id": "function_5",
           "name": "Update User",
           "properties": {
             "input1": "changes",
             "action": true,
             "calculation": {
-              "expr": "let user = await GetUser()\nIf(user, await Update(Users, user.id, changes), await Add(Users, Record(changes, 'id', user.id)))"
+              "expr": "let user = GetUser()\nIf(user, Update(Users, user.id, changes), Add(Users, Record(changes, 'id', user.id)))"
             }
           },
           "kind": "Function"
@@ -960,7 +1151,7 @@
             "input1": "changes",
             "action": false,
             "calculation": {
-              "expr": "let userId = CurrentUser().uid\nlet userResult = await Query(Users, {id: userId})\nuserResult[0]"
+              "expr": "let userId = CurrentUser().uid\nlet userResult = Query(Users, {id: userId})\nuserResult[0]"
             }
           },
           "kind": "Function"
@@ -972,8 +1163,20 @@
             "input1": "teamData",
             "action": true,
             "calculation": {
-              "expr": "Log('In NewTeam', teamData)\nlet user = await GetUser()\nCheck(Not(user?.TeamId), 'Cannot create new team as already a member of a team')\nlet team = await Add(Teams, Record('Name', teamData.TeamName, 'OwnerId', CurrentUser().uid))\nawait UpdateUser(Record('TeamId', team.id))\nLog('Done NewTeam')"
+              "expr": "Log('In NewTeam', teamData)\nlet user = GetUser()\nCheck(Not(user?.TeamId), 'Cannot create new team as already a member of a team')\nlet team = Add(Teams, Record('Name', teamData.TeamName, 'OwnerId', CurrentUser().uid))\nUpdateUser(Record('TeamId', team.id))\nLog('Done NewTeam')"
             }
+          },
+          "kind": "Function"
+        },
+        {
+          "id": "function_10",
+          "name": "Invite Team Member",
+          "properties": {
+            "action": true,
+            "calculation": {
+              "expr": "let user = GetUser()\nlet team = Get(Teams, user?.TeamId)\nCheck(team?.OwnerId == user.id, 'Cannot invite a team member unless you are the owner')\nAdd(Invites, Record('id', inviteId, 'TeamId', team.id, 'DateCreated', Now()))"
+            },
+            "input1": "inviteId"
           },
           "kind": "Function"
         }
