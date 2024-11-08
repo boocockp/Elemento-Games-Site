@@ -67,7 +67,6 @@
         {
           "id": "collection_5",
           "name": "Users",
-          "notes": "Read-only version of data in Server Data Store",
           "properties": {
             "dataStore": {
               "expr": "PlayerDataStore"
@@ -79,7 +78,6 @@
         {
           "id": "collection_6",
           "name": "Teams",
-          "notes": "Read-only version of data in Server Data Store",
           "properties": {
             "dataStore": {
               "expr": "PlayerDataStore"
@@ -961,18 +959,41 @@
               "kind": "Text"
             },
             {
+              "id": "data_2",
+              "name": "Message Text",
+              "properties": {
+                "initialValue": {
+                  "expr": "'Ready'"
+                }
+              },
+              "kind": "Data"
+            },
+            {
               "id": "data_1",
               "name": "Invite Id",
               "properties": {},
               "kind": "Data"
             },
             {
+              "id": "text_32",
+              "name": "Message",
+              "properties": {
+                "content": {
+                  "expr": "MessageText"
+                }
+              },
+              "kind": "Text"
+            },
+            {
               "id": "block_4",
               "name": "Link Block",
               "properties": {
-                "layout": "horizontal",
+                "layout": "horizontal wrapped",
                 "styles": {
                   "width": "100%"
+                },
+                "show": {
+                  "expr": "NotNull(InviteId)"
                 }
               },
               "elements": [
@@ -981,11 +1002,9 @@
                   "name": "Invite Link",
                   "properties": {
                     "calculation": {
-                      "expr": "InviteId ? window.location.origin + '/AcceptInvite/' + InviteId : null"
+                      "expr": "InviteId ? CurrentUrl().text.replace(/\\/NewInvite/, '/AcceptInvite/') + InviteId : null"
                     },
-                    "show": {
-                      "expr": "NotNull(InviteId)"
-                    },
+                    "show": true,
                     "label": "Invite Link",
                     "styles": {
                       "width": "calc(100% - 5em)",
@@ -1016,10 +1035,10 @@
             },
             {
               "id": "button_20",
-              "name": "Create",
+              "name": "Create Invite",
               "properties": {
                 "action": {
-                  "expr": "let inviteId = GetRandomId()\nLog('Creating invite', inviteId)\nPuzzlesServerApp.InviteTeamMember(inviteId)\nSet(InviteId, inviteId)"
+                  "expr": "let inviteId = GetRandomId()\nLog('Creating invite', inviteId)\nSet(InviteId, null)\nSet(MessageText, 'Generating invite...')\nPuzzlesServerApp.InviteTeamMember(inviteId)\nSet(InviteId, inviteId)\nSet(MessageText, null)"
                 },
                 "content": "New Invite",
                 "appearance": "filled"

@@ -231,29 +231,37 @@ function NewInvite(props) {
     const {NotNull, Log} = Elemento.globalFunctions
     const {GetRandomId, Set} = Elemento.appFunctions
     const _state = Elemento.useGetStore()
+    const app = _state.useObject('Puzzles')
+    const {CurrentUrl} = app
     const PuzzlesServerApp = _state.useObject('Puzzles.PuzzlesServerApp')
+    const MessageText = _state.setObject(pathTo('MessageText'), new Data.State(stateProps(pathTo('MessageText')).value('Ready').props))
     const InviteId = _state.setObject(pathTo('InviteId'), new Data.State(stateProps(pathTo('InviteId')).props))
     const LinkBlock = _state.setObject(pathTo('LinkBlock'), new Block.State(stateProps(pathTo('LinkBlock')).props))
-    const InviteLink = _state.setObject(pathTo('InviteLink'), new Calculation.State(stateProps(pathTo('InviteLink')).value(InviteId ? window.location.origin + '/AcceptInvite/' + InviteId : null).props))
+    const InviteLink = _state.setObject(pathTo('InviteLink'), new Calculation.State(stateProps(pathTo('InviteLink')).value(InviteId ? CurrentUrl().text.replace(/\/NewInvite/, '/AcceptInvite/') + InviteId : null).props))
     const Copy_action = React.useCallback(wrapFn(pathTo('Copy'), 'action', async () => {
         await window.navigator.clipboard.writeText(InviteLink.value)
     }), [InviteLink])
-    const Create_action = React.useCallback(wrapFn(pathTo('Create'), 'action', async () => {
+    const CreateInvite_action = React.useCallback(wrapFn(pathTo('CreateInvite'), 'action', async () => {
         let inviteId = GetRandomId()
         Log('Creating invite', inviteId)
+        Set(InviteId, null)
+        Set(MessageText, 'Generating invite...')
         await PuzzlesServerApp.InviteTeamMember(inviteId)
         Set(InviteId, inviteId)
-    }), [InviteId])
+        Set(MessageText, null)
+    }), [InviteId, MessageText])
     Elemento.elementoDebug(() => eval(Elemento.useDebugExpr()))
 
     return React.createElement(Page, elProps(props.path).props,
         React.createElement(TextElement, elProps(pathTo('Title')).styles(elProps(pathTo('Title.Styles')).fontSize('20').color('green').props).content('Invite a Team Member').props),
+        React.createElement(Data, elProps(pathTo('MessageText')).display(false).props),
         React.createElement(Data, elProps(pathTo('InviteId')).display(false).props),
-        React.createElement(Block, elProps(pathTo('LinkBlock')).layout('horizontal').styles(elProps(pathTo('LinkBlock.Styles')).width('100%').props).props,
-            React.createElement(Calculation, elProps(pathTo('InviteLink')).label('Invite Link').show(NotNull(InviteId)).styles(elProps(pathTo('InviteLink.Styles')).width('calc(100% - 5em)').maxWidth('30em').props).props),
+        React.createElement(TextElement, elProps(pathTo('Message')).content(MessageText).props),
+        React.createElement(Block, elProps(pathTo('LinkBlock')).layout('horizontal wrapped').show(NotNull(InviteId)).styles(elProps(pathTo('LinkBlock.Styles')).width('100%').props).props,
+            React.createElement(Calculation, elProps(pathTo('InviteLink')).label('Invite Link').show(true).styles(elProps(pathTo('InviteLink.Styles')).width('calc(100% - 5em)').maxWidth('30em').props).props),
             React.createElement(Button, elProps(pathTo('Copy')).content('Copy').iconName('content_copy').appearance('outline').show(NotNull(InviteId)).action(Copy_action).styles(elProps(pathTo('Copy.Styles')).height('40').props).props),
     ),
-        React.createElement(Button, elProps(pathTo('Create')).content('New Invite').appearance('filled').action(Create_action).props),
+        React.createElement(Button, elProps(pathTo('CreateInvite')).content('New Invite').appearance('filled').action(CreateInvite_action).props),
     )
 }
 

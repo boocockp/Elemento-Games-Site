@@ -18,6 +18,8 @@ Solo MVP
 - Design reviewed
 - First puzzles in place
 - Works on small phones
+- Puzzle gallery
+- Puzzle of the day
 
 
 Teams MVP
