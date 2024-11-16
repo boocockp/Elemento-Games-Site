@@ -28,9 +28,10 @@ Teams MVP
 - ✅ Basic Login
 - ✅ Personal stats - collect, simple display
 - ✅ Create a Team
-- Invite someone to a Team
-- Accept invitation
+- ✅ Invite someone to a Team
+- ✅ Accept invitation
 - Leave Team
+- Combined My Team page
 - View team scores
 - League tables by day
 - Google Analytics

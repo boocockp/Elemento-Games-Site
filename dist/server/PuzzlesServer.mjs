@@ -4,8 +4,8 @@ const {globalFunctions} = serverRuntime
 const {appFunctions} = serverRuntime
 const {components} = serverRuntime
 
-const {If, Record, Log, Check, Not, Now} = globalFunctions
-const {GetUser, Update, Add, CurrentUser, Query, UpdateUser, Get} = appFunctions
+const {If, Record, Log, Check, Not, Now, IsNull, Today} = globalFunctions
+const {GetUser, CurrentUser, Update, Add, Query, UpdateUser, Get} = appFunctions
 const {FirestoreDataStore, Collection} = components
 
 const ServerDataStore = new FirestoreDataStore({collections: `Teams
@@ -21,7 +21,8 @@ function CurrentUser() { return runtimeFunctions.asCurrentUser(user) }
 
 async function UpdateUser(changes) {
     let user = await GetUser()
-    If(user, async () => await Update(Users, user.id, changes), async () => await Add(Users, Record(changes, 'id', user.id)))
+    let userId = CurrentUser().uid
+    If(user, async () => await Update(Users, userId, changes), async () => await Add(Users, Record(changes, 'id', userId)))
 }
 
 async function GetUser(changes) {
@@ -46,11 +47,21 @@ async function InviteTeamMember(inviteId) {
     await Add(Invites, Record('id', inviteId, 'TeamId', team.id, 'DateCreated', Now()))
 }
 
+async function AcceptInvite(inviteId) {
+    let user = await GetUser()
+    let invite = await Get(Invites, inviteId)
+    Check(IsNull(invite.DateUsed), 'This invite has already been used')
+    Check(IsNull(user.TeamId), 'Cannot join a team if you are already in a team')
+    await Update(Users, user.id, Record('TeamId', invite.TeamId, 'DateJoinedTeam', Today()))
+    await Update(Invites, inviteId, Record('DateUsed', Now()))
+}
+
 return {
     UpdateUser: {func: UpdateUser, update: true, argNames: ['changes']},
     GetUser: {func: GetUser, update: false, argNames: ['changes']},
     NewTeam: {func: NewTeam, update: true, argNames: ['teamData']},
-    InviteTeamMember: {func: InviteTeamMember, update: true, argNames: ['inviteId']}
+    InviteTeamMember: {func: InviteTeamMember, update: true, argNames: ['inviteId']},
+    AcceptInvite: {func: AcceptInvite, update: true, argNames: ['inviteId']}
 }
 }
 

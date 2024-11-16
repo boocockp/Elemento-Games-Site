@@ -24,10 +24,10 @@ function HomePage(props) {
         React.createElement(TextElement, elProps(pathTo('Heading1')).styles(elProps(pathTo('Heading1.Styles')).fontFamily('Tahoma').fontSize('20').color('green').marginTop('20px').props).content('The No Boredom games and puzzles site!').props),
         React.createElement(TextElement, elProps(pathTo('Para1')).content(`Word puzzles, number games, visual brainteasers - try a different one every day.
 
-Many take less than 5 minutes, so you can fit them in whenever you want.`).props),
-        React.createElement(Button, elProps(pathTo('TodaysPuzzleButton')).content('Today\'s Featured Game').appearance('outline').action(TodaysPuzzleButton_action).styles(elProps(pathTo('TodaysPuzzleButton.Styles')).backgroundColor('orange').color('white').fontSize('28').textTransform('inherit').props).props),
-        React.createElement(Button, elProps(pathTo('GameArchive')).content('All the Games').appearance('link').action(GameArchive_action).styles(elProps(pathTo('GameArchive.Styles')).fontSize('20').props).props),
-        React.createElement(Button, elProps(pathTo('AboutLink')).content('About The Games Place').appearance('link').action(AboutLink_action).styles(elProps(pathTo('AboutLink.Styles')).fontSize('20').props).props),
+Most take less than 5 minutes, so you can fit them in whenever you want.`).props),
+        React.createElement(Button, elProps(pathTo('TodaysPuzzleButton')).content('Today\'s Featured Puzzle').appearance('outline').action(TodaysPuzzleButton_action).styles(elProps(pathTo('TodaysPuzzleButton.Styles')).backgroundColor('orange').color('white').fontSize('28').textTransform('inherit').props).props),
+        React.createElement(Button, elProps(pathTo('GameArchive')).content('All the Puzzles').appearance('link').action(GameArchive_action).styles(elProps(pathTo('GameArchive.Styles')).fontSize('20').props).props),
+        React.createElement(Button, elProps(pathTo('AboutLink')).content('About Puzzle Teams').appearance('link').action(AboutLink_action).styles(elProps(pathTo('AboutLink.Styles')).fontSize('20').props).props),
     )
 }
 
@@ -56,7 +56,7 @@ Each takes less than 5 minutes, so you can fit it in whenever you want.`).props)
 Teams compete with each other in leagues and one-off showdowns.  
 The more people you get in your team, the better your chances!`).props),
         React.createElement(TextElement, elProps(pathTo('Heading3')).styles(elProps(pathTo('Heading3.Styles')).fontFamily('Tahoma').fontSize('20').color('green').props).content('Showcase your ideas').props),
-        React.createElement(TextElement, elProps(pathTo('Text9')).content(`The Games Place runs off your creativity.
+        React.createElement(TextElement, elProps(pathTo('Text9')).content(`Puzzle Teams runs off your creativity.
 If you have an idea for a great puzzle, send it to us and you could see it on the site in a few days.
 Even better - program it yourself with the easy to use Elemento tool and get everyone playing the puzzle YOU created!`).props),
         React.createElement(Button, elProps(pathTo('TodaysPuzzleButton')).content('Today\'s Featured Game').appearance('outline').action(TodaysPuzzleButton_action).styles(elProps(pathTo('TodaysPuzzleButton.Styles')).backgroundColor('orange').color('white').fontSize('20').textTransform('inherit').props).props),
@@ -265,6 +265,74 @@ function NewInvite(props) {
     )
 }
 
+// AcceptInvite.js
+function AcceptInvite(props) {
+    const pathTo = name => props.path + '.' + name
+    const {Page, TextElement, Calculation, Data, Block, Button} = Elemento.components
+    const {NotNull, And, Not} = Elemento.globalFunctions
+    const {GetIfExists, Set} = Elemento.appFunctions
+    const _state = Elemento.useGetStore()
+    const app = _state.useObject('Puzzles')
+    const {CurrentUrl} = app
+    const Invites = _state.useObject('Puzzles.Invites')
+    const Teams = _state.useObject('Puzzles.Teams')
+    const UserData = _state.useObject('Puzzles.UserData')
+    const PuzzlesServerApp = _state.useObject('Puzzles.PuzzlesServerApp')
+    const InviteId = _state.setObject(pathTo('InviteId'), new Calculation.State(stateProps(pathTo('InviteId')).value(CurrentUrl().pathSections[0]).props))
+    const Invite = _state.setObject(pathTo('Invite'), new Data.State(stateProps(pathTo('Invite')).value(GetIfExists(Invites, InviteId)).props))
+    const Team = _state.setObject(pathTo('Team'), new Data.State(stateProps(pathTo('Team')).value(GetIfExists(Teams, Invite?.TeamId)).props))
+    const InvitationUsed = _state.setObject(pathTo('InvitationUsed'), new Calculation.State(stateProps(pathTo('InvitationUsed')).value(NotNull(Invite?.DateUsed)).props))
+    const InThisTeam = _state.setObject(pathTo('InThisTeam'), new Calculation.State(stateProps(pathTo('InThisTeam')).value(Invite?.TeamId === UserData()?.TeamId).props))
+    const InAnotherTeam = _state.setObject(pathTo('InAnotherTeam'), new Calculation.State(stateProps(pathTo('InAnotherTeam')).value(And(UserData()?.TeamId, Invite?.TeamId !== UserData()?.TeamId)).props))
+    const JoinState = _state.setObject(pathTo('JoinState'), new Data.State(stateProps(pathTo('JoinState')).value('ready').props))
+    const InviteIdDisplay = _state.setObject(pathTo('InviteIdDisplay'), new Calculation.State(stateProps(pathTo('InviteIdDisplay')).value(Invite.id).props))
+    const CanJoin = _state.setObject(pathTo('CanJoin'), new Calculation.State(stateProps(pathTo('CanJoin')).value(And(Not(InvitationUsed), Not(InThisTeam), Not(InAnotherTeam))).props))
+    const JoinBlock = _state.setObject(pathTo('JoinBlock'), new Block.State(stateProps(pathTo('JoinBlock')).props))
+    const JoinTeam_action = React.useCallback(wrapFn(pathTo('JoinTeam'), 'action', async () => {
+        Set(JoinState,'joining')
+        await PuzzlesServerApp.AcceptInvite(Invite.id)
+        Set(JoinState,'joined')
+    }), [JoinState, Invite])
+    Elemento.elementoDebug(() => eval(Elemento.useDebugExpr()))
+
+    return React.createElement(Page, elProps(props.path).props,
+        React.createElement(TextElement, elProps(pathTo('Title')).styles(elProps(pathTo('Title.Styles')).fontSize('20').color('green').marginBottom('20').props).content('Join a Team').props),
+        React.createElement(Calculation, elProps(pathTo('InviteId')).show(false).props),
+        React.createElement(Data, elProps(pathTo('Invite')).display(false).props),
+        React.createElement(Data, elProps(pathTo('Team')).display(false).props),
+        React.createElement(Calculation, elProps(pathTo('InvitationUsed')).props),
+        React.createElement(Calculation, elProps(pathTo('InThisTeam')).props),
+        React.createElement(Calculation, elProps(pathTo('InAnotherTeam')).props),
+        React.createElement(Data, elProps(pathTo('JoinState')).display(false).props),
+        React.createElement(Calculation, elProps(pathTo('InviteIdDisplay')).label('Invitation Code').show(true).props),
+        React.createElement(TextElement, elProps(pathTo('Invitation')).allowHtml(true).show(NotNull(Team) && JoinState == 'ready').content('Invitation to join ' + '<span style="font-size: larger; color: green">' + Team.Name + '</span>').props),
+        React.createElement(TextElement, elProps(pathTo('AlreadyUsedMessage')).show(InvitationUsed).content('Sorry - this invitation has already been used').props),
+        React.createElement(TextElement, elProps(pathTo('AlreadyMemberMessage')).allowHtml(true).show(InThisTeam).content('You are already a member of ' + '<span style="font-size: larger; color: green">' + Team.Name + '</span>').props),
+        React.createElement(TextElement, elProps(pathTo('AlreadyMemberElsewhereMessage')).allowHtml(true).show(InAnotherTeam).content('You are already a member of another team.  You will have to leave that team to join this one.').props),
+        React.createElement(Calculation, elProps(pathTo('CanJoin')).props),
+        React.createElement(Block, elProps(pathTo('JoinBlock')).layout('vertical').show(CanJoin).props,
+            React.createElement(TextElement, elProps(pathTo('JoiningMessage')).show(JoinState == 'joining').content('Joining team....').props),
+            React.createElement(TextElement, elProps(pathTo('CongratsMessage')).allowHtml(true).show(JoinState == 'joined').content('Congratulations - you are now a member of ' + '<span style="font-size: larger; color: green">' + Team.Name + '</span>').props),
+            React.createElement(Button, elProps(pathTo('JoinTeam')).content('Join the Team').appearance('filled').enabled(CanJoin).action(JoinTeam_action).props),
+    ),
+    )
+}
+AcceptInvite.notLoggedInPage = 'AcceptInviteLogin'
+
+// AcceptInviteLogin.js
+function AcceptInviteLogin(props) {
+    const pathTo = name => props.path + '.' + name
+    const {Page, TextElement} = Elemento.components
+    const _state = Elemento.useGetStore()
+    Elemento.elementoDebug(() => eval(Elemento.useDebugExpr()))
+
+    return React.createElement(Page, elProps(props.path).props,
+        React.createElement(TextElement, elProps(pathTo('Title')).styles(elProps(pathTo('Title.Styles')).fontSize('20').color('green').marginBottom('20').props).content('Join a Team').props),
+        React.createElement(TextElement, elProps(pathTo('Loginreminder')).content(`Sorry - we need to know who you are before you can join a team. 
+Please Log In,  or Sign Up if you do not already have an account.`).props),
+    )
+}
+
 // Terms.js
 function Terms(props) {
     const pathTo = name => props.path + '.' + name
@@ -317,6 +385,11 @@ function configPuzzlesServer() {
             InviteTeamMember: {
                 params: ['inviteId'],
                 action: true
+            },
+
+            AcceptInvite: {
+                params: ['inviteId'],
+                action: true
             }
         }
     };
@@ -326,7 +399,7 @@ export default function Puzzles(props) {
     const pathTo = name => 'Puzzles' + '.' + name
     const {App, WebFileDataStore, FirestoreDataStore, ServerAppConnector, Collection, AppBar, Image, TextElement, Block, Button, Menu, MenuItem, UserLogon, Calculation} = Elemento.components
     const {If, And, Log, Record, Now, Last, Sort, DateFormat, Today, First, Not} = Elemento.globalFunctions
-    const pages = {HomePage, AboutPage, TodaysPuzzle, ArchivedPuzzle, PuzzleArchive, GamesPlayed, NewTeam, NewInvite, Terms, Privacy}
+    const pages = {HomePage, AboutPage, TodaysPuzzle, ArchivedPuzzle, PuzzleArchive, GamesPlayed, NewTeam, NewInvite, AcceptInvite, AcceptInviteLogin, Terms, Privacy}
     const appContext = Elemento.useGetAppContext()
     const {CurrentUser, Query, Add, Get} = Elemento.appFunctions
     const _state = Elemento.useGetStore()
@@ -335,12 +408,14 @@ export default function Puzzles(props) {
     const SiteDataStore = _state.setObject('Puzzles.SiteDataStore', new WebFileDataStore.State(stateProps('Puzzles.SiteDataStore').url('https://firebasestorage.googleapis.com/v0/b/elemento-games-site.appspot.com/o/public%2FsiteData.json?alt=media').props))
     const PlayerDataStore = _state.setObject('Puzzles.PlayerDataStore', new FirestoreDataStore.State(stateProps('Puzzles.PlayerDataStore').collections(`GamePlays
 Users
-Teams`).props))
+Teams
+Invites`).props))
     const PuzzlesServerApp = _state.setObject('Puzzles.PuzzlesServerApp', new ServerAppConnector.State({configuration: configPuzzlesServer()}))
     const Puzzles = _state.setObject('Puzzles.Puzzles', new Collection.State(stateProps('Puzzles.Puzzles').dataStore(SiteDataStore).collectionName('Puzzles').props))
     const GamePlays = _state.setObject('Puzzles.GamePlays', new Collection.State(stateProps('Puzzles.GamePlays').dataStore(PlayerDataStore).collectionName('GamePlays').props))
     const Users = _state.setObject('Puzzles.Users', new Collection.State(stateProps('Puzzles.Users').dataStore(PlayerDataStore).collectionName('Users').props))
     const Teams = _state.setObject('Puzzles.Teams', new Collection.State(stateProps('Puzzles.Teams').dataStore(PlayerDataStore).collectionName('Teams').props))
+    const Invites = _state.setObject('Puzzles.Invites', new Collection.State(stateProps('Puzzles.Invites').dataStore(PlayerDataStore).collectionName('Invites').props))
     const StoreGamePlay = _state.setObject('Puzzles.StoreGamePlay', React.useCallback(wrapFn(pathTo('StoreGamePlay'), 'calculation', async (data) => {
         let puzzleUrl = data.url
         let puzzleResult = await Query(Puzzles, {url: puzzleUrl})
@@ -359,7 +434,7 @@ Teams`).props))
         return puzzle?.url
     }), [Puzzles]))
     const UserData = _state.setObject('Puzzles.UserData', React.useCallback(wrapFn(pathTo('UserData'), 'calculation', () => {
-        return If(CurrentUser(), () => Get(Users, CurrentUser().uid), null)
+        return If(CurrentUser(), () => Query(Users, Record('id', CurrentUser().uid))[0])
     }), [Users]))
     const UsersTeam = _state.setObject('Puzzles.UsersTeam', React.useCallback(wrapFn(pathTo('UsersTeam'), 'calculation', () => {
         let teamId = UserData()?.TeamId
@@ -430,7 +505,7 @@ Teams`).props))
 
     return React.createElement(App, {...elProps('Puzzles').maxWidth('600px').messageAction(Puzzles_messageAction).cookieMessage('We use cookies for the usual things - to make the site work properly and learn how people use it.').faviconUrl('puzzleteams_icon_plain.svg').fonts(['Road Rage', 'Grape Nuts']).props, topChildren: React.createElement( React.Fragment, null, React.createElement(AppBar, elProps(pathTo('MainAppBar')).styles(elProps(pathTo('MainAppBar.Styles')).backgroundColor('orange').color('green').fontSize('32').fontFamily('Road Rage').props).props,
             React.createElement(Image, elProps(pathTo('Logo')).source('puzzleteams_icon_plain.svg').styles(elProps(pathTo('Logo.Styles')).width('40').borderRadius('3').props).props),
-            React.createElement(TextElement, elProps(pathTo('AppTitle')).styles(elProps(pathTo('AppTitle.Styles')).fontFamily('Road Rage').fontSize('32').props).content('The Games Place').props),
+            React.createElement(TextElement, elProps(pathTo('AppTitle')).styles(elProps(pathTo('AppTitle.Styles')).fontFamily('Road Rage').fontSize('32').props).content('Puzzle Teams').props),
             React.createElement(Block, elProps(pathTo('NavItems')).layout('horizontal').show(Not(NarrowScreen)).props,
             React.createElement(Button, elProps(pathTo('Home')).content('Home').appearance('filled').action(Home_action).styles(elProps(pathTo('Home.Styles')).backgroundColor('orange').marginTop('5').props).props),
             React.createElement(Button, elProps(pathTo('TodaysPuzzle')).content('Today\'s Game').appearance('filled').action(TodaysPuzzle_action).styles(elProps(pathTo('TodaysPuzzle.Styles')).backgroundColor('orange').textWrap('nowrap').marginTop('5').props).props),
@@ -463,6 +538,7 @@ Teams`).props))
         React.createElement(Collection, elProps(pathTo('Puzzles')).display(false).props),
         React.createElement(Collection, elProps(pathTo('GamePlays')).display(false).props),
         React.createElement(Collection, elProps(pathTo('Users')).display(false).props),
-        React.createElement(Collection, elProps(pathTo('Teams')).display(false).props)
+        React.createElement(Collection, elProps(pathTo('Teams')).display(false).props),
+        React.createElement(Collection, elProps(pathTo('Invites')).display(false).props)
     )
 }

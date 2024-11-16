@@ -28,7 +28,7 @@
           "id": "firestoredatastore_1",
           "name": "Player Data Store",
           "properties": {
-            "collections": "GamePlays\nUsers\nTeams"
+            "collections": "GamePlays\nUsers\nTeams\nInvites"
           },
           "kind": "FirestoreDataStore"
         },
@@ -87,6 +87,17 @@
           "kind": "Collection"
         },
         {
+          "id": "collection_8",
+          "name": "Invites",
+          "properties": {
+            "dataStore": {
+              "expr": "PlayerDataStore"
+            },
+            "collectionName": "Invites"
+          },
+          "kind": "Collection"
+        },
+        {
           "id": "function_3",
           "name": "Store Game Play",
           "properties": {
@@ -123,7 +134,7 @@
           "name": "User Data",
           "properties": {
             "calculation": {
-              "expr": "If(CurrentUser(), Get(Users, CurrentUser().uid), null)"
+              "expr": "If(CurrentUser(), Query(Users, Record('id', CurrentUser().uid))[0])"
             }
           },
           "kind": "Function"
@@ -178,7 +189,7 @@
               "id": "text_24",
               "name": "App Title",
               "properties": {
-                "content": "The Games Place",
+                "content": "Puzzle Teams",
                 "styles": {
                   "fontFamily": "Road Rage",
                   "fontSize": "32"
@@ -488,7 +499,7 @@
               "id": "text_2",
               "name": "Para 1",
               "properties": {
-                "content": "Word puzzles, number games, visual brainteasers - try a different one every day.\n\nMany take less than 5 minutes, so you can fit them in whenever you want."
+                "content": "Word puzzles, number games, visual brainteasers - try a different one every day.\n\nMost take less than 5 minutes, so you can fit them in whenever you want."
               },
               "kind": "Text"
             },
@@ -496,7 +507,7 @@
               "id": "button_6",
               "name": "Todays Puzzle Button",
               "properties": {
-                "content": "Today's Featured Game",
+                "content": "Today's Featured Puzzle",
                 "styles": {
                   "backgroundColor": "orange",
                   "color": "white",
@@ -520,7 +531,7 @@
                 "styles": {
                   "fontSize": "20"
                 },
-                "content": "All the Games"
+                "content": "All the Puzzles"
               },
               "kind": "Button"
             },
@@ -535,7 +546,7 @@
                 "styles": {
                   "fontSize": "20"
                 },
-                "content": "About The Games Place"
+                "content": "About Puzzle Teams"
               },
               "kind": "Button"
             }
@@ -606,7 +617,7 @@
               "id": "text_22",
               "name": "Text 9",
               "properties": {
-                "content": "The Games Place runs off your creativity.\nIf you have an idea for a great puzzle, send it to us and you could see it on the site in a few days.\nEven better - program it yourself with the easy to use Elemento tool and get everyone playing the puzzle YOU created!"
+                "content": "Puzzle Teams runs off your creativity.\nIf you have an idea for a great puzzle, send it to us and you could see it on the site in a few days.\nEven better - program it yourself with the easy to use Elemento tool and get everyone playing the puzzle YOU created!"
               },
               "kind": "Text"
             },
@@ -1049,6 +1060,256 @@
           "kind": "Page"
         },
         {
+          "id": "page_13",
+          "name": "Accept Invite",
+          "properties": {
+            "notLoggedInPage": {
+              "expr": "AcceptInviteLogin"
+            }
+          },
+          "elements": [
+            {
+              "id": "text_33",
+              "name": "Title",
+              "properties": {
+                "content": "Join a Team",
+                "styles": {
+                  "fontSize": "20",
+                  "color": "green",
+                  "marginBottom": "20"
+                }
+              },
+              "kind": "Text"
+            },
+            {
+              "id": "calculation_5",
+              "name": "Invite Id",
+              "properties": {
+                "show": false,
+                "calculation": {
+                  "expr": "CurrentUrl().pathSections[0]"
+                }
+              },
+              "kind": "Calculation"
+            },
+            {
+              "id": "data_3",
+              "name": "Invite",
+              "properties": {
+                "initialValue": {
+                  "expr": "GetIfExists(Invites, InviteId)"
+                }
+              },
+              "kind": "Data"
+            },
+            {
+              "id": "data_4",
+              "name": "Team",
+              "properties": {
+                "initialValue": {
+                  "expr": "GetIfExists(Teams, Invite?.TeamId)"
+                }
+              },
+              "kind": "Data"
+            },
+            {
+              "id": "calculation_7",
+              "name": "Invitation Used",
+              "properties": {
+                "calculation": {
+                  "expr": "NotNull(Invite?.DateUsed)"
+                }
+              },
+              "kind": "Calculation"
+            },
+            {
+              "id": "calculation_8",
+              "name": "In This Team",
+              "properties": {
+                "calculation": {
+                  "expr": "Invite?.TeamId === UserData()?.TeamId"
+                }
+              },
+              "kind": "Calculation"
+            },
+            {
+              "id": "calculation_9",
+              "name": "In Another Team",
+              "properties": {
+                "calculation": {
+                  "expr": "And(UserData()?.TeamId, Invite?.TeamId !== UserData()?.TeamId)"
+                }
+              },
+              "kind": "Calculation"
+            },
+            {
+              "id": "data_5",
+              "name": "Join State",
+              "properties": {
+                "initialValue": {
+                  "expr": "'ready'"
+                }
+              },
+              "kind": "Data"
+            },
+            {
+              "id": "calculation_6",
+              "name": "Invite Id Display",
+              "properties": {
+                "calculation": {
+                  "expr": "Invite.id"
+                },
+                "show": true,
+                "label": "Invitation Code"
+              },
+              "kind": "Calculation"
+            },
+            {
+              "id": "text_43",
+              "name": "Invitation",
+              "properties": {
+                "content": {
+                  "expr": "'Invitation to join ' + '<span style=\"font-size: larger; color: green\">' + Team.Name + '</span>'"
+                },
+                "allowHtml": true,
+                "show": {
+                  "expr": "NotNull(Team) && JoinState == 'ready'"
+                }
+              },
+              "kind": "Text"
+            },
+            {
+              "id": "text_42",
+              "name": "Already Used Message",
+              "properties": {
+                "content": "Sorry - this invitation has already been used",
+                "show": {
+                  "expr": "InvitationUsed"
+                }
+              },
+              "kind": "Text"
+            },
+            {
+              "id": "text_34",
+              "name": "Already Member Message",
+              "properties": {
+                "content": {
+                  "expr": "'You are already a member of ' + '<span style=\"font-size: larger; color: green\">' + Team.Name + '</span>'"
+                },
+                "allowHtml": true,
+                "show": {
+                  "expr": "InThisTeam"
+                }
+              },
+              "kind": "Text"
+            },
+            {
+              "id": "text_44",
+              "name": "Already Member Elsewhere Message",
+              "properties": {
+                "content": "You are already a member of another team.  You will have to leave that team to join this one.",
+                "allowHtml": true,
+                "show": {
+                  "expr": "InAnotherTeam"
+                }
+              },
+              "kind": "Text"
+            },
+            {
+              "id": "calculation_10",
+              "name": "Can Join",
+              "properties": {
+                "calculation": {
+                  "expr": "And(Not(InvitationUsed), Not(InThisTeam), Not(InAnotherTeam))"
+                }
+              },
+              "kind": "Calculation"
+            },
+            {
+              "id": "block_5",
+              "name": "Join Block",
+              "properties": {
+                "show": {
+                  "expr": "CanJoin"
+                }
+              },
+              "elements": [
+                {
+                  "id": "text_38",
+                  "name": "Joining Message",
+                  "properties": {
+                    "content": "Joining team....",
+                    "show": {
+                      "expr": "JoinState == 'joining'"
+                    }
+                  },
+                  "kind": "Text"
+                },
+                {
+                  "id": "text_39",
+                  "name": "Congrats Message",
+                  "properties": {
+                    "content": {
+                      "expr": "'Congratulations - you are now a member of ' + '<span style=\"font-size: larger; color: green\">' + Team.Name + '</span>'"
+                    },
+                    "allowHtml": true,
+                    "show": {
+                      "expr": "JoinState == 'joined'"
+                    }
+                  },
+                  "kind": "Text"
+                },
+                {
+                  "id": "button_22",
+                  "name": "Join Team",
+                  "properties": {
+                    "action": {
+                      "expr": "Set(JoinState,'joining')\nPuzzlesServerApp.AcceptInvite(Invite.id)\nSet(JoinState,'joined')"
+                    },
+                    "content": "Join the Team",
+                    "appearance": "filled",
+                    "enabled": {
+                      "expr": "CanJoin"
+                    }
+                  },
+                  "kind": "Button"
+                }
+              ],
+              "kind": "Block"
+            }
+          ],
+          "kind": "Page"
+        },
+        {
+          "id": "page_14",
+          "name": "Accept Invite Login",
+          "properties": {},
+          "elements": [
+            {
+              "id": "text_40",
+              "name": "Title",
+              "properties": {
+                "content": "Join a Team",
+                "styles": {
+                  "fontSize": "20",
+                  "color": "green",
+                  "marginBottom": "20"
+                }
+              },
+              "kind": "Text"
+            },
+            {
+              "id": "text_41",
+              "name": "Login reminder",
+              "properties": {
+                "content": "Sorry - we need to know who you are before you can join a team. \nPlease Log In,  or Sign Up if you do not already have an account."
+              },
+              "kind": "Text"
+            }
+          ],
+          "kind": "Page"
+        },
+        {
           "id": "page_8",
           "name": "Terms",
           "properties": {},
@@ -1158,7 +1419,7 @@
             "input1": "changes",
             "action": true,
             "calculation": {
-              "expr": "let user = GetUser()\nIf(user, Update(Users, user.id, changes), Add(Users, Record(changes, 'id', user.id)))"
+              "expr": "let user = GetUser()\nlet userId = CurrentUser().uid\nIf(user, Update(Users, userId, changes), Add(Users, Record(changes, 'id', userId)))"
             }
           },
           "kind": "Function"
@@ -1196,6 +1457,18 @@
               "expr": "let user = GetUser()\nlet team = Get(Teams, user?.TeamId)\nCheck(team?.OwnerId == user.id, 'Cannot invite a team member unless you are the owner')\nAdd(Invites, Record('id', inviteId, 'TeamId', team.id, 'DateCreated', Now()))"
             },
             "input1": "inviteId"
+          },
+          "kind": "Function"
+        },
+        {
+          "id": "function_12",
+          "name": "Accept Invite",
+          "properties": {
+            "calculation": {
+              "expr": "let user = GetUser()\nlet invite = Get(Invites, inviteId)\nCheck(IsNull(invite.DateUsed), 'This invite has already been used')\nCheck(IsNull(user.TeamId), 'Cannot join a team if you are already in a team')\nUpdate(Users, user.id, Record('TeamId', invite.TeamId, 'DateJoinedTeam', Today()))\nUpdate(Invites, inviteId, Record('DateUsed', Now()))"
+            },
+            "input1": "inviteId",
+            "action": true
           },
           "kind": "Function"
         }
