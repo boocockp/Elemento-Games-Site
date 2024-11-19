@@ -5,7 +5,7 @@ const {appFunctions} = serverRuntime
 const {components} = serverRuntime
 
 const {If, Record, Log, Check, Not, Now, IsNull, Today} = globalFunctions
-const {GetUser, CurrentUser, Update, Add, Query, UpdateUser, Get} = appFunctions
+const {CurrentUser, Update, Add, Query, Get} = appFunctions
 const {FirestoreDataStore, Collection} = components
 
 const ServerDataStore = new FirestoreDataStore({collections: `Teams
@@ -19,13 +19,13 @@ const PuzzlesServer = (user) => {
 
 function CurrentUser() { return runtimeFunctions.asCurrentUser(user) }
 
-async function UpdateUser(changes) {
-    let user = await GetUser()
+async function UpdateUserData(changes) {
+    let user = await GetUserData()
     let userId = CurrentUser().uid
     If(user, async () => await Update(Users, userId, changes), async () => await Add(Users, Record(changes, 'id', userId)))
 }
 
-async function GetUser(changes) {
+async function GetUserData() {
     let userId = CurrentUser().uid
     let userResult = await Query(Users, {id: userId})
     return userResult[0]
@@ -33,35 +33,40 @@ async function GetUser(changes) {
 
 async function NewTeam(teamData) {
     Log('In NewTeam', teamData)
-    let user = await GetUser()
+    let user = await GetUserData()
     Check(Not(user?.TeamId), 'Cannot create new team as already a member of a team')
     let team = await Add(Teams, Record('Name', teamData.TeamName, 'OwnerId', CurrentUser().uid))
-    await UpdateUser(Record('TeamId', team.id))
+    await UpdateUserData(Record('TeamId', team.id))
     Log('Done NewTeam')
 }
 
 async function InviteTeamMember(inviteId) {
-    let user = await GetUser()
+    let user = await GetUserData()
     let team = await Get(Teams, user?.TeamId)
     Check(team?.OwnerId == user.id, 'Cannot invite a team member unless you are the owner')
     await Add(Invites, Record('id', inviteId, 'TeamId', team.id, 'DateCreated', Now()))
 }
 
 async function AcceptInvite(inviteId) {
-    let user = await GetUser()
+    let user = await GetUserData()
     let invite = await Get(Invites, inviteId)
     Check(IsNull(invite.DateUsed), 'This invite has already been used')
-    Check(IsNull(user.TeamId), 'Cannot join a team if you are already in a team')
-    await Update(Users, user.id, Record('TeamId', invite.TeamId, 'DateJoinedTeam', Today()))
+    Check(IsNull(user?.TeamId), 'Cannot join a team if you are already in a team')
+    await UpdateUserData(Record('TeamId', invite.TeamId, 'DateJoinedTeam', Today()))
     await Update(Invites, inviteId, Record('DateUsed', Now()))
 }
 
+async function LeaveTeam() {
+    await UpdateUserData(Record('TeamId', null, 'DateJoinedTeam', null))
+}
+
 return {
-    UpdateUser: {func: UpdateUser, update: true, argNames: ['changes']},
-    GetUser: {func: GetUser, update: false, argNames: ['changes']},
+    UpdateUserData: {func: UpdateUserData, update: true, argNames: ['changes']},
+    GetUserData: {func: GetUserData, update: false, argNames: []},
     NewTeam: {func: NewTeam, update: true, argNames: ['teamData']},
     InviteTeamMember: {func: InviteTeamMember, update: true, argNames: ['inviteId']},
-    AcceptInvite: {func: AcceptInvite, update: true, argNames: ['inviteId']}
+    AcceptInvite: {func: AcceptInvite, update: true, argNames: ['inviteId']},
+    LeaveTeam: {func: LeaveTeam, update: true, argNames: []}
 }
 }
 

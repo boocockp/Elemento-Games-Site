@@ -30,15 +30,19 @@ Teams MVP
 - ✅ Create a Team
 - ✅ Invite someone to a Team
 - ✅ Accept invitation
-- Leave Team
-- Combined My Team page
+- ✅ Leave Team
+- ✅ Combined Team page
 - View team scores
 - League tables by day
+- Help
+- Support email
 - Google Analytics
 - Facebook Login
 
 Future stuff
 ------------
 
+- Transfer Team Ownership
 - Secure score recording
 - Report abuse or offensive content
+- Limit recorded plays per day - maybe 10?

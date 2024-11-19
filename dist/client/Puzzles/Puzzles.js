@@ -181,6 +181,69 @@ function GamesPlayed(props) {
     )
 }
 
+// MyTeam.js
+function MyTeam(props) {
+    const pathTo = name => props.path + '.' + name
+    const {Page, TextElement, Calculation, Data, Block, Button, UserLogon} = Elemento.components
+    const {NotNull, Not, And} = Elemento.globalFunctions
+    const {GetIfExists, CurrentUser} = Elemento.appFunctions
+    const _state = Elemento.useGetStore()
+    const app = _state.useObject('Puzzles')
+    const {ShowPage} = app
+    const UserData = _state.useObject('Puzzles.UserData')
+    const Teams = _state.useObject('Puzzles.Teams')
+    const IsTeamOwner = _state.useObject('Puzzles.IsTeamOwner')
+    const InTeam = _state.setObject(pathTo('InTeam'), new Calculation.State(stateProps(pathTo('InTeam')).value(NotNull(UserData()?.TeamId)).props))
+    const Team = _state.setObject(pathTo('Team'), new Data.State(stateProps(pathTo('Team')).value(GetIfExists(Teams, UserData()?.TeamId)).props))
+    const NotInTeamBlock = _state.setObject(pathTo('NotInTeamBlock'), new Block.State(stateProps(pathTo('NotInTeamBlock')).props))
+    const NotLoggedInBlock = _state.setObject(pathTo('NotLoggedInBlock'), new Block.State(stateProps(pathTo('NotLoggedInBlock')).props))
+    const InTeamBlock = _state.setObject(pathTo('InTeamBlock'), new Block.State(stateProps(pathTo('InTeamBlock')).props))
+    const TeamOwnerBlock = _state.setObject(pathTo('TeamOwnerBlock'), new Block.State(stateProps(pathTo('TeamOwnerBlock')).props))
+    const JoinATeam_action = React.useCallback(wrapFn(pathTo('JoinATeam'), 'action', async () => {
+        await ShowPage(NewTeam)
+    }), [])
+    const StartANewTeam_action = React.useCallback(wrapFn(pathTo('StartANewTeam'), 'action', async () => {
+        await ShowPage(NewTeam)
+    }), [])
+    const InviteMembers_action = React.useCallback(wrapFn(pathTo('InviteMembers'), 'action', async () => {
+        await ShowPage(NewInvite)
+    }), [])
+    const LeaveTeam_action = React.useCallback(wrapFn(pathTo('LeaveTeam'), 'action', async () => {
+        await ShowPage(LeaveTeam)
+    }), [])
+    Elemento.elementoDebug(() => eval(Elemento.useDebugExpr()))
+
+    return React.createElement(Page, elProps(props.path).props,
+        React.createElement(TextElement, elProps(pathTo('Title')).styles(elProps(pathTo('Title.Styles')).fontSize('20').color('green').props).content('My Team').props),
+        React.createElement(Calculation, elProps(pathTo('InTeam')).props),
+        React.createElement(Data, elProps(pathTo('Team')).display(false).props),
+        React.createElement(TextElement, elProps(pathTo('TeamsBlurb')).show(Not(InTeam)).content(`If you want to get the most out of Puzzle Teams ... join a Team!
+
+You can enjoy a friendly rivalry with your other team members, and your team will also compete in the leagues and competitions.
+
+To join a team, you will need an invitation code from the owner of the team.
+
+But if you don't know anyone in a Puzzle Teams Team, why not find some friends or family members and start your own?
+`).props),
+        React.createElement(Block, elProps(pathTo('NotInTeamBlock')).layout('horizontal wrapped').show(And(CurrentUser(), Not(InTeam))).props,
+            React.createElement(Button, elProps(pathTo('JoinATeam')).content('Join A Team').appearance('outline').action(JoinATeam_action).props),
+            React.createElement(Button, elProps(pathTo('StartANewTeam')).content('Start A New Team').appearance('outline').action(StartANewTeam_action).props),
+    ),
+        React.createElement(Block, elProps(pathTo('NotLoggedInBlock')).layout('vertical').show(Not(CurrentUser())).props,
+            React.createElement(TextElement, elProps(pathTo('LoginMessage')).content('You need to Log In or Sign Up to see your team details or join one.').props),
+            React.createElement(UserLogon, elProps(pathTo('UserLogon3')).props),
+    ),
+        React.createElement(TextElement, elProps(pathTo('InTeamMessage')).allowHtml(true).show(InTeam).content('You are a member of ' + '<span style="font-size: larger; color: green">' + Team.Name + '</span>').props),
+        React.createElement(Block, elProps(pathTo('InTeamBlock')).layout('vertical').show(InTeam).props,
+            React.createElement(Block, elProps(pathTo('TeamOwnerBlock')).layout('vertical').show(IsTeamOwner()).styles(elProps(pathTo('TeamOwnerBlock.Styles')).paddingLeft('0').props).props,
+            React.createElement(TextElement, elProps(pathTo('Message')).styles(elProps(pathTo('Message.Styles')).props).content('You are the owner of this team.').props),
+            React.createElement(Button, elProps(pathTo('InviteMembers')).content('Invite Members').appearance('outline').action(InviteMembers_action).props),
+    ),
+            React.createElement(Button, elProps(pathTo('LeaveTeam')).content('Leave Team').appearance('link').action(LeaveTeam_action).props),
+    ),
+    )
+}
+
 // NewTeam.js
 function NewTeam_NewTeamForm(props) {
     const pathTo = name => props.path + '.' + name
@@ -237,7 +300,8 @@ function NewInvite(props) {
     const MessageText = _state.setObject(pathTo('MessageText'), new Data.State(stateProps(pathTo('MessageText')).value('Ready').props))
     const InviteId = _state.setObject(pathTo('InviteId'), new Data.State(stateProps(pathTo('InviteId')).props))
     const LinkBlock = _state.setObject(pathTo('LinkBlock'), new Block.State(stateProps(pathTo('LinkBlock')).props))
-    const InviteLink = _state.setObject(pathTo('InviteLink'), new Calculation.State(stateProps(pathTo('InviteLink')).value(InviteId ? CurrentUrl().text.replace(/\/NewInvite/, '/AcceptInvite/') + InviteId : null).props))
+    const InviteCode = _state.setObject(pathTo('InviteCode'), new Calculation.State(stateProps(pathTo('InviteCode')).value(InviteId).props))
+    const InviteLink = _state.setObject(pathTo('InviteLink'), new Calculation.State(stateProps(pathTo('InviteLink')).value(InviteId ? CurrentUrl().text.replace(/\/NewInvite/, '/JoinTeam/') + InviteId : null).props))
     const Copy_action = React.useCallback(wrapFn(pathTo('Copy'), 'action', async () => {
         await window.navigator.clipboard.writeText(InviteLink.value)
     }), [InviteLink])
@@ -258,15 +322,19 @@ function NewInvite(props) {
         React.createElement(Data, elProps(pathTo('InviteId')).display(false).props),
         React.createElement(TextElement, elProps(pathTo('Message')).content(MessageText).props),
         React.createElement(Block, elProps(pathTo('LinkBlock')).layout('horizontal wrapped').show(NotNull(InviteId)).styles(elProps(pathTo('LinkBlock.Styles')).width('100%').props).props,
+            React.createElement(Calculation, elProps(pathTo('InviteCode')).label('Invite Code').show(true).styles(elProps(pathTo('InviteCode.Styles')).width('calc(100% - 5em)').maxWidth('30em').props).props),
             React.createElement(Calculation, elProps(pathTo('InviteLink')).label('Invite Link').show(true).styles(elProps(pathTo('InviteLink.Styles')).width('calc(100% - 5em)').maxWidth('30em').props).props),
             React.createElement(Button, elProps(pathTo('Copy')).content('Copy').iconName('content_copy').appearance('outline').show(NotNull(InviteId)).action(Copy_action).styles(elProps(pathTo('Copy.Styles')).height('40').props).props),
+            React.createElement(TextElement, elProps(pathTo('LinkUsageExplanation')).content(`Send the link above to the person you want to invite.
+
+Anyone who has the link can use it, but it can only be used once.`).props),
     ),
         React.createElement(Button, elProps(pathTo('CreateInvite')).content('New Invite').appearance('filled').action(CreateInvite_action).props),
     )
 }
 
-// AcceptInvite.js
-function AcceptInvite(props) {
+// JoinTeam.js
+function JoinTeam(props) {
     const pathTo = name => props.path + '.' + name
     const {Page, TextElement, Calculation, Data, Block, Button} = Elemento.components
     const {NotNull, And, Not} = Elemento.globalFunctions
@@ -317,10 +385,10 @@ function AcceptInvite(props) {
     ),
     )
 }
-AcceptInvite.notLoggedInPage = 'AcceptInviteLogin'
+JoinTeam.notLoggedInPage = 'JoinTeamLogin'
 
-// AcceptInviteLogin.js
-function AcceptInviteLogin(props) {
+// JoinTeamLogin.js
+function JoinTeamLogin(props) {
     const pathTo = name => props.path + '.' + name
     const {Page, TextElement} = Elemento.components
     const _state = Elemento.useGetStore()
@@ -332,6 +400,68 @@ function AcceptInviteLogin(props) {
 Please Log In,  or Sign Up if you do not already have an account.`).props),
     )
 }
+
+// GeneralLogin.js
+function GeneralLogin(props) {
+    const pathTo = name => props.path + '.' + name
+    const {Page, TextElement, UserLogon} = Elemento.components
+    const _state = Elemento.useGetStore()
+    Elemento.elementoDebug(() => eval(Elemento.useDebugExpr()))
+
+    return React.createElement(Page, elProps(props.path).props,
+        React.createElement(TextElement, elProps(pathTo('Title')).styles(elProps(pathTo('Title.Styles')).fontSize('20').color('green').marginBottom('20').props).content('You need to be logged in!').props),
+        React.createElement(TextElement, elProps(pathTo('Loginreminder')).content(`Sorry - we would love to help you but we need to know who you are. 
+
+Please Log In using the button below.  
+
+If you do not have an account yet, click the button anyway and it will tell you how to sign up.`).props),
+        React.createElement(UserLogon, elProps(pathTo('UserLogonInPage')).props),
+    )
+}
+
+// LeaveTeam.js
+function LeaveTeam(props) {
+    const pathTo = name => props.path + '.' + name
+    const {Page, TextElement, Calculation, Block, Button} = Elemento.components
+    const {NotNull, And, Not} = Elemento.globalFunctions
+    const _state = Elemento.useGetStore()
+    const app = _state.useObject('Puzzles')
+    const {ShowPage} = app
+    const UserData = _state.useObject('Puzzles.UserData')
+    const IsTeamOwner = _state.useObject('Puzzles.IsTeamOwner')
+    const PuzzlesServerApp = _state.useObject('Puzzles.PuzzlesServerApp')
+    const InTeam = _state.setObject(pathTo('InTeam'), new Calculation.State(stateProps(pathTo('InTeam')).value(NotNull(UserData()?.TeamId)).props))
+    const InTeamBlock = _state.setObject(pathTo('InTeamBlock'), new Block.State(stateProps(pathTo('InTeamBlock')).props))
+    const NotInTeamBlock = _state.setObject(pathTo('NotInTeamBlock'), new Block.State(stateProps(pathTo('NotInTeamBlock')).props))
+    const TeamOwnerBlock = _state.setObject(pathTo('TeamOwnerBlock'), new Block.State(stateProps(pathTo('TeamOwnerBlock')).props))
+    const LeaveTeam_action = React.useCallback(wrapFn(pathTo('LeaveTeam'), 'action', async () => {
+        await PuzzlesServerApp.LeaveTeam()
+        await ShowPage(MyTeam)
+    }), [])
+    Elemento.elementoDebug(() => eval(Elemento.useDebugExpr()))
+
+    return React.createElement(Page, elProps(props.path).props,
+        React.createElement(TextElement, elProps(pathTo('Title')).styles(elProps(pathTo('Title.Styles')).fontSize('20').color('green').marginBottom('20').props).content('Leave your Team').props),
+        React.createElement(Calculation, elProps(pathTo('InTeam')).props),
+        React.createElement(Block, elProps(pathTo('InTeamBlock')).layout('vertical').show(And(InTeam, Not(IsTeamOwner()))).props,
+            React.createElement(TextElement, elProps(pathTo('Explanation')).content(`If you leave your team, you obviously won't be able to take part in the leagues or see the team scores any more.
+
+To rejoin, or join another team, you will need a new invitation code.
+
+If you're OK with that, then click the button below.`).props),
+            React.createElement(Button, elProps(pathTo('LeaveTeam')).content('Leave Team').appearance('outline').action(LeaveTeam_action).props),
+    ),
+        React.createElement(Block, elProps(pathTo('NotInTeamBlock')).layout('vertical').show(Not(InTeam)).props,
+            React.createElement(TextElement, elProps(pathTo('Message')).content('You are not in a team at the moment.').props),
+    ),
+        React.createElement(Block, elProps(pathTo('TeamOwnerBlock')).layout('vertical').show(IsTeamOwner()).props,
+            React.createElement(TextElement, elProps(pathTo('Message')).content(`You are the owner of this team, so you cannot leave it.
+
+If you want to transfer the team to someone else, please contact PuzzleTeams support.`).props),
+    ),
+    )
+}
+LeaveTeam.notLoggedInPage = 'GeneralLogin'
 
 // Terms.js
 function Terms(props) {
@@ -368,13 +498,13 @@ function configPuzzlesServer() {
         url: '/capi/:versionId/PuzzlesServer',
 
         functions: {
-            UpdateUser: {
+            UpdateUserData: {
                 params: ['changes'],
                 action: true
             },
 
-            GetUser: {
-                params: ['changes']
+            GetUserData: {
+                params: []
             },
 
             NewTeam: {
@@ -390,6 +520,11 @@ function configPuzzlesServer() {
             AcceptInvite: {
                 params: ['inviteId'],
                 action: true
+            },
+
+            LeaveTeam: {
+                params: [],
+                action: true
             }
         }
     };
@@ -399,7 +534,7 @@ export default function Puzzles(props) {
     const pathTo = name => 'Puzzles' + '.' + name
     const {App, WebFileDataStore, FirestoreDataStore, ServerAppConnector, Collection, AppBar, Image, TextElement, Block, Button, Menu, MenuItem, UserLogon, Calculation} = Elemento.components
     const {If, And, Log, Record, Now, Last, Sort, DateFormat, Today, First, Not} = Elemento.globalFunctions
-    const pages = {HomePage, AboutPage, TodaysPuzzle, ArchivedPuzzle, PuzzleArchive, GamesPlayed, NewTeam, NewInvite, AcceptInvite, AcceptInviteLogin, Terms, Privacy}
+    const pages = {HomePage, AboutPage, TodaysPuzzle, ArchivedPuzzle, PuzzleArchive, GamesPlayed, MyTeam, NewTeam, NewInvite, JoinTeam, JoinTeamLogin, GeneralLogin, LeaveTeam, Terms, Privacy}
     const appContext = Elemento.useGetAppContext()
     const {CurrentUser, Query, Add, Get} = Elemento.appFunctions
     const _state = Elemento.useGetStore()
@@ -441,7 +576,7 @@ Invites`).props))
         return If(teamId, () => Get(Teams, teamId))
     }), [UserData, Teams]))
     const IsTeamOwner = _state.setObject('Puzzles.IsTeamOwner', React.useCallback(wrapFn(pathTo('IsTeamOwner'), 'calculation', () => {
-        return UsersTeam()?.OwnerId == CurrentUser()?.uid
+        return And(CurrentUser(), UsersTeam()?.OwnerId == CurrentUser()?.uid)
     }), [UsersTeam]))
     const NavItems = _state.setObject('Puzzles.NavItems', new Block.State(stateProps('Puzzles.NavItems').props))
     const NarrowScreen = _state.setObject('Puzzles.NarrowScreen', new Calculation.State(stateProps('Puzzles.NarrowScreen').value(AppWidth() < 630).props))
@@ -460,11 +595,8 @@ Invites`).props))
     const GamesPlayed_action = React.useCallback(wrapFn(pathTo('GamesPlayed'), 'action', async () => {
         await ShowPage(GamesPlayed)
     }), [])
-    const NewTeam_action = React.useCallback(wrapFn(pathTo('NewTeam'), 'action', async () => {
-        await ShowPage(NewTeam)
-    }), [])
-    const InviteTeamMember_action = React.useCallback(wrapFn(pathTo('InviteTeamMember'), 'action', async () => {
-        await ShowPage(NewInvite)
+    const MyTeam_action = React.useCallback(wrapFn(pathTo('MyTeam'), 'action', async () => {
+        await ShowPage(MyTeam)
     }), [])
     const AboutItem_action = React.useCallback(wrapFn(pathTo('AboutItem'), 'action', async () => {
         await ShowPage(AboutPage)
@@ -487,11 +619,8 @@ Invites`).props))
     const GamesPlayed2_action = React.useCallback(wrapFn(pathTo('GamesPlayed2'), 'action', async () => {
         await ShowPage(GamesPlayed)
     }), [])
-    const NewTeam2_action = React.useCallback(wrapFn(pathTo('NewTeam2'), 'action', async () => {
-        await ShowPage(NewTeam)
-    }), [])
-    const InviteTeamMember2_action = React.useCallback(wrapFn(pathTo('InviteTeamMember2'), 'action', async () => {
-        await ShowPage(NewInvite)
+    const MyTeam2_action = React.useCallback(wrapFn(pathTo('MyTeam2'), 'action', async () => {
+        await ShowPage(MyTeam)
     }), [])
     const AboutItem2_action = React.useCallback(wrapFn(pathTo('AboutItem2'), 'action', async () => {
         await ShowPage(AboutPage)
@@ -512,8 +641,7 @@ Invites`).props))
             React.createElement(Button, elProps(pathTo('Archive')).content('All the Games').appearance('filled').action(Archive_action).styles(elProps(pathTo('Archive.Styles')).backgroundColor('orange').marginTop('5').props).props),
             React.createElement(Menu, elProps(pathTo('MoreMenu')).label('More...').buttonStyles(elProps(pathTo('MoreMenu.Styles')).color('white').props).props,
             React.createElement(MenuItem, elProps(pathTo('GamesPlayed')).label('Games Played').action(GamesPlayed_action).props),
-            React.createElement(MenuItem, elProps(pathTo('NewTeam')).label('New Team').action(NewTeam_action).props),
-            React.createElement(MenuItem, elProps(pathTo('InviteTeamMember')).label('Invite Team Member').action(InviteTeamMember_action).show(IsTeamOwner()).props),
+            React.createElement(MenuItem, elProps(pathTo('MyTeam')).label('My Team').action(MyTeam_action).props),
             React.createElement(MenuItem, elProps(pathTo('AboutItem')).label('About').action(AboutItem_action).props),
             React.createElement(MenuItem, elProps(pathTo('Terms')).label('Terms & Conditions').action(Terms_action).props),
             React.createElement(MenuItem, elProps(pathTo('Privacy')).label('Privacy & Cookies').action(Privacy_action).props),
@@ -524,8 +652,7 @@ Invites`).props))
             React.createElement(MenuItem, elProps(pathTo('TodaysPuzzle2')).label('Today\'s Game').action(TodaysPuzzle2_action).props),
             React.createElement(MenuItem, elProps(pathTo('Archive2')).label('All the Games').action(Archive2_action).props),
             React.createElement(MenuItem, elProps(pathTo('GamesPlayed2')).label('Games Played').action(GamesPlayed2_action).props),
-            React.createElement(MenuItem, elProps(pathTo('NewTeam2')).label('New Team').action(NewTeam2_action).props),
-            React.createElement(MenuItem, elProps(pathTo('InviteTeamMember2')).label('Invite Team Member').action(InviteTeamMember2_action).show(IsTeamOwner()).props),
+            React.createElement(MenuItem, elProps(pathTo('MyTeam2')).label('My Team').action(MyTeam2_action).props),
             React.createElement(MenuItem, elProps(pathTo('AboutItem2')).label('About').action(AboutItem2_action).props),
             React.createElement(MenuItem, elProps(pathTo('Terms2')).label('Terms & Conditions').action(Terms2_action).props),
             React.createElement(MenuItem, elProps(pathTo('Privacy2')).label('Privacy & Cookies').action(Privacy2_action).props),

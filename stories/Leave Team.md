@@ -10,7 +10,9 @@ Aim
 Requirements
 ------------
 
-- Logged in member can see a Team page that shows the details of the Team 
+- If you are not in a Team, error message
+- If the user is the team owner, show error message instead
+- Name of team and explanation
 - Page has a Leave Team button
-- Confirmation dialog prompts to confirm choice or cancel
 - Member is no longer linked to that Team
+- Go to Combined Team Page

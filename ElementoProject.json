@@ -156,7 +156,7 @@
           "properties": {
             "action": false,
             "calculation": {
-              "expr": "UsersTeam()?.OwnerId == CurrentUser()?.uid"
+              "expr": "And(CurrentUser(), UsersTeam()?.OwnerId == CurrentUser()?.uid)"
             }
           },
           "kind": "Function"
@@ -278,23 +278,10 @@
                     },
                     {
                       "id": "menuitem_12",
-                      "name": "New Team",
+                      "name": "My Team",
                       "properties": {
                         "action": {
-                          "expr": "ShowPage(NewTeam)"
-                        }
-                      },
-                      "kind": "MenuItem"
-                    },
-                    {
-                      "id": "menuitem_13",
-                      "name": "Invite Team Member",
-                      "properties": {
-                        "show": {
-                          "expr": "IsTeamOwner()"
-                        },
-                        "action": {
-                          "expr": "ShowPage(NewInvite)"
+                          "expr": "ShowPage(MyTeam)"
                         }
                       },
                       "kind": "MenuItem"
@@ -398,26 +385,12 @@
                 },
                 {
                   "id": "menuitem_14",
-                  "name": "New Team 2",
+                  "name": "My Team 2",
                   "properties": {
                     "action": {
-                      "expr": "ShowPage(NewTeam)"
+                      "expr": "ShowPage(MyTeam)"
                     },
-                    "label": "New Team"
-                  },
-                  "kind": "MenuItem"
-                },
-                {
-                  "id": "menuitem_15",
-                  "name": "Invite Team Member 2",
-                  "properties": {
-                    "show": {
-                      "expr": "IsTeamOwner()"
-                    },
-                    "action": {
-                      "expr": "ShowPage(NewInvite)"
-                    },
-                    "label": "Invite Team Member"
+                    "label": "My Team"
                   },
                   "kind": "MenuItem"
                 },
@@ -904,6 +877,187 @@
           "kind": "Page"
         },
         {
+          "id": "page_17",
+          "name": "My Team",
+          "properties": {},
+          "elements": [
+            {
+              "id": "text_55",
+              "name": "Title",
+              "properties": {
+                "content": "My Team",
+                "styles": {
+                  "fontSize": "20",
+                  "color": "green"
+                }
+              },
+              "kind": "Text"
+            },
+            {
+              "id": "calculation_12",
+              "name": "In Team",
+              "properties": {
+                "calculation": {
+                  "expr": "NotNull(UserData()?.TeamId)"
+                }
+              },
+              "kind": "Calculation"
+            },
+            {
+              "id": "data_6",
+              "name": "Team",
+              "properties": {
+                "initialValue": {
+                  "expr": "GetIfExists(Teams, UserData()?.TeamId)"
+                }
+              },
+              "kind": "Data"
+            },
+            {
+              "id": "text_65",
+              "name": "Teams Blurb",
+              "properties": {
+                "content": "If you want to get the most out of Puzzle Teams ... join a Team!\n\nYou can enjoy a friendly rivalry with your other team members, and your team will also compete in the leagues and competitions.\n\nTo join a team, you will need an invitation code from the owner of the team.\n\nBut if you don't know anyone in a Puzzle Teams Team, why not find some friends or family members and start your own?\n",
+                "show": {
+                  "expr": "Not(InTeam)"
+                }
+              },
+              "kind": "Text"
+            },
+            {
+              "id": "block_10",
+              "name": "Not In Team Block",
+              "properties": {
+                "show": {
+                  "expr": "And(CurrentUser(), Not(InTeam))"
+                },
+                "layout": "horizontal wrapped"
+              },
+              "elements": [
+                {
+                  "id": "button_26",
+                  "name": "Join A Team",
+                  "properties": {
+                    "action": {
+                      "expr": "ShowPage(NewTeam)"
+                    }
+                  },
+                  "kind": "Button"
+                },
+                {
+                  "id": "button_25",
+                  "name": "Start A New Team",
+                  "properties": {
+                    "action": {
+                      "expr": "ShowPage(NewTeam)"
+                    }
+                  },
+                  "kind": "Button"
+                }
+              ],
+              "kind": "Block"
+            },
+            {
+              "id": "block_12",
+              "name": "Not Logged In Block",
+              "properties": {
+                "show": {
+                  "expr": "Not(CurrentUser())"
+                }
+              },
+              "elements": [
+                {
+                  "id": "text_62",
+                  "name": "Log in Message",
+                  "properties": {
+                    "content": "You need to Log In or Sign Up to see your team details or join one."
+                  },
+                  "kind": "Text"
+                },
+                {
+                  "id": "userlogon_3",
+                  "name": "User Logon 3",
+                  "properties": {},
+                  "kind": "UserLogon"
+                }
+              ],
+              "kind": "Block"
+            },
+            {
+              "id": "text_64",
+              "name": "In Team Message",
+              "properties": {
+                "content": {
+                  "expr": "'You are a member of ' + '<span style=\"font-size: larger; color: green\">' + Team.Name + '</span>'"
+                },
+                "allowHtml": true,
+                "show": {
+                  "expr": "InTeam"
+                }
+              },
+              "kind": "Text"
+            },
+            {
+              "id": "block_9",
+              "name": "In Team Block",
+              "properties": {
+                "show": {
+                  "expr": "InTeam"
+                }
+              },
+              "elements": [
+                {
+                  "id": "block_11",
+                  "name": "Team Owner Block",
+                  "properties": {
+                    "show": {
+                      "expr": "IsTeamOwner()"
+                    },
+                    "styles": {
+                      "paddingLeft": "0"
+                    }
+                  },
+                  "elements": [
+                    {
+                      "id": "text_61",
+                      "name": "Message",
+                      "properties": {
+                        "content": "You are the owner of this team.",
+                        "styles": {}
+                      },
+                      "kind": "Text"
+                    },
+                    {
+                      "id": "button_27",
+                      "name": "Invite Members",
+                      "properties": {
+                        "action": {
+                          "expr": "ShowPage(NewInvite)"
+                        }
+                      },
+                      "kind": "Button"
+                    }
+                  ],
+                  "kind": "Block"
+                },
+                {
+                  "id": "button_24",
+                  "name": "Leave Team",
+                  "properties": {
+                    "action": {
+                      "expr": "ShowPage(LeaveTeam)"
+                    },
+                    "appearance": "link"
+                  },
+                  "kind": "Button"
+                }
+              ],
+              "kind": "Block"
+            }
+          ],
+          "kind": "Page"
+        },
+        {
           "id": "page_11",
           "name": "New Team",
           "properties": {},
@@ -1009,11 +1163,27 @@
               },
               "elements": [
                 {
+                  "id": "calculation_13",
+                  "name": "Invite Code",
+                  "properties": {
+                    "calculation": {
+                      "expr": "InviteId"
+                    },
+                    "show": true,
+                    "label": "Invite Code",
+                    "styles": {
+                      "width": "calc(100% - 5em)",
+                      "maxWidth": "30em"
+                    }
+                  },
+                  "kind": "Calculation"
+                },
+                {
                   "id": "calculation_4",
                   "name": "Invite Link",
                   "properties": {
                     "calculation": {
-                      "expr": "InviteId ? CurrentUrl().text.replace(/\\/NewInvite/, '/AcceptInvite/') + InviteId : null"
+                      "expr": "InviteId ? CurrentUrl().text.replace(/\\/NewInvite/, '/JoinTeam/') + InviteId : null"
                     },
                     "show": true,
                     "label": "Invite Link",
@@ -1040,6 +1210,14 @@
                     }
                   },
                   "kind": "Button"
+                },
+                {
+                  "id": "text_66",
+                  "name": "Link Usage Explanation",
+                  "properties": {
+                    "content": "Send the link above to the person you want to invite.\n\nAnyone who has the link can use it, but it can only be used once."
+                  },
+                  "kind": "Text"
                 }
               ],
               "kind": "Block"
@@ -1061,10 +1239,10 @@
         },
         {
           "id": "page_13",
-          "name": "Accept Invite",
+          "name": "Join Team",
           "properties": {
             "notLoggedInPage": {
-              "expr": "AcceptInviteLogin"
+              "expr": "JoinTeamLogin"
             }
           },
           "elements": [
@@ -1282,7 +1460,7 @@
         },
         {
           "id": "page_14",
-          "name": "Accept Invite Login",
+          "name": "Join Team Login",
           "properties": {},
           "elements": [
             {
@@ -1305,6 +1483,146 @@
                 "content": "Sorry - we need to know who you are before you can join a team. \nPlease Log In,  or Sign Up if you do not already have an account."
               },
               "kind": "Text"
+            }
+          ],
+          "kind": "Page"
+        },
+        {
+          "id": "page_16",
+          "name": "General Login",
+          "properties": {},
+          "elements": [
+            {
+              "id": "text_52",
+              "name": "Title",
+              "properties": {
+                "content": "You need to be logged in!",
+                "styles": {
+                  "fontSize": "20",
+                  "color": "green",
+                  "marginBottom": "20"
+                }
+              },
+              "kind": "Text"
+            },
+            {
+              "id": "text_53",
+              "name": "Login reminder",
+              "properties": {
+                "content": "Sorry - we would love to help you but we need to know who you are. \n\nPlease Log In using the button below.  \n\nIf you do not have an account yet, click the button anyway and it will tell you how to sign up."
+              },
+              "kind": "Text"
+            },
+            {
+              "id": "userlogon_2",
+              "name": "User Logon In Page",
+              "properties": {},
+              "kind": "UserLogon"
+            }
+          ],
+          "kind": "Page"
+        },
+        {
+          "id": "page_15",
+          "name": "Leave Team",
+          "properties": {
+            "notLoggedInPage": {
+              "expr": "GeneralLogin"
+            }
+          },
+          "elements": [
+            {
+              "id": "text_45",
+              "name": "Title",
+              "properties": {
+                "content": "Leave your Team",
+                "styles": {
+                  "fontSize": "20",
+                  "color": "green",
+                  "marginBottom": "20"
+                }
+              },
+              "kind": "Text"
+            },
+            {
+              "id": "calculation_11",
+              "name": "In Team",
+              "properties": {
+                "calculation": {
+                  "expr": "NotNull(UserData()?.TeamId)"
+                }
+              },
+              "kind": "Calculation"
+            },
+            {
+              "id": "block_6",
+              "name": "In Team Block",
+              "properties": {
+                "show": {
+                  "expr": "And(InTeam, Not(IsTeamOwner()))"
+                }
+              },
+              "elements": [
+                {
+                  "id": "text_56",
+                  "name": "Explanation",
+                  "properties": {
+                    "content": "If you leave your team, you obviously won't be able to take part in the leagues or see the team scores any more.\n\nTo rejoin, or join another team, you will need a new invitation code.\n\nIf you're OK with that, then click the button below."
+                  },
+                  "kind": "Text"
+                },
+                {
+                  "id": "button_23",
+                  "name": "Leave Team",
+                  "properties": {
+                    "action": {
+                      "expr": "PuzzlesServerApp.LeaveTeam()\nShowPage(MyTeam)"
+                    }
+                  },
+                  "kind": "Button"
+                }
+              ],
+              "kind": "Block"
+            },
+            {
+              "id": "block_7",
+              "name": "Not In Team Block",
+              "properties": {
+                "show": {
+                  "expr": "Not(InTeam)"
+                }
+              },
+              "elements": [
+                {
+                  "id": "text_57",
+                  "name": "Message",
+                  "properties": {
+                    "content": "You are not in a team at the moment."
+                  },
+                  "kind": "Text"
+                }
+              ],
+              "kind": "Block"
+            },
+            {
+              "id": "block_8",
+              "name": "Team Owner Block",
+              "properties": {
+                "show": {
+                  "expr": "IsTeamOwner()"
+                }
+              },
+              "elements": [
+                {
+                  "id": "text_58",
+                  "name": "Message",
+                  "properties": {
+                    "content": "You are the owner of this team, so you cannot leave it.\n\nIf you want to transfer the team to someone else, please contact PuzzleTeams support."
+                  },
+                  "kind": "Text"
+                }
+              ],
+              "kind": "Block"
             }
           ],
           "kind": "Page"
@@ -1414,21 +1732,20 @@
         },
         {
           "id": "function_5",
-          "name": "Update User",
+          "name": "Update User Data",
           "properties": {
             "input1": "changes",
             "action": true,
             "calculation": {
-              "expr": "let user = GetUser()\nlet userId = CurrentUser().uid\nIf(user, Update(Users, userId, changes), Add(Users, Record(changes, 'id', userId)))"
+              "expr": "let user = GetUserData()\nlet userId = CurrentUser().uid\nIf(user, Update(Users, userId, changes), Add(Users, Record(changes, 'id', userId)))"
             }
           },
           "kind": "Function"
         },
         {
           "id": "function_6",
-          "name": "Get User",
+          "name": "Get User Data",
           "properties": {
-            "input1": "changes",
             "action": false,
             "calculation": {
               "expr": "let userId = CurrentUser().uid\nlet userResult = Query(Users, {id: userId})\nuserResult[0]"
@@ -1443,7 +1760,7 @@
             "input1": "teamData",
             "action": true,
             "calculation": {
-              "expr": "Log('In NewTeam', teamData)\nlet user = GetUser()\nCheck(Not(user?.TeamId), 'Cannot create new team as already a member of a team')\nlet team = Add(Teams, Record('Name', teamData.TeamName, 'OwnerId', CurrentUser().uid))\nUpdateUser(Record('TeamId', team.id))\nLog('Done NewTeam')"
+              "expr": "Log('In NewTeam', teamData)\nlet user = GetUserData()\nCheck(Not(user?.TeamId), 'Cannot create new team as already a member of a team')\nlet team = Add(Teams, Record('Name', teamData.TeamName, 'OwnerId', CurrentUser().uid))\nUpdateUserData(Record('TeamId', team.id))\nLog('Done NewTeam')"
             }
           },
           "kind": "Function"
@@ -1454,7 +1771,7 @@
           "properties": {
             "action": true,
             "calculation": {
-              "expr": "let user = GetUser()\nlet team = Get(Teams, user?.TeamId)\nCheck(team?.OwnerId == user.id, 'Cannot invite a team member unless you are the owner')\nAdd(Invites, Record('id', inviteId, 'TeamId', team.id, 'DateCreated', Now()))"
+              "expr": "let user = GetUserData()\nlet team = Get(Teams, user?.TeamId)\nCheck(team?.OwnerId == user.id, 'Cannot invite a team member unless you are the owner')\nAdd(Invites, Record('id', inviteId, 'TeamId', team.id, 'DateCreated', Now()))"
             },
             "input1": "inviteId"
           },
@@ -1465,9 +1782,20 @@
           "name": "Accept Invite",
           "properties": {
             "calculation": {
-              "expr": "let user = GetUser()\nlet invite = Get(Invites, inviteId)\nCheck(IsNull(invite.DateUsed), 'This invite has already been used')\nCheck(IsNull(user.TeamId), 'Cannot join a team if you are already in a team')\nUpdate(Users, user.id, Record('TeamId', invite.TeamId, 'DateJoinedTeam', Today()))\nUpdate(Invites, inviteId, Record('DateUsed', Now()))"
+              "expr": "let user = GetUserData()\nlet invite = Get(Invites, inviteId)\nCheck(IsNull(invite.DateUsed), 'This invite has already been used')\nCheck(IsNull(user?.TeamId), 'Cannot join a team if you are already in a team')\nUpdateUserData(Record('TeamId', invite.TeamId, 'DateJoinedTeam', Today()))\nUpdate(Invites, inviteId, Record('DateUsed', Now()))"
             },
             "input1": "inviteId",
+            "action": true
+          },
+          "kind": "Function"
+        },
+        {
+          "id": "function_13",
+          "name": "Leave Team",
+          "properties": {
+            "calculation": {
+              "expr": "UpdateUserData(Record('TeamId', null, 'DateJoinedTeam', null))"
+            },
             "action": true
           },
           "kind": "Function"
