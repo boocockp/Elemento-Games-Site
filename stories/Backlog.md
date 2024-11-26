@@ -1,6 +1,14 @@
 Puzzle Teams backlog
 ====================
 
+Problems
+--------
+
+- Games sending score without final round - eg hidden words
+- Games sending wrong puzzle id with score
+- Games adding last score twice eg hidden words
+- Game timer not stopped if stop game, score sent again
+
 Solo MVP
 --------
 
@@ -38,6 +46,8 @@ Teams MVP
 - Support email
 - Google Analytics
 - Facebook Login
+- Tighten up all the security rules so can only read own data
+
 
 Future stuff
 ------------

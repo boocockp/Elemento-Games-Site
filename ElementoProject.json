@@ -104,7 +104,7 @@
             "input1": "data",
             "action": true,
             "calculation": {
-              "expr": "let puzzleUrl = data.url\nlet puzzleResult = await Query(Puzzles, {url: puzzleUrl})\nlet puzzle = puzzleResult[0]\nlet score = data.score\nLog(CurrentUser().uid, puzzle.id, score)\nAdd(GamePlays, Record('DateTime', Now(), 'UserId', CurrentUser().uid, 'PuzzleId', puzzle.id, 'Score', score))"
+              "expr": "Log('StoreGamePlay', data)\nlet puzzleUrl = data.url.replace(/\\/$/, '')\nlet puzzleResult = Query(Puzzles, {url: puzzleUrl})\nlet puzzle = puzzleResult[0]\nlet score = data.score\nlet teamId = UserData().TeamId\nLog(CurrentUser().uid, teamId, puzzle.id, score)\nAdd(GamePlays, Record('DateTime', Now(), 'UserId', CurrentUser().uid, 'TeamId', teamId, 'PuzzleId', puzzle.id, 'Score', score))"
             }
           },
           "kind": "Function"
@@ -120,21 +120,11 @@
           "kind": "Function"
         },
         {
-          "id": "function_1",
-          "name": "Todays Puzzle Url",
-          "properties": {
-            "calculation": {
-              "expr": "let todayId = DateFormat(Today(), 'yyyy-MM-dd')\nlet puzzle = First(Query(Puzzles, {id: todayId}))\npuzzle?.url\n"
-            }
-          },
-          "kind": "Function"
-        },
-        {
           "id": "function_7",
           "name": "User Data",
           "properties": {
             "calculation": {
-              "expr": "If(CurrentUser(), Query(Users, Record('id', CurrentUser().uid))[0])"
+              "expr": "If(CurrentUser(), GetIfExists(Users, CurrentUser().uid))"
             }
           },
           "kind": "Function"
@@ -273,6 +263,17 @@
                           "expr": "ShowPage(GamesPlayed)"
                         },
                         "label": "Games Played"
+                      },
+                      "kind": "MenuItem"
+                    },
+                    {
+                      "id": "menuitem_15",
+                      "name": "Player Leagues",
+                      "properties": {
+                        "action": {
+                          "expr": "ShowPage(PlayerLeagues)"
+                        },
+                        "label": "Player Leagues"
                       },
                       "kind": "MenuItem"
                     },
@@ -646,7 +647,7 @@
               "name": "Game Frame",
               "properties": {
                 "source": {
-                  "expr": "FirstNotNull(TodaysPuzzleUrl(), LatestPuzzleUrl())"
+                  "expr": "LatestPuzzleUrl()"
                 },
                 "styles": {
                   "height": "calc(100% + 16px)",
@@ -1628,6 +1629,332 @@
           "kind": "Page"
         },
         {
+          "id": "page_18",
+          "name": "Player Leagues",
+          "properties": {
+            "notLoggedInPage": {
+              "expr": "GeneralLogin"
+            }
+          },
+          "elements": [
+            {
+              "id": "text_67",
+              "name": "Title",
+              "properties": {
+                "content": "Team Leagues",
+                "styles": {
+                  "fontSize": "20",
+                  "color": "green"
+                }
+              },
+              "kind": "Text"
+            },
+            {
+              "id": "calculation_14",
+              "name": "TheData",
+              "properties": {
+                "calculation": {
+                  "expr": "If(CurrentUser(), PuzzlesServerApp.TeamGamePlays())"
+                }
+              },
+              "kind": "Calculation"
+            },
+            {
+              "id": "calculation_15",
+              "name": "The Users",
+              "properties": {
+                "calculation": {
+                  "expr": "TheData.value?.users"
+                }
+              },
+              "kind": "Calculation"
+            },
+            {
+              "id": "calculation_17",
+              "name": "The Game Plays",
+              "properties": {
+                "calculation": {
+                  "expr": "TheData.value?.gamePlays"
+                },
+                "styles": {
+                  "width": "100% "
+                }
+              },
+              "kind": "Calculation"
+            },
+            {
+              "id": "calculation_16",
+              "name": "Users Display",
+              "properties": {
+                "calculation": {
+                  "expr": "JSON.stringify(TheUsers.value, null, 2)"
+                },
+                "show": false,
+                "styles": {
+                  "width": "100%"
+                },
+                "label": "Users"
+              },
+              "kind": "Calculation"
+            },
+            {
+              "id": "calculation_18",
+              "name": "Game Plays Display",
+              "properties": {
+                "calculation": {
+                  "expr": "JSON.stringify(TheGamePlays.value, null, 2)"
+                },
+                "show": false,
+                "styles": {
+                  "width": "100%"
+                },
+                "label": "Game Plays"
+              },
+              "kind": "Calculation"
+            },
+            {
+              "id": "calculation_19",
+              "name": "Game Plays For Puzzle",
+              "properties": {
+                "calculation": {
+                  "expr": "Select(TheGamePlays, $item.PuzzleId === PuzzleChooser.selectedItem?.id)"
+                },
+                "show": false,
+                "label": "Game Plays For Puzzle"
+              },
+              "kind": "Calculation"
+            },
+            {
+              "id": "calculation_21",
+              "name": "Game Plays By User",
+              "properties": {
+                "calculation": {
+                  "expr": "GroupBy(GamePlaysForPuzzle, $item => $item.UserId)"
+                },
+                "show": false,
+                "label": "Game Plays By User"
+              },
+              "kind": "Calculation"
+            },
+            {
+              "id": "function_15",
+              "name": "User Result",
+              "properties": {
+                "input1": "gamePlays",
+                "input2": "userId",
+                "calculation": {
+                  "expr": "let scores = ForEach(gamePlays, $item.Score)\nlet average = Round(Sum(...scores) / Count(scores))\nlet high = Max(...scores)\nlet userName = SelectFirst(TheUsers, $item => $item.id === userId).DisplayName\nRecord('UserId', userId, 'Name', userName, 'Average', average, 'High', high)"
+                }
+              },
+              "kind": "Function"
+            },
+            {
+              "id": "calculation_22",
+              "name": "Results By User",
+              "properties": {
+                "calculation": {
+                  "expr": "ForEach(GamePlaysByUser, UserResult($item, $index))\n"
+                },
+                "show": false,
+                "label": "Results By User"
+              },
+              "kind": "Calculation"
+            },
+            {
+              "id": "calculation_23",
+              "name": "Sorted Results",
+              "properties": {
+                "calculation": {
+                  "expr": "Sort(ResultsByUser, -$item.High)"
+                }
+              },
+              "kind": "Calculation"
+            },
+            {
+              "id": "block_14",
+              "name": "Overall Layout",
+              "properties": {
+                "layout": "horizontal",
+                "styles": {
+                  "height": "100%",
+                  "width": "100%"
+                }
+              },
+              "elements": [
+                {
+                  "id": "block_16",
+                  "name": "Puzzles List",
+                  "properties": {
+                    "styles": {
+                      "backgroundColor": "#fed867"
+                    }
+                  },
+                  "elements": [
+                    {
+                      "id": "itemset_5",
+                      "name": "Puzzle Chooser",
+                      "properties": {
+                        "items": {
+                          "expr": "Query(Puzzles, {})"
+                        },
+                        "selectable": "single",
+                        "itemStyles": {}
+                      },
+                      "elements": [
+                        {
+                          "id": "text_72",
+                          "name": "Puzzle Name",
+                          "properties": {
+                            "content": {
+                              "expr": "$item.name"
+                            },
+                            "styles": {
+                              "cursor": "pointer",
+                              "backgroundColor": {
+                                "expr": "If($selected, 'white', 'transparent')"
+                              },
+                              "padding": "2"
+                            }
+                          },
+                          "kind": "Text"
+                        }
+                      ],
+                      "kind": "ItemSet"
+                    }
+                  ],
+                  "kind": "Block"
+                },
+                {
+                  "id": "block_17",
+                  "name": "League Table",
+                  "properties": {},
+                  "elements": [
+                    {
+                      "id": "block_19",
+                      "name": "League Title",
+                      "properties": {
+                        "layout": "horizontal",
+                        "styles": {
+                          "backgroundColor": "#fed867",
+                          "padding": "2px 5px"
+                        }
+                      },
+                      "elements": [
+                        {
+                          "id": "text_76",
+                          "name": "Name",
+                          "properties": {
+                            "content": "Name",
+                            "styles": {
+                              "width": "8em"
+                            }
+                          },
+                          "kind": "Text"
+                        },
+                        {
+                          "id": "text_77",
+                          "name": "High Score",
+                          "properties": {
+                            "content": "High",
+                            "styles": {
+                              "textAlign": "right",
+                              "width": "3em"
+                            }
+                          },
+                          "kind": "Text"
+                        },
+                        {
+                          "id": "text_78",
+                          "name": "Average",
+                          "properties": {
+                            "content": "Ave",
+                            "styles": {
+                              "width": "3em",
+                              "textAlign": "right"
+                            }
+                          },
+                          "kind": "Text"
+                        }
+                      ],
+                      "kind": "Block"
+                    },
+                    {
+                      "id": "itemset_6",
+                      "name": "League Items",
+                      "properties": {
+                        "items": {
+                          "expr": "SortedResults"
+                        }
+                      },
+                      "elements": [
+                        {
+                          "id": "block_18",
+                          "name": "League Entry",
+                          "properties": {
+                            "layout": "horizontal",
+                            "styles": {
+                              "borderWidth": "2px",
+                              "borderColor": "black"
+                            }
+                          },
+                          "elements": [
+                            {
+                              "id": "text_73",
+                              "name": "Name",
+                              "properties": {
+                                "content": {
+                                  "expr": "$item.Name"
+                                },
+                                "styles": {
+                                  "width": "8em"
+                                }
+                              },
+                              "kind": "Text"
+                            },
+                            {
+                              "id": "text_74",
+                              "name": "High Score",
+                              "properties": {
+                                "content": {
+                                  "expr": "$item.High"
+                                },
+                                "styles": {
+                                  "textAlign": "right",
+                                  "width": "3em"
+                                }
+                              },
+                              "kind": "Text"
+                            },
+                            {
+                              "id": "text_75",
+                              "name": "Average",
+                              "properties": {
+                                "content": {
+                                  "expr": "$item.Average"
+                                },
+                                "styles": {
+                                  "width": "3em",
+                                  "textAlign": "right"
+                                }
+                              },
+                              "kind": "Text"
+                            }
+                          ],
+                          "kind": "Block"
+                        }
+                      ],
+                      "kind": "ItemSet"
+                    }
+                  ],
+                  "kind": "Block"
+                }
+              ],
+              "kind": "Block"
+            }
+          ],
+          "kind": "Page"
+        },
+        {
           "id": "page_8",
           "name": "Terms",
           "properties": {},
@@ -1693,7 +2020,7 @@
           "id": "firestoredatastore_2",
           "name": "Server Data Store",
           "properties": {
-            "collections": "Teams\nUsers\nInvites"
+            "collections": "Teams\nUsers\nInvites\nGamePlays"
           },
           "kind": "FirestoreDataStore"
         },
@@ -1731,13 +2058,24 @@
           "kind": "Collection"
         },
         {
+          "id": "collection_9",
+          "name": "Game Plays",
+          "properties": {
+            "dataStore": {
+              "expr": "ServerDataStore"
+            },
+            "collectionName": "GamePlays"
+          },
+          "kind": "Collection"
+        },
+        {
           "id": "function_5",
           "name": "Update User Data",
           "properties": {
             "input1": "changes",
             "action": true,
             "calculation": {
-              "expr": "let user = GetUserData()\nlet userId = CurrentUser().uid\nIf(user, Update(Users, userId, changes), Add(Users, Record(changes, 'id', userId)))"
+              "expr": "let user = GetUserData()\nlet userId = CurrentUser().uid\nIf(user, Update(Users, userId, changes), Add(Users, Record(changes, 'id', userId, 'DisplayName', CurrentUser().Name)))"
             }
           },
           "kind": "Function"
@@ -1748,7 +2086,7 @@
           "properties": {
             "action": false,
             "calculation": {
-              "expr": "let userId = CurrentUser().uid\nlet userResult = Query(Users, {id: userId})\nuserResult[0]"
+              "expr": "GetIfExists(Users, CurrentUser()?.uid)\n"
             }
           },
           "kind": "Function"
@@ -1797,6 +2135,16 @@
               "expr": "UpdateUserData(Record('TeamId', null, 'DateJoinedTeam', null))"
             },
             "action": true
+          },
+          "kind": "Function"
+        },
+        {
+          "id": "function_14",
+          "name": "Team Game Plays",
+          "properties": {
+            "calculation": {
+              "expr": "let teamId = GetUserData()?.TeamId\nlet gamePlays = If(teamId, Query(GamePlays, {TeamId: teamId}))\nlet users = If(teamId, Query(Users, {TeamId: teamId}))\nRecord({gamePlays: gamePlays, users: users})"
+            }
           },
           "kind": "Function"
         }

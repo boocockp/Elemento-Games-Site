@@ -9,6 +9,11 @@ Aims
 Requirements
 ------------
 
+### Personal
+
+- High score, average points for each game
+
+
 ### Within a Team
 
 - High score, average points for each game
