@@ -500,12 +500,12 @@ const PlayerLeagues_LeagueItemsItem = React.memo(function PlayerLeagues_LeagueIt
 
 function PlayerLeagues(props) {
     const pathTo = name => props.path + '.' + name
-    const {Page, TextElement, Calculation, Block, Button, ItemSet} = Elemento.components
-    const {If, Select, Eq, GroupBy, ForEach, Round, Sum, Count, Max, SelectFirst, Record, Sort, IsNull, NotNull, And} = Elemento.globalFunctions
-    const {Query} = Elemento.appFunctions
+    const {Page, TextElement, Calculation, Data, Block, Button, ItemSet} = Elemento.components
+    const {If, Select, Eq, GroupBy, ForEach, Round, Sum, Count, Max, SelectFirst, Record, Sort, Or, Not, IsNull, NotNull, And} = Elemento.globalFunctions
+    const {Set, Query} = Elemento.appFunctions
     const _state = Elemento.useGetStore()
     const app = _state.useObject('Puzzles')
-    const {CurrentUrl, ShowPage} = app
+    const {CurrentUrl, AppWidth, ShowPage} = app
     const UsersTeam = _state.useObject('Puzzles.UsersTeam')
     const PuzzlesServerApp = _state.useObject('Puzzles.PuzzlesServerApp')
     const Puzzles = _state.useObject('Puzzles.Puzzles')
@@ -526,22 +526,29 @@ function PlayerLeagues(props) {
     }), [TheUsers]))
     const ResultsByUser = _state.setObject(pathTo('ResultsByUser'), new Calculation.State(stateProps(pathTo('ResultsByUser')).value(ForEach(GamePlaysByUser, ($item, $index) => UserResult($item, $index))).props))
     const SortedResults = _state.setObject(pathTo('SortedResults'), new Calculation.State(stateProps(pathTo('SortedResults')).value(Sort(ResultsByUser, $item => -$item.High)).props))
+    const PopupListNeeded = _state.setObject(pathTo('PopupListNeeded'), new Calculation.State(stateProps(pathTo('PopupListNeeded')).value(AppWidth() < 500).props))
+    const ShowList = _state.setObject(pathTo('ShowList'), new Data.State(stateProps(pathTo('ShowList')).value(false).props))
+    const PuzzleListVisible = _state.setObject(pathTo('PuzzleListVisible'), new Calculation.State(stateProps(pathTo('PuzzleListVisible')).value(Or(Not(PopupListNeeded) , ShowList)).props))
     const NoTeamLayout = _state.setObject(pathTo('NoTeamLayout'), new Block.State(stateProps(pathTo('NoTeamLayout')).props))
     const InTeamLayout = _state.setObject(pathTo('InTeamLayout'), new Block.State(stateProps(pathTo('InTeamLayout')).props))
+    const PuzzleTitleLayout = _state.setObject(pathTo('PuzzleTitleLayout'), new Block.State(stateProps(pathTo('PuzzleTitleLayout')).props))
     const MainLayout = _state.setObject(pathTo('MainLayout'), new Block.State(stateProps(pathTo('MainLayout')).props))
-    const PuzzlesLayout = _state.setObject(pathTo('PuzzlesLayout'), new Block.State(stateProps(pathTo('PuzzlesLayout')).props))
-    const PuzzlesTitle = _state.setObject(pathTo('PuzzlesTitle'), new Block.State(stateProps(pathTo('PuzzlesTitle')).props))
     const PuzzlesList = _state.setObject(pathTo('PuzzlesList'), new Block.State(stateProps(pathTo('PuzzlesList')).props))
     const PuzzleChooser_selectAction = React.useCallback(wrapFn(pathTo('PuzzleChooser'), 'selectAction', async ($item, $itemId, $index) => {
+        Set(ShowList, false)
         await ShowPage(PlayerLeagues, $item.id)
-    }), [])
+    }), [ShowList])
     const PuzzleChooser = _state.setObject(pathTo('PuzzleChooser'), new ItemSet.State(stateProps(pathTo('PuzzleChooser')).items(Query(Puzzles, {})).selectedItems(SelectedPuzzleId).selectable('none').selectAction(PuzzleChooser_selectAction).props))
     const LeagueTable = _state.setObject(pathTo('LeagueTable'), new Block.State(stateProps(pathTo('LeagueTable')).props))
     const LeagueTitle = _state.setObject(pathTo('LeagueTitle'), new Block.State(stateProps(pathTo('LeagueTitle')).props))
+    const ItemLayout = _state.setObject(pathTo('ItemLayout'), new Block.State(stateProps(pathTo('ItemLayout')).props))
     const LeagueItems = _state.setObject(pathTo('LeagueItems'), new ItemSet.State(stateProps(pathTo('LeagueItems')).items(SortedResults).props))
     const MyTeamLink_action = React.useCallback(wrapFn(pathTo('MyTeamLink'), 'action', async () => {
         await ShowPage(MyTeam)
     }), [])
+    const Select_action = React.useCallback(wrapFn(pathTo('Select'), 'action', () => {
+        Set(ShowList, true)
+    }), [ShowList])
     Elemento.elementoDebug(() => eval(Elemento.useDebugExpr()))
 
     return React.createElement(Page, elProps(props.path).props,
@@ -556,32 +563,35 @@ function PlayerLeagues(props) {
         React.createElement(Calculation, elProps(pathTo('GamePlaysByUser')).label('Game Plays By User').show(false).props),
         React.createElement(Calculation, elProps(pathTo('ResultsByUser')).label('Results By User').show(false).props),
         React.createElement(Calculation, elProps(pathTo('SortedResults')).props),
+        React.createElement(Calculation, elProps(pathTo('PopupListNeeded')).props),
+        React.createElement(Data, elProps(pathTo('ShowList')).display(false).props),
+        React.createElement(Calculation, elProps(pathTo('PuzzleListVisible')).props),
         React.createElement(Block, elProps(pathTo('NoTeamLayout')).layout('vertical').show(IsNull(UsersTeam())).props,
             React.createElement(TextElement, elProps(pathTo('Text81')).content('Great that you\'re interested in the Puzzle Teams Leagues, but they are only for team members and unfortunately you don\'t seem to be in a team at the moment.').props),
             React.createElement(TextElement, elProps(pathTo('Text82')).content('You can find out how to join or start a team on the My Team page.').props),
             React.createElement(Button, elProps(pathTo('MyTeamLink')).content('Go To My Team').appearance('filled').action(MyTeamLink_action).styles(elProps(pathTo('MyTeamLink.Styles')).display('inline').props).props),
     ),
         React.createElement(Block, elProps(pathTo('InTeamLayout')).layout('vertical').show(NotNull(UsersTeam())).styles(elProps(pathTo('InTeamLayout.Styles')).height('100%').width('100%').props).props,
+            React.createElement(Block, elProps(pathTo('PuzzleTitleLayout')).layout('horizontal').props,
             React.createElement(TextElement, elProps(pathTo('PuzzleName')).allowHtml(true).styles(elProps(pathTo('PuzzleName.Styles')).color('green').fontSize('18').props).content(PuzzleChooser.selectedItem?.name ?? '&nbsp;').props),
-            React.createElement(Block, elProps(pathTo('MainLayout')).layout('horizontal').props,
-            React.createElement(Block, elProps(pathTo('PuzzlesLayout')).layout('vertical').styles(elProps(pathTo('PuzzlesLayout.Styles')).height('100%').props).props,
-            React.createElement(Block, elProps(pathTo('PuzzlesTitle')).layout('horizontal').show(false).styles(elProps(pathTo('PuzzlesTitle.Styles')).backgroundColor('#fed867').padding('2px 5px').width('100%').props).props,
-            React.createElement(TextElement, elProps(pathTo('Title')).styles(elProps(pathTo('Title.Styles')).width('100%').props).content('Puzzles').props),
+            React.createElement(Button, elProps(pathTo('Select')).content('Select').appearance('outline').show(PopupListNeeded).action(Select_action).props),
     ),
-            React.createElement(Block, elProps(pathTo('PuzzlesList')).layout('vertical').styles(elProps(pathTo('PuzzlesList.Styles')).backgroundColor('#fed867').height('100%').props).props,
+            React.createElement(Block, elProps(pathTo('MainLayout')).layout('horizontal').styles(elProps(pathTo('MainLayout.Styles')).maxHeight('calc(100% - 48px)').position('relative').minHeight('300').props).props,
+            React.createElement(Block, elProps(pathTo('PuzzlesList')).layout('vertical').show(PuzzleListVisible).styles(elProps(pathTo('PuzzlesList.Styles')).backgroundColor('#fed867').height('100%').boxShadow(If(PopupListNeeded, '0px 0px 5px 10px #B2AEB2')).position(If(PopupListNeeded, 'absolute')).top(If(PopupListNeeded, '-7px')).left(If(PopupListNeeded, '90px')).props).props,
             React.createElement(ItemSet, elProps(pathTo('PuzzleChooser')).itemContentComponent(PlayerLeagues_PuzzleChooserItem).props),
     ),
-    ),
-            React.createElement(Block, elProps(pathTo('LeagueTable')).layout('vertical').props,
+            React.createElement(Block, elProps(pathTo('LeagueTable')).layout('vertical').styles(elProps(pathTo('LeagueTable.Styles')).padding('0').props).props,
             React.createElement(Block, elProps(pathTo('LeagueTitle')).layout('horizontal').styles(elProps(pathTo('LeagueTitle.Styles')).backgroundColor('#fed867').padding('2px 5px').props).props,
             React.createElement(TextElement, elProps(pathTo('Name')).styles(elProps(pathTo('Name.Styles')).width('8em').props).content('Player').props),
             React.createElement(TextElement, elProps(pathTo('HighScore')).styles(elProps(pathTo('HighScore.Styles')).textAlign('right').width('3em').props).content('High').props),
             React.createElement(TextElement, elProps(pathTo('Average')).styles(elProps(pathTo('Average.Styles')).width('3em').textAlign('right').props).content('Ave').props),
     ),
+            React.createElement(Block, elProps(pathTo('ItemLayout')).layout('vertical').props,
+            React.createElement(ItemSet, elProps(pathTo('LeagueItems')).itemContentComponent(PlayerLeagues_LeagueItemsItem).props),
+    ),
             React.createElement(TextElement, elProps(pathTo('NoSelectionText')).show(IsNull(SelectedPuzzleId)).content('Please select a Puzzle').props),
             React.createElement(TextElement, elProps(pathTo('NoResultsText')).show(And(NotNull(SelectedPuzzleId), Count(SortedResults) === 0)).content(`No-one in your team has played this puzzle yet 
 - why not be the first?`).props),
-            React.createElement(ItemSet, elProps(pathTo('LeagueItems')).itemContentComponent(PlayerLeagues_LeagueItemsItem).props),
     ),
     ),
     ),

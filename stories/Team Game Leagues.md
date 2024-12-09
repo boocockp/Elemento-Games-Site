@@ -13,13 +13,13 @@ Requirements
 - ✅ Show general login page if not logged in
 - ✅ Show sorry message if not in a team
 - ✅ Scrolling list to left with all games
-- On small screen, scrolling list is a pop-out
+- ✅ On small screen, scrolling list is a pop-out
 - ✅ No selection shows instruction panel on right
 - ✅ Selection shows the league for that game
 - ✅ League is a table with Player, High score, average score
 - ✅ League has Team Name and Game Name at top
 - ✅ No results message
-- It looks nice
+- ✅ It looks nice
 - ✅ URL path has game id
 - ✅ Works correctly on refresh, whether logged in or not
 
