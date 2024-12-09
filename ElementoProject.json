@@ -918,7 +918,7 @@
               "id": "text_65",
               "name": "Teams Blurb",
               "properties": {
-                "content": "If you want to get the most out of Puzzle Teams ... join a Team!\n\nYou can enjoy a friendly rivalry with your other team members, and your team will also compete in the leagues and competitions.\n\nTo join a team, you will need an invitation code from the owner of the team.\n\nBut if you don't know anyone in a Puzzle Teams Team, why not find some friends or family members and start your own?\n",
+                "content": "If you want to get the most out of Puzzle Teams ... join a Team!\n\nYou can enjoy a friendly rivalry with your other team members, and your team will also compete with other teams in the leagues and competitions.\n\nTo join a team, you will need an invitation code from the owner of the team.\n\nBut if you don't know anyone in a Puzzle Teams Team, why not find some friends or family members and start your own?\n",
                 "show": {
                   "expr": "Not(InTeam)"
                 }
@@ -1641,7 +1641,9 @@
               "id": "text_67",
               "name": "Title",
               "properties": {
-                "content": "Team Leagues",
+                "content": {
+                  "expr": "(UsersTeam()?.Name ?? '') +  ' Player Leagues'"
+                },
                 "styles": {
                   "fontSize": "20",
                   "color": "green"
@@ -1654,7 +1656,7 @@
               "name": "TheData",
               "properties": {
                 "calculation": {
-                  "expr": "If(CurrentUser(), PuzzlesServerApp.TeamGamePlays())"
+                  "expr": "If(UsersTeam(), PuzzlesServerApp.TeamGamePlays())"
                 }
               },
               "kind": "Calculation"
@@ -1713,11 +1715,21 @@
               "kind": "Calculation"
             },
             {
+              "id": "calculation_24",
+              "name": "Selected Puzzle Id",
+              "properties": {
+                "calculation": {
+                  "expr": "CurrentUrl().pathSections[0]"
+                }
+              },
+              "kind": "Calculation"
+            },
+            {
               "id": "calculation_19",
               "name": "Game Plays For Puzzle",
               "properties": {
                 "calculation": {
-                  "expr": "Select(TheGamePlays, $item.PuzzleId === PuzzleChooser.selectedItem?.id)"
+                  "expr": "Select(TheGamePlays, Eq($item.PuzzleId, SelectedPuzzleId))"
                 },
                 "show": false,
                 "label": "Game Plays For Puzzle"
@@ -1729,7 +1741,7 @@
               "name": "Game Plays By User",
               "properties": {
                 "calculation": {
-                  "expr": "GroupBy(GamePlaysForPuzzle, $item => $item.UserId)"
+                  "expr": "GroupBy(GamePlaysForPuzzle, $item.UserId)"
                 },
                 "show": false,
                 "label": "Game Plays By User"
@@ -1743,7 +1755,7 @@
                 "input1": "gamePlays",
                 "input2": "userId",
                 "calculation": {
-                  "expr": "let scores = ForEach(gamePlays, $item.Score)\nlet average = Round(Sum(...scores) / Count(scores))\nlet high = Max(...scores)\nlet userName = SelectFirst(TheUsers, $item => $item.id === userId).DisplayName\nRecord('UserId', userId, 'Name', userName, 'Average', average, 'High', high)"
+                  "expr": "let scores = ForEach(gamePlays, $item.Score)\nlet average = Round(Sum(...scores) / Count(scores))\nlet high = Max(...scores)\nlet userName = SelectFirst(TheUsers, $item.id === userId).DisplayName\nRecord('UserId', userId, 'Name', userName, 'Average', average, 'High', high)"
                 }
               },
               "kind": "Function"
@@ -1771,55 +1783,142 @@
               "kind": "Calculation"
             },
             {
+              "id": "block_23",
+              "name": "No Team Layout",
+              "properties": {
+                "show": {
+                  "expr": "IsNull(UsersTeam())"
+                }
+              },
+              "elements": [
+                {
+                  "id": "text_81",
+                  "name": "Text 81",
+                  "properties": {
+                    "content": "Great that you're interested in the Puzzle Teams Leagues, but they are only for team members and unfortunately you don't seem to be in a team at the moment."
+                  },
+                  "kind": "Text"
+                },
+                {
+                  "id": "text_82",
+                  "name": "Text 82",
+                  "properties": {
+                    "content": "You can find out how to join or start a team on the My Team page."
+                  },
+                  "elements": [],
+                  "kind": "Text"
+                },
+                {
+                  "id": "button_28",
+                  "name": "My Team Link",
+                  "properties": {
+                    "appearance": "filled",
+                    "content": "Go To My Team",
+                    "action": {
+                      "expr": "ShowPage(MyTeam)"
+                    },
+                    "styles": {
+                      "display": "inline"
+                    }
+                  },
+                  "kind": "Button"
+                }
+              ],
+              "kind": "Block"
+            },
+            {
               "id": "block_14",
-              "name": "Overall Layout",
+              "name": "In Team Layout",
               "properties": {
                 "layout": "horizontal",
                 "styles": {
                   "height": "100%",
                   "width": "100%"
+                },
+                "show": {
+                  "expr": "NotNull(UsersTeam())"
                 }
               },
               "elements": [
                 {
-                  "id": "block_16",
-                  "name": "Puzzles List",
-                  "properties": {
-                    "styles": {
-                      "backgroundColor": "#fed867"
-                    }
-                  },
+                  "id": "block_20",
+                  "name": "Puzzles Layout",
+                  "properties": {},
                   "elements": [
                     {
-                      "id": "itemset_5",
-                      "name": "Puzzle Chooser",
+                      "id": "block_22",
+                      "name": "Puzzles Title",
                       "properties": {
-                        "items": {
-                          "expr": "Query(Puzzles, {})"
-                        },
-                        "selectable": "single",
-                        "itemStyles": {}
+                        "layout": "horizontal",
+                        "styles": {
+                          "backgroundColor": "#fed867",
+                          "padding": "2px 5px",
+                          "width": "100%"
+                        }
                       },
                       "elements": [
                         {
-                          "id": "text_72",
-                          "name": "Puzzle Name",
+                          "id": "text_80",
+                          "name": "Title",
                           "properties": {
-                            "content": {
-                              "expr": "$item.name"
-                            },
+                            "content": "Puzzles",
                             "styles": {
-                              "cursor": "pointer",
-                              "backgroundColor": {
-                                "expr": "If($selected, 'white', 'transparent')"
-                              },
-                              "padding": "2"
+                              "width": "100%"
                             }
                           },
                           "kind": "Text"
                         }
                       ],
-                      "kind": "ItemSet"
+                      "kind": "Block"
+                    },
+                    {
+                      "id": "block_21",
+                      "name": "Puzzles List",
+                      "properties": {
+                        "styles": {
+                          "backgroundColor": "#fed867"
+                        }
+                      },
+                      "elements": [
+                        {
+                          "id": "itemset_7",
+                          "name": "Puzzle Chooser",
+                          "properties": {
+                            "items": {
+                              "expr": "Query(Puzzles, {})"
+                            },
+                            "selectable": "none",
+                            "itemStyles": {},
+                            "selectAction": {
+                              "expr": "ShowPage(PlayerLeagues, $item.id)"
+                            },
+                            "selectedItems": {
+                              "expr": "SelectedPuzzleId"
+                            }
+                          },
+                          "elements": [
+                            {
+                              "id": "text_79",
+                              "name": "Puzzle Name",
+                              "properties": {
+                                "content": {
+                                  "expr": "$item.name"
+                                },
+                                "styles": {
+                                  "cursor": "pointer",
+                                  "backgroundColor": {
+                                    "expr": "If($selected, 'white', 'transparent')"
+                                  },
+                                  "padding": "2"
+                                }
+                              },
+                              "kind": "Text"
+                            }
+                          ],
+                          "kind": "ItemSet"
+                        }
+                      ],
+                      "kind": "Block"
                     }
                   ],
                   "kind": "Block"
@@ -1829,6 +1928,21 @@
                   "name": "League Table",
                   "properties": {},
                   "elements": [
+                    {
+                      "id": "text_84",
+                      "name": "Puzzle Name",
+                      "properties": {
+                        "content": {
+                          "expr": "PuzzleChooser.selectedItem?.name ?? '&nbsp;'"
+                        },
+                        "styles": {
+                          "color": "green",
+                          "fontSize": "18"
+                        },
+                        "allowHtml": true
+                      },
+                      "kind": "Text"
+                    },
                     {
                       "id": "block_19",
                       "name": "League Title",
@@ -1844,7 +1958,7 @@
                           "id": "text_76",
                           "name": "Name",
                           "properties": {
-                            "content": "Name",
+                            "content": "Player",
                             "styles": {
                               "width": "8em"
                             }
@@ -1877,6 +1991,28 @@
                         }
                       ],
                       "kind": "Block"
+                    },
+                    {
+                      "id": "text_83",
+                      "name": "No Selection Text",
+                      "properties": {
+                        "content": "Please select a Puzzle",
+                        "show": {
+                          "expr": "IsNull(SelectedPuzzleId)"
+                        }
+                      },
+                      "kind": "Text"
+                    },
+                    {
+                      "id": "text_85",
+                      "name": "No Results Text",
+                      "properties": {
+                        "content": "No-one in your team has played this puzzle yet \n- why not be the first?",
+                        "show": {
+                          "expr": "And(NotNull(SelectedPuzzleId), Count(SortedResults) === 0)"
+                        }
+                      },
+                      "kind": "Text"
                     },
                     {
                       "id": "itemset_6",
