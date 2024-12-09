@@ -470,7 +470,7 @@ const PlayerLeagues_PuzzleChooserItem = React.memo(function PlayerLeagues_Puzzle
     const {If} = Elemento.globalFunctions
     const _state = Elemento.useGetStore()
     const canDragItem = undefined
-    const styles = elProps(pathTo('PuzzleChooser.Styles')).props
+    const styles = elProps(pathTo('PuzzleChooser.Styles')).width('100%').props
 
     return React.createElement(ItemSetItem, {path: props.path, item: $item, itemId: $itemId, index: $index, onClick, canDragItem, styles},
         React.createElement(TextElement, elProps(pathTo('PuzzleName')).styles(elProps(pathTo('PuzzleName.Styles')).cursor('pointer').backgroundColor(If($selected, 'white', 'transparent')).padding('2').props).content($item.name).props),
@@ -528,6 +528,7 @@ function PlayerLeagues(props) {
     const SortedResults = _state.setObject(pathTo('SortedResults'), new Calculation.State(stateProps(pathTo('SortedResults')).value(Sort(ResultsByUser, $item => -$item.High)).props))
     const NoTeamLayout = _state.setObject(pathTo('NoTeamLayout'), new Block.State(stateProps(pathTo('NoTeamLayout')).props))
     const InTeamLayout = _state.setObject(pathTo('InTeamLayout'), new Block.State(stateProps(pathTo('InTeamLayout')).props))
+    const MainLayout = _state.setObject(pathTo('MainLayout'), new Block.State(stateProps(pathTo('MainLayout')).props))
     const PuzzlesLayout = _state.setObject(pathTo('PuzzlesLayout'), new Block.State(stateProps(pathTo('PuzzlesLayout')).props))
     const PuzzlesTitle = _state.setObject(pathTo('PuzzlesTitle'), new Block.State(stateProps(pathTo('PuzzlesTitle')).props))
     const PuzzlesList = _state.setObject(pathTo('PuzzlesList'), new Block.State(stateProps(pathTo('PuzzlesList')).props))
@@ -560,17 +561,18 @@ function PlayerLeagues(props) {
             React.createElement(TextElement, elProps(pathTo('Text82')).content('You can find out how to join or start a team on the My Team page.').props),
             React.createElement(Button, elProps(pathTo('MyTeamLink')).content('Go To My Team').appearance('filled').action(MyTeamLink_action).styles(elProps(pathTo('MyTeamLink.Styles')).display('inline').props).props),
     ),
-        React.createElement(Block, elProps(pathTo('InTeamLayout')).layout('horizontal').show(NotNull(UsersTeam())).styles(elProps(pathTo('InTeamLayout.Styles')).height('100%').width('100%').props).props,
-            React.createElement(Block, elProps(pathTo('PuzzlesLayout')).layout('vertical').props,
-            React.createElement(Block, elProps(pathTo('PuzzlesTitle')).layout('horizontal').styles(elProps(pathTo('PuzzlesTitle.Styles')).backgroundColor('#fed867').padding('2px 5px').width('100%').props).props,
+        React.createElement(Block, elProps(pathTo('InTeamLayout')).layout('vertical').show(NotNull(UsersTeam())).styles(elProps(pathTo('InTeamLayout.Styles')).height('100%').width('100%').props).props,
+            React.createElement(TextElement, elProps(pathTo('PuzzleName')).allowHtml(true).styles(elProps(pathTo('PuzzleName.Styles')).color('green').fontSize('18').props).content(PuzzleChooser.selectedItem?.name ?? '&nbsp;').props),
+            React.createElement(Block, elProps(pathTo('MainLayout')).layout('horizontal').props,
+            React.createElement(Block, elProps(pathTo('PuzzlesLayout')).layout('vertical').styles(elProps(pathTo('PuzzlesLayout.Styles')).height('100%').props).props,
+            React.createElement(Block, elProps(pathTo('PuzzlesTitle')).layout('horizontal').show(false).styles(elProps(pathTo('PuzzlesTitle.Styles')).backgroundColor('#fed867').padding('2px 5px').width('100%').props).props,
             React.createElement(TextElement, elProps(pathTo('Title')).styles(elProps(pathTo('Title.Styles')).width('100%').props).content('Puzzles').props),
     ),
-            React.createElement(Block, elProps(pathTo('PuzzlesList')).layout('vertical').styles(elProps(pathTo('PuzzlesList.Styles')).backgroundColor('#fed867').props).props,
+            React.createElement(Block, elProps(pathTo('PuzzlesList')).layout('vertical').styles(elProps(pathTo('PuzzlesList.Styles')).backgroundColor('#fed867').height('100%').props).props,
             React.createElement(ItemSet, elProps(pathTo('PuzzleChooser')).itemContentComponent(PlayerLeagues_PuzzleChooserItem).props),
     ),
     ),
             React.createElement(Block, elProps(pathTo('LeagueTable')).layout('vertical').props,
-            React.createElement(TextElement, elProps(pathTo('PuzzleName')).allowHtml(true).styles(elProps(pathTo('PuzzleName.Styles')).color('green').fontSize('18').props).content(PuzzleChooser.selectedItem?.name ?? '&nbsp;').props),
             React.createElement(Block, elProps(pathTo('LeagueTitle')).layout('horizontal').styles(elProps(pathTo('LeagueTitle.Styles')).backgroundColor('#fed867').padding('2px 5px').props).props,
             React.createElement(TextElement, elProps(pathTo('Name')).styles(elProps(pathTo('Name.Styles')).width('8em').props).content('Player').props),
             React.createElement(TextElement, elProps(pathTo('HighScore')).styles(elProps(pathTo('HighScore.Styles')).textAlign('right').width('3em').props).content('High').props),
@@ -580,6 +582,7 @@ function PlayerLeagues(props) {
             React.createElement(TextElement, elProps(pathTo('NoResultsText')).show(And(NotNull(SelectedPuzzleId), Count(SortedResults) === 0)).content(`No-one in your team has played this puzzle yet 
 - why not be the first?`).props),
             React.createElement(ItemSet, elProps(pathTo('LeagueItems')).itemContentComponent(PlayerLeagues_LeagueItemsItem).props),
+    ),
     ),
     ),
     )

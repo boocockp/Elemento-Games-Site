@@ -1830,7 +1830,6 @@
               "id": "block_14",
               "name": "In Team Layout",
               "properties": {
-                "layout": "horizontal",
                 "styles": {
                   "height": "100%",
                   "width": "100%"
@@ -1841,206 +1840,139 @@
               },
               "elements": [
                 {
-                  "id": "block_20",
-                  "name": "Puzzles Layout",
-                  "properties": {},
+                  "id": "text_85",
+                  "name": "Puzzle Name",
+                  "properties": {
+                    "content": {
+                      "expr": "PuzzleChooser.selectedItem?.name ?? '&nbsp;'"
+                    },
+                    "styles": {
+                      "color": "green",
+                      "fontSize": "18"
+                    },
+                    "allowHtml": true
+                  },
+                  "kind": "Text"
+                },
+                {
+                  "id": "block_24",
+                  "name": "Main Layout",
+                  "properties": {
+                    "layout": "horizontal"
+                  },
                   "elements": [
                     {
-                      "id": "block_22",
-                      "name": "Puzzles Title",
+                      "id": "block_27",
+                      "name": "Puzzles Layout",
                       "properties": {
-                        "layout": "horizontal",
                         "styles": {
-                          "backgroundColor": "#fed867",
-                          "padding": "2px 5px",
-                          "width": "100%"
+                          "height": "100%"
                         }
                       },
                       "elements": [
                         {
-                          "id": "text_80",
-                          "name": "Title",
+                          "id": "block_25",
+                          "name": "Puzzles Title",
                           "properties": {
-                            "content": "Puzzles",
+                            "layout": "horizontal",
                             "styles": {
+                              "backgroundColor": "#fed867",
+                              "padding": "2px 5px",
                               "width": "100%"
-                            }
-                          },
-                          "kind": "Text"
-                        }
-                      ],
-                      "kind": "Block"
-                    },
-                    {
-                      "id": "block_21",
-                      "name": "Puzzles List",
-                      "properties": {
-                        "styles": {
-                          "backgroundColor": "#fed867"
-                        }
-                      },
-                      "elements": [
-                        {
-                          "id": "itemset_7",
-                          "name": "Puzzle Chooser",
-                          "properties": {
-                            "items": {
-                              "expr": "Query(Puzzles, {})"
                             },
-                            "selectable": "none",
-                            "itemStyles": {},
-                            "selectAction": {
-                              "expr": "ShowPage(PlayerLeagues, $item.id)"
-                            },
-                            "selectedItems": {
-                              "expr": "SelectedPuzzleId"
-                            }
+                            "show": false
                           },
                           "elements": [
                             {
-                              "id": "text_79",
-                              "name": "Puzzle Name",
+                              "id": "text_83",
+                              "name": "Title",
                               "properties": {
-                                "content": {
-                                  "expr": "$item.name"
-                                },
+                                "content": "Puzzles",
                                 "styles": {
-                                  "cursor": "pointer",
-                                  "backgroundColor": {
-                                    "expr": "If($selected, 'white', 'transparent')"
-                                  },
-                                  "padding": "2"
+                                  "width": "100%"
                                 }
                               },
                               "kind": "Text"
                             }
                           ],
-                          "kind": "ItemSet"
-                        }
-                      ],
-                      "kind": "Block"
-                    }
-                  ],
-                  "kind": "Block"
-                },
-                {
-                  "id": "block_17",
-                  "name": "League Table",
-                  "properties": {},
-                  "elements": [
-                    {
-                      "id": "text_84",
-                      "name": "Puzzle Name",
-                      "properties": {
-                        "content": {
-                          "expr": "PuzzleChooser.selectedItem?.name ?? '&nbsp;'"
-                        },
-                        "styles": {
-                          "color": "green",
-                          "fontSize": "18"
-                        },
-                        "allowHtml": true
-                      },
-                      "kind": "Text"
-                    },
-                    {
-                      "id": "block_19",
-                      "name": "League Title",
-                      "properties": {
-                        "layout": "horizontal",
-                        "styles": {
-                          "backgroundColor": "#fed867",
-                          "padding": "2px 5px"
-                        }
-                      },
-                      "elements": [
-                        {
-                          "id": "text_76",
-                          "name": "Name",
-                          "properties": {
-                            "content": "Player",
-                            "styles": {
-                              "width": "8em"
-                            }
-                          },
-                          "kind": "Text"
+                          "kind": "Block"
                         },
                         {
-                          "id": "text_77",
-                          "name": "High Score",
+                          "id": "block_26",
+                          "name": "Puzzles List",
                           "properties": {
-                            "content": "High",
                             "styles": {
-                              "textAlign": "right",
-                              "width": "3em"
-                            }
-                          },
-                          "kind": "Text"
-                        },
-                        {
-                          "id": "text_78",
-                          "name": "Average",
-                          "properties": {
-                            "content": "Ave",
-                            "styles": {
-                              "width": "3em",
-                              "textAlign": "right"
-                            }
-                          },
-                          "kind": "Text"
-                        }
-                      ],
-                      "kind": "Block"
-                    },
-                    {
-                      "id": "text_83",
-                      "name": "No Selection Text",
-                      "properties": {
-                        "content": "Please select a Puzzle",
-                        "show": {
-                          "expr": "IsNull(SelectedPuzzleId)"
-                        }
-                      },
-                      "kind": "Text"
-                    },
-                    {
-                      "id": "text_85",
-                      "name": "No Results Text",
-                      "properties": {
-                        "content": "No-one in your team has played this puzzle yet \n- why not be the first?",
-                        "show": {
-                          "expr": "And(NotNull(SelectedPuzzleId), Count(SortedResults) === 0)"
-                        }
-                      },
-                      "kind": "Text"
-                    },
-                    {
-                      "id": "itemset_6",
-                      "name": "League Items",
-                      "properties": {
-                        "items": {
-                          "expr": "SortedResults"
-                        }
-                      },
-                      "elements": [
-                        {
-                          "id": "block_18",
-                          "name": "League Entry",
-                          "properties": {
-                            "layout": "horizontal",
-                            "styles": {
-                              "borderWidth": "2px",
-                              "borderColor": "black"
+                              "backgroundColor": "#fed867",
+                              "height": "100%"
                             }
                           },
                           "elements": [
                             {
-                              "id": "text_73",
+                              "id": "itemset_3",
+                              "name": "Puzzle Chooser",
+                              "properties": {
+                                "items": {
+                                  "expr": "Query(Puzzles, {})"
+                                },
+                                "selectable": "none",
+                                "itemStyles": {
+                                  "width": "100%"
+                                },
+                                "selectAction": {
+                                  "expr": "ShowPage(PlayerLeagues, $item.id)"
+                                },
+                                "selectedItems": {
+                                  "expr": "SelectedPuzzleId"
+                                }
+                              },
+                              "elements": [
+                                {
+                                  "id": "text_84",
+                                  "name": "Puzzle Name",
+                                  "properties": {
+                                    "content": {
+                                      "expr": "$item.name"
+                                    },
+                                    "styles": {
+                                      "cursor": "pointer",
+                                      "backgroundColor": {
+                                        "expr": "If($selected, 'white', 'transparent')"
+                                      },
+                                      "padding": "2"
+                                    }
+                                  },
+                                  "kind": "Text"
+                                }
+                              ],
+                              "kind": "ItemSet"
+                            }
+                          ],
+                          "kind": "Block"
+                        }
+                      ],
+                      "kind": "Block"
+                    },
+                    {
+                      "id": "block_30",
+                      "name": "League Table",
+                      "properties": {},
+                      "elements": [
+                        {
+                          "id": "block_28",
+                          "name": "League Title",
+                          "properties": {
+                            "layout": "horizontal",
+                            "styles": {
+                              "backgroundColor": "#fed867",
+                              "padding": "2px 5px"
+                            }
+                          },
+                          "elements": [
+                            {
+                              "id": "text_86",
                               "name": "Name",
                               "properties": {
-                                "content": {
-                                  "expr": "$item.Name"
-                                },
+                                "content": "Player",
                                 "styles": {
                                   "width": "8em"
                                 }
@@ -2048,12 +1980,10 @@
                               "kind": "Text"
                             },
                             {
-                              "id": "text_74",
+                              "id": "text_87",
                               "name": "High Score",
                               "properties": {
-                                "content": {
-                                  "expr": "$item.High"
-                                },
+                                "content": "High",
                                 "styles": {
                                   "textAlign": "right",
                                   "width": "3em"
@@ -2062,12 +1992,10 @@
                               "kind": "Text"
                             },
                             {
-                              "id": "text_75",
+                              "id": "text_88",
                               "name": "Average",
                               "properties": {
-                                "content": {
-                                  "expr": "$item.Average"
-                                },
+                                "content": "Ave",
                                 "styles": {
                                   "width": "3em",
                                   "textAlign": "right"
@@ -2077,9 +2005,98 @@
                             }
                           ],
                           "kind": "Block"
+                        },
+                        {
+                          "id": "text_89",
+                          "name": "No Selection Text",
+                          "properties": {
+                            "content": "Please select a Puzzle",
+                            "show": {
+                              "expr": "IsNull(SelectedPuzzleId)"
+                            }
+                          },
+                          "kind": "Text"
+                        },
+                        {
+                          "id": "text_90",
+                          "name": "No Results Text",
+                          "properties": {
+                            "content": "No-one in your team has played this puzzle yet \n- why not be the first?",
+                            "show": {
+                              "expr": "And(NotNull(SelectedPuzzleId), Count(SortedResults) === 0)"
+                            }
+                          },
+                          "kind": "Text"
+                        },
+                        {
+                          "id": "itemset_4",
+                          "name": "League Items",
+                          "properties": {
+                            "items": {
+                              "expr": "SortedResults"
+                            }
+                          },
+                          "elements": [
+                            {
+                              "id": "block_29",
+                              "name": "League Entry",
+                              "properties": {
+                                "layout": "horizontal",
+                                "styles": {
+                                  "borderWidth": "2px",
+                                  "borderColor": "black"
+                                }
+                              },
+                              "elements": [
+                                {
+                                  "id": "text_91",
+                                  "name": "Name",
+                                  "properties": {
+                                    "content": {
+                                      "expr": "$item.Name"
+                                    },
+                                    "styles": {
+                                      "width": "8em"
+                                    }
+                                  },
+                                  "kind": "Text"
+                                },
+                                {
+                                  "id": "text_92",
+                                  "name": "High Score",
+                                  "properties": {
+                                    "content": {
+                                      "expr": "$item.High"
+                                    },
+                                    "styles": {
+                                      "textAlign": "right",
+                                      "width": "3em"
+                                    }
+                                  },
+                                  "kind": "Text"
+                                },
+                                {
+                                  "id": "text_93",
+                                  "name": "Average",
+                                  "properties": {
+                                    "content": {
+                                      "expr": "$item.Average"
+                                    },
+                                    "styles": {
+                                      "width": "3em",
+                                      "textAlign": "right"
+                                    }
+                                  },
+                                  "kind": "Text"
+                                }
+                              ],
+                              "kind": "Block"
+                            }
+                          ],
+                          "kind": "ItemSet"
                         }
                       ],
-                      "kind": "ItemSet"
+                      "kind": "Block"
                     }
                   ],
                   "kind": "Block"
