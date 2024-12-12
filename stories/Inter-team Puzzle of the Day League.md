@@ -28,12 +28,8 @@ Requirements
 - Menu page with all days/weeks/months/years
 - Ability to introduce further comparisons, such as between periods, and positions at certain dates in a period
 
-Technical
----------
-
-- Calculate the period data at end of each day for that day
-- Calculate a new period so far data set for week, month, year
-- Send a league as list of team + array of numbers - sort on the client
+Stage 1 - Calculation on request
+--------------------------------
 
 Calculation flow
 ----------------
@@ -43,5 +39,23 @@ Calculation flow
 - Find high score of each player - store with team id
 - Group high scores by team
 - For each team group get Max, Count, Sum, Average
+- Filter for min players
 - Create a record for each team group with TeamId and numbers
-- Write to file in storage id'ed by date
+- Send a league as list of team + array of numbers - sort on the client
+
+
+
+Stage 2 - Cached calculations
+-----------------------------
+
+- Write each result to file in storage id'ed by date
+- Check for file before recalculating
+- Calculate the period data at end of each day for that day
+- Calculate a new period so far data set for week, month, year
+
+
+Test data needed
+----------------
+
+- 5 teams
+- 5 days

@@ -28,7 +28,7 @@
           "id": "firestoredatastore_1",
           "name": "Player Data Store",
           "properties": {
-            "collections": "GamePlays\nUsers\nTeams\nInvites"
+            "collections": "GamePlays\nUsers\nTeams\nInvites\nPuzzles\nDayPuzzles"
           },
           "kind": "FirestoreDataStore"
         },
@@ -47,7 +47,7 @@
           "name": "Puzzles",
           "properties": {
             "dataStore": {
-              "expr": "SiteDataStore"
+              "expr": "PlayerDataStore"
             },
             "collectionName": "Puzzles"
           },
@@ -110,11 +110,11 @@
           "kind": "Function"
         },
         {
-          "id": "function_2",
-          "name": "Latest Puzzle Url",
+          "id": "function_16",
+          "name": "Puzzle Of The Day",
           "properties": {
             "calculation": {
-              "expr": "let allPuzzles = Query(Puzzles, {})\nLast(Sort(allPuzzles, $item.id))?.url"
+              "expr": "PuzzlesServerApp.PuzzleOfTheDay()"
             }
           },
           "kind": "Function"
@@ -647,7 +647,7 @@
               "name": "Game Frame",
               "properties": {
                 "source": {
-                  "expr": "LatestPuzzleUrl()"
+                  "expr": "PuzzleOfTheDay()?.url"
                 },
                 "styles": {
                   "height": "calc(100% + 16px)",
@@ -2219,7 +2219,7 @@
           "id": "firestoredatastore_2",
           "name": "Server Data Store",
           "properties": {
-            "collections": "Teams\nUsers\nInvites\nGamePlays"
+            "collections": "Teams\nUsers\nInvites\nGamePlays\nPuzzles\nDayPuzzles"
           },
           "kind": "FirestoreDataStore"
         },
@@ -2268,13 +2268,45 @@
           "kind": "Collection"
         },
         {
+          "id": "collection_11",
+          "name": "Puzzles",
+          "properties": {
+            "dataStore": {
+              "expr": "ServerDataStore"
+            },
+            "collectionName": "Puzzles"
+          },
+          "kind": "Collection"
+        },
+        {
+          "id": "collection_12",
+          "name": "Day Puzzles",
+          "properties": {
+            "dataStore": {
+              "expr": "ServerDataStore"
+            },
+            "collectionName": "DayPuzzles"
+          },
+          "kind": "Collection"
+        },
+        {
+          "id": "function_17",
+          "name": "Puzzle Of The Day",
+          "properties": {
+            "calculation": {
+              "expr": "let dayPuzzleId = Today().toISOString().substring(0, 10)\nlet dayPuzzle = Get(DayPuzzles, dayPuzzleId)\nGet(Puzzles, dayPuzzle.puzzleId)"
+            }
+          },
+          "kind": "Function"
+        },
+        {
           "id": "function_5",
           "name": "Update User Data",
           "properties": {
             "input1": "changes",
             "action": true,
             "calculation": {
-              "expr": "let user = GetUserData()\nlet userId = CurrentUser().uid\nIf(user, Update(Users, userId, changes), Add(Users, Record(changes, 'id', userId, 'DisplayName', CurrentUser().Name)))"
+              "expr": "let user = GetUserData()\nlet userId = CurrentUser().uid\nIf(user, Update(Users, userId, changes), Add(Users, Record(changes, 'id', userId, 'DisplayName', CurrentUser().Name))) "
             }
           },
           "kind": "Function"
@@ -2344,6 +2376,31 @@
             "calculation": {
               "expr": "let teamId = GetUserData()?.TeamId\nlet gamePlays = If(teamId, Query(GamePlays, {TeamId: teamId}))\nlet users = If(teamId, Query(Users, {TeamId: teamId}))\nRecord({gamePlays: gamePlays, users: users})"
             }
+          },
+          "kind": "Function"
+        },
+        {
+          "id": "function_19",
+          "name": "TeamStats",
+          "properties": {
+            "private": true,
+            "input1": "teamScoreGroups",
+            "calculation": {
+              "expr": "function teamItem(scoreItems) {\n  let teamId = scoreItems[0].TeamId\n  let scores = ForEach(scoreItems, $item => $item.HighScore)\n  let max = Max(scores)\n  let count = Count(scores)\n  let total = Sum(scores)\n  let ave = Floor(total/count)\n  return Record({TeamId: teamId, Max: max, Average: ave, Total: total, Count: count})\n}\nreturn ForEach(teamScoreGroups, $item => teamItem($item))"
+            },
+            "javascript": true
+          },
+          "kind": "Function"
+        },
+        {
+          "id": "function_18",
+          "name": "Potd League Data",
+          "properties": {
+            "calculation": {
+              "expr": "let dateTo = DateAdd(date, 1,  'days')\nlet plays = Query(GamePlays, [['PuzzleId', '==', puzzleId], ['DateTime', '>=', date], ['DateTime', '<', dateTo]])\nlet playerGroups = GroupBy(plays, $item.UserId)\nlet playerHighScores = ForEach(playerGroups, Record('UserId', $item[0].UserId, 'TeamId', $item[0].TeamId, 'HighScore', Max(ForEach($item, $item.Score))))\nlet teamScoreGroups = GroupBy(playerHighScores, $item.TeamId)\nlet teamStats = TeamStats(teamScoreGroups)\nlet qualifyingTeams = Select(teamStats, $item.Count > 1)\nqualifyingTeams"
+            },
+            "input1": "puzzleId",
+            "input2": "date"
           },
           "kind": "Function"
         }

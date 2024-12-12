@@ -4,22 +4,32 @@ const {globalFunctions} = serverRuntime
 const {appFunctions} = serverRuntime
 const {components} = serverRuntime
 
-const {If, Record, Log, Check, Not, Now, IsNull, Today} = globalFunctions
-const {CurrentUser, Update, Add, GetIfExists, Get, Query} = appFunctions
+const {Today, If, Record, Log, Check, Not, Now, IsNull, ForEach, Max, Count, Sum, Floor, DateAdd, GroupBy, Select} = globalFunctions
+const {Get, CurrentUser, Update, Add, GetIfExists, Query} = appFunctions
 const {FirestoreDataStore, Collection} = components
 
 const ServerDataStore = new FirestoreDataStore({collections: `Teams
 Users
 Invites
-GamePlays`})
+GamePlays
+Puzzles
+DayPuzzles`})
 const Teams = new Collection({dataStore: ServerDataStore, collectionName: 'Teams'})
 const Users = new Collection({dataStore: ServerDataStore, collectionName: 'Users'})
 const Invites = new Collection({dataStore: ServerDataStore, collectionName: 'Invites'})
 const GamePlays = new Collection({dataStore: ServerDataStore, collectionName: 'GamePlays'})
+const Puzzles = new Collection({dataStore: ServerDataStore, collectionName: 'Puzzles'})
+const DayPuzzles = new Collection({dataStore: ServerDataStore, collectionName: 'DayPuzzles'})
 
 const PuzzlesServer = (user) => {
 
 function CurrentUser() { return runtimeFunctions.asCurrentUser(user) }
+
+async function PuzzleOfTheDay() {
+    let dayPuzzleId = await (await Today().toISOString()).substring(0, 10)
+    let dayPuzzle = await Get(DayPuzzles, dayPuzzleId)
+    return await Get(Puzzles, dayPuzzle.puzzleId)
+}
 
 async function UpdateUserData(changes) {
     let user = await GetUserData()
@@ -67,14 +77,40 @@ async function TeamGamePlays() {
     return Record({gamePlays: gamePlays, users: users})
 }
 
+async function TeamStats(teamScoreGroups) {
+    function teamItem(scoreItems) {
+      let teamId = scoreItems[0].TeamId
+      let scores = ForEach(scoreItems, $item => $item.HighScore)
+      let max = Max(scores)
+      let count = Count(scores)
+      let total = Sum(scores)
+      let ave = Floor(total/count)
+      return Record({TeamId: teamId, Max: max, Average: ave, Total: total, Count: count})
+    }
+    return ForEach(teamScoreGroups, $item => teamItem($item))
+}
+
+async function PotdLeagueData(puzzleId, date) {
+    let dateTo = DateAdd(date, 1,  'days')
+    let plays = await Query(GamePlays, [['PuzzleId', '==', puzzleId], ['DateTime', '>=', date], ['DateTime', '<', dateTo]])
+    let playerGroups = GroupBy(plays, $item => $item.UserId)
+    let playerHighScores = ForEach(playerGroups, ($item, $index) => Record('UserId', $item[0].UserId, 'TeamId', $item[0].TeamId, 'HighScore', Max(ForEach($item, ($item, $index) => $item.Score))))
+    let teamScoreGroups = GroupBy(playerHighScores, $item => $item.TeamId)
+    let teamStats = await TeamStats(teamScoreGroups)
+    let qualifyingTeams = Select(teamStats, ($item, $index) => $item.Count > 1)
+    return qualifyingTeams
+}
+
 return {
+    PuzzleOfTheDay: {func: PuzzleOfTheDay, update: false, argNames: []},
     UpdateUserData: {func: UpdateUserData, update: true, argNames: ['changes']},
     GetUserData: {func: GetUserData, update: false, argNames: []},
     NewTeam: {func: NewTeam, update: true, argNames: ['teamData']},
     InviteTeamMember: {func: InviteTeamMember, update: true, argNames: ['inviteId']},
     AcceptInvite: {func: AcceptInvite, update: true, argNames: ['inviteId']},
     LeaveTeam: {func: LeaveTeam, update: true, argNames: []},
-    TeamGamePlays: {func: TeamGamePlays, update: false, argNames: []}
+    TeamGamePlays: {func: TeamGamePlays, update: false, argNames: []},
+    PotdLeagueData: {func: PotdLeagueData, update: false, argNames: ['puzzleId', 'date']}
 }
 }
 

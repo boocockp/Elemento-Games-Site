@@ -69,11 +69,11 @@ function TodaysPuzzle(props) {
     const pathTo = name => props.path + '.' + name
     const {Page, Frame} = Elemento.components
     const _state = Elemento.useGetStore()
-    const LatestPuzzleUrl = _state.useObject('Puzzles.LatestPuzzleUrl')
+    const PuzzleOfTheDay = _state.useObject('Puzzles.PuzzleOfTheDay')
     Elemento.elementoDebug(() => eval(Elemento.useDebugExpr()))
 
     return React.createElement(Page, elProps(props.path).styles(elProps(pathTo('TodaysPuzzle.Styles')).paddingLeft('0').paddingRight('0').paddingTop('0').paddingBottom('0').props).props,
-        React.createElement(Frame, elProps(pathTo('GameFrame')).source(LatestPuzzleUrl()).styles(elProps(pathTo('GameFrame.Styles')).height('calc(100% + 16px)').width('calc(100% + 8px)').marginLeft('-4px').marginRight('-4px').marginTop('-8px').props).props),
+        React.createElement(Frame, elProps(pathTo('GameFrame')).source(PuzzleOfTheDay()?.url).styles(elProps(pathTo('GameFrame.Styles')).height('calc(100% + 16px)').width('calc(100% + 8px)').marginLeft('-4px').marginRight('-4px').marginTop('-8px').props).props),
     )
 }
 
@@ -634,6 +634,10 @@ function configPuzzlesServer() {
         url: '/capi/:versionId/PuzzlesServer',
 
         functions: {
+            PuzzleOfTheDay: {
+                params: []
+            },
+
             UpdateUserData: {
                 params: ['changes'],
                 action: true
@@ -665,6 +669,14 @@ function configPuzzlesServer() {
 
             TeamGamePlays: {
                 params: []
+            },
+
+            TeamStats: {
+                params: ['teamScoreGroups']
+            },
+
+            PotdLeagueData: {
+                params: ['puzzleId', 'date']
             }
         }
     };
@@ -673,7 +685,7 @@ function configPuzzlesServer() {
 export default function Puzzles(props) {
     const pathTo = name => 'Puzzles' + '.' + name
     const {App, WebFileDataStore, FirestoreDataStore, ServerAppConnector, Collection, AppBar, Image, TextElement, Block, Button, Menu, MenuItem, UserLogon, Calculation} = Elemento.components
-    const {If, And, Log, Record, Now, Last, Sort, Not} = Elemento.globalFunctions
+    const {If, And, Log, Record, Now, Not} = Elemento.globalFunctions
     const pages = {HomePage, AboutPage, TodaysPuzzle, ArchivedPuzzle, PuzzleArchive, GamesPlayed, MyTeam, NewTeam, NewInvite, JoinTeam, JoinTeamLogin, GeneralLogin, LeaveTeam, PlayerLeagues, Terms, Privacy}
     const appContext = Elemento.useGetAppContext()
     const {CurrentUser, Query, Add, GetIfExists, Get} = Elemento.appFunctions
@@ -684,17 +696,18 @@ export default function Puzzles(props) {
     const PlayerDataStore = _state.setObject('Puzzles.PlayerDataStore', new FirestoreDataStore.State(stateProps('Puzzles.PlayerDataStore').collections(`GamePlays
 Users
 Teams
-Invites`).props))
+Invites
+Puzzles
+DayPuzzles`).props))
     const PuzzlesServerApp = _state.setObject('Puzzles.PuzzlesServerApp', new ServerAppConnector.State({configuration: configPuzzlesServer()}))
-    const Puzzles = _state.setObject('Puzzles.Puzzles', new Collection.State(stateProps('Puzzles.Puzzles').dataStore(SiteDataStore).collectionName('Puzzles').props))
+    const Puzzles = _state.setObject('Puzzles.Puzzles', new Collection.State(stateProps('Puzzles.Puzzles').dataStore(PlayerDataStore).collectionName('Puzzles').props))
     const GamePlays = _state.setObject('Puzzles.GamePlays', new Collection.State(stateProps('Puzzles.GamePlays').dataStore(PlayerDataStore).collectionName('GamePlays').props))
     const Users = _state.setObject('Puzzles.Users', new Collection.State(stateProps('Puzzles.Users').dataStore(PlayerDataStore).collectionName('Users').props))
     const Teams = _state.setObject('Puzzles.Teams', new Collection.State(stateProps('Puzzles.Teams').dataStore(PlayerDataStore).collectionName('Teams').props))
     const Invites = _state.setObject('Puzzles.Invites', new Collection.State(stateProps('Puzzles.Invites').dataStore(PlayerDataStore).collectionName('Invites').props))
-    const LatestPuzzleUrl = _state.setObject('Puzzles.LatestPuzzleUrl', React.useCallback(wrapFn(pathTo('LatestPuzzleUrl'), 'calculation', () => {
-        let allPuzzles = Query(Puzzles, {})
-        return Last(Sort(allPuzzles, $item => $item.id))?.url
-    }), [Puzzles]))
+    const PuzzleOfTheDay = _state.setObject('Puzzles.PuzzleOfTheDay', React.useCallback(wrapFn(pathTo('PuzzleOfTheDay'), 'calculation', () => {
+        return PuzzlesServerApp.PuzzleOfTheDay()
+    }), [PuzzlesServerApp]))
     const UserData = _state.setObject('Puzzles.UserData', React.useCallback(wrapFn(pathTo('UserData'), 'calculation', () => {
         return If(CurrentUser(), () => GetIfExists(Users, CurrentUser().uid))
     }), [Users]))
