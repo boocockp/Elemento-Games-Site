@@ -39,8 +39,8 @@ Calculation flow
 - Find high score of each player - store with team id
 - Group high scores by team
 - For each team group get Max, Count, Sum, Average
-- Filter for min players
 - Create a record for each team group with TeamId and numbers
+- Filter for min players
 - Send a league as list of team + array of numbers - sort on the client
 
 
@@ -48,7 +48,7 @@ Calculation flow
 Stage 2 - Cached calculations
 -----------------------------
 
-- Write each result to file in storage id'ed by date
+- Write each result to file in storage id'ed by date - or a db record?
 - Check for file before recalculating
 - Calculate the period data at end of each day for that day
 - Calculate a new period so far data set for week, month, year

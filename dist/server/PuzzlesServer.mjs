@@ -25,8 +25,9 @@ const PuzzlesServer = (user) => {
 
 function CurrentUser() { return runtimeFunctions.asCurrentUser(user) }
 
-async function PuzzleOfTheDay() {
-    let dayPuzzleId = await (await Today().toISOString()).substring(0, 10)
+async function PuzzleOfTheDay(date) {
+    let puzzleDay = date ?? Today()
+    let dayPuzzleId = await (await puzzleDay.toISOString()).substring(0, 10)
     let dayPuzzle = await Get(DayPuzzles, dayPuzzleId)
     return await Get(Puzzles, dayPuzzle.puzzleId)
 }
@@ -90,7 +91,12 @@ async function TeamStats(teamScoreGroups) {
     return ForEach(teamScoreGroups, $item => teamItem($item))
 }
 
-async function PotdLeagueData(puzzleId, date) {
+async function PotdLeagueData(date) {
+    let puzzleId = (await PuzzleOfTheDay(date))?.id
+    return await PuzzleDayLeagueData(puzzleId, date)
+}
+
+async function PuzzleDayLeagueData(puzzleId, date) {
     let dateTo = DateAdd(date, 1,  'days')
     let plays = await Query(GamePlays, [['PuzzleId', '==', puzzleId], ['DateTime', '>=', date], ['DateTime', '<', dateTo]])
     let playerGroups = GroupBy(plays, $item => $item.UserId)
@@ -101,8 +107,26 @@ async function PotdLeagueData(puzzleId, date) {
     return qualifyingTeams
 }
 
+async function TeamNames() {
+    let allTeams = await Query(Teams, {})
+    let teamEntries = ForEach(allTeams, $item => [$item.id, $item.Name])
+    return Object.fromEntries(teamEntries)
+}
+
+async function DayPuzzleData() {
+    let puzzles = await Query(Puzzles, {})
+    
+    let today = Today().toISOString().substring(0, 10)
+    function puzzleName(id) {
+      return puzzles.find( p => p.id === id)?.name
+    }
+    let allPreviousDayPuzzles = await Query(DayPuzzles, [['id', '<', today]])
+    let entries = ForEach(allPreviousDayPuzzles, $item => [$item.id, {id: $item.id, Name: puzzleName($item.puzzleId)}])
+    return Object.fromEntries(entries)
+}
+
 return {
-    PuzzleOfTheDay: {func: PuzzleOfTheDay, update: false, argNames: []},
+    PuzzleOfTheDay: {func: PuzzleOfTheDay, update: false, argNames: ['date']},
     UpdateUserData: {func: UpdateUserData, update: true, argNames: ['changes']},
     GetUserData: {func: GetUserData, update: false, argNames: []},
     NewTeam: {func: NewTeam, update: true, argNames: ['teamData']},
@@ -110,7 +134,10 @@ return {
     AcceptInvite: {func: AcceptInvite, update: true, argNames: ['inviteId']},
     LeaveTeam: {func: LeaveTeam, update: true, argNames: []},
     TeamGamePlays: {func: TeamGamePlays, update: false, argNames: []},
-    PotdLeagueData: {func: PotdLeagueData, update: false, argNames: ['puzzleId', 'date']}
+    PotdLeagueData: {func: PotdLeagueData, update: false, argNames: ['date']},
+    PuzzleDayLeagueData: {func: PuzzleDayLeagueData, update: false, argNames: ['puzzleId', 'date']},
+    TeamNames: {func: TeamNames, update: false, argNames: []},
+    DayPuzzleData: {func: DayPuzzleData, update: false, argNames: []}
 }
 }
 

@@ -2154,6 +2154,341 @@
           "kind": "Page"
         },
         {
+          "id": "page_19",
+          "name": "Potd Leagues",
+          "properties": {
+            "notLoggedInPage": {
+              "expr": "GeneralLogin"
+            }
+          },
+          "elements": [
+            {
+              "id": "text_98",
+              "name": "Title",
+              "properties": {
+                "content": "Puzzle of the Day Leagues",
+                "styles": {
+                  "fontSize": "20",
+                  "color": "green"
+                }
+              },
+              "kind": "Text"
+            },
+            {
+              "id": "calculation_31",
+              "name": "Day Puzzles",
+              "properties": {
+                "calculation": {
+                  "expr": "PuzzlesServerApp.DayPuzzleData()"
+                }
+              },
+              "kind": "Calculation"
+            },
+            {
+              "id": "calculation_32",
+              "name": "Days Available",
+              "properties": {
+                "calculation": {
+                  "expr": "ForEach(DayPuzzles, $item.id)"
+                }
+              },
+              "kind": "Calculation"
+            },
+            {
+              "id": "calculation_27",
+              "name": "Day List",
+              "properties": {
+                "calculation": {
+                  "expr": "Sort(DaysAvailable, -DateVal($item))"
+                }
+              },
+              "kind": "Calculation"
+            },
+            {
+              "id": "block_38",
+              "name": "Selector Layout",
+              "properties": {
+                "layout": "horizontal",
+                "styles": {
+                  "width": "100%"
+                }
+              },
+              "elements": [
+                {
+                  "id": "selectinput_1",
+                  "name": "Day Selector",
+                  "properties": {
+                    "label": "Day",
+                    "values": {
+                      "expr": "ForEach(DayList, DateFormat(DateVal($item), 'd MMMM'))"
+                    },
+                    "styles": {
+                      "minWidth": "10em"
+                    }
+                  },
+                  "kind": "SelectInput"
+                },
+                {
+                  "id": "text_111",
+                  "name": "Puzzle Name",
+                  "properties": {
+                    "content": {
+                      "expr": "DayPuzzles.value?.[SelectedDate.value]?.Name"
+                    },
+                    "styles": {
+                      "color": "green",
+                      "fontSize": "20"
+                    }
+                  },
+                  "kind": "Text"
+                }
+              ],
+              "kind": "Block"
+            },
+            {
+              "id": "calculation_28",
+              "name": "Selected Date",
+              "properties": {
+                "calculation": {
+                  "expr": "DateVal(DaySelector.value,  'd MMMM')?.toISOString().substring(0, 10)"
+                }
+              },
+              "kind": "Calculation"
+            },
+            {
+              "id": "calculation_30",
+              "name": "Team Names",
+              "properties": {
+                "calculation": {
+                  "expr": "PuzzlesServerApp.TeamNames()"
+                }
+              },
+              "kind": "Calculation"
+            },
+            {
+              "id": "calculation_29",
+              "name": "Sorted Results",
+              "properties": {
+                "calculation": {
+                  "expr": "If(SelectedDate, Sort(PuzzlesServerApp.PotdLeagueData(SelectedDate.value), -$item.Total), [])"
+                }
+              },
+              "kind": "Calculation"
+            },
+            {
+              "id": "block_37",
+              "name": "League Table",
+              "properties": {
+                "styles": {
+                  "padding": "0"
+                }
+              },
+              "elements": [
+                {
+                  "id": "block_34",
+                  "name": "League Title",
+                  "properties": {
+                    "layout": "horizontal",
+                    "styles": {
+                      "backgroundColor": "#fed867",
+                      "padding": "2px 5px"
+                    }
+                  },
+                  "elements": [
+                    {
+                      "id": "text_99",
+                      "name": "Name",
+                      "properties": {
+                        "content": "Team",
+                        "styles": {
+                          "width": "8em"
+                        }
+                      },
+                      "kind": "Text"
+                    },
+                    {
+                      "id": "text_100",
+                      "name": "Total",
+                      "properties": {
+                        "content": "Total",
+                        "styles": {
+                          "textAlign": "center",
+                          "width": "3em"
+                        }
+                      },
+                      "kind": "Text"
+                    },
+                    {
+                      "id": "text_107",
+                      "name": "Players",
+                      "properties": {
+                        "content": "Players",
+                        "styles": {
+                          "textAlign": "center",
+                          "width": "3em"
+                        }
+                      },
+                      "kind": "Text"
+                    },
+                    {
+                      "id": "text_101",
+                      "name": "Average",
+                      "properties": {
+                        "content": "Average",
+                        "styles": {
+                          "width": "3em",
+                          "textAlign": "center"
+                        }
+                      },
+                      "kind": "Text"
+                    },
+                    {
+                      "id": "text_108",
+                      "name": "Highest",
+                      "properties": {
+                        "content": "Highest",
+                        "styles": {
+                          "width": "4em",
+                          "textAlign": "center"
+                        }
+                      },
+                      "kind": "Text"
+                    }
+                  ],
+                  "kind": "Block"
+                },
+                {
+                  "id": "block_36",
+                  "name": "Item Layout",
+                  "properties": {},
+                  "elements": [
+                    {
+                      "id": "itemset_5",
+                      "name": "League Items",
+                      "properties": {
+                        "items": {
+                          "expr": "SortedResults"
+                        }
+                      },
+                      "elements": [
+                        {
+                          "id": "block_35",
+                          "name": "League Entry",
+                          "properties": {
+                            "layout": "horizontal",
+                            "styles": {
+                              "borderWidth": "2px",
+                              "borderColor": "black"
+                            }
+                          },
+                          "elements": [
+                            {
+                              "id": "text_102",
+                              "name": "Name",
+                              "properties": {
+                                "content": {
+                                  "expr": "TeamNames.value[$item.TeamId]"
+                                },
+                                "styles": {
+                                  "width": "8em"
+                                }
+                              },
+                              "kind": "Text"
+                            },
+                            {
+                              "id": "text_103",
+                              "name": "Total",
+                              "properties": {
+                                "content": {
+                                  "expr": "$item.Total"
+                                },
+                                "styles": {
+                                  "textAlign": "right",
+                                  "width": "3em"
+                                }
+                              },
+                              "kind": "Text"
+                            },
+                            {
+                              "id": "text_109",
+                              "name": "Players",
+                              "properties": {
+                                "content": {
+                                  "expr": "$item.Count"
+                                },
+                                "styles": {
+                                  "textAlign": "right",
+                                  "width": "3em"
+                                }
+                              },
+                              "kind": "Text"
+                            },
+                            {
+                              "id": "text_104",
+                              "name": "Average",
+                              "properties": {
+                                "content": {
+                                  "expr": "$item.Average"
+                                },
+                                "styles": {
+                                  "width": "3em",
+                                  "textAlign": "right"
+                                }
+                              },
+                              "kind": "Text"
+                            },
+                            {
+                              "id": "text_110",
+                              "name": "Highest",
+                              "properties": {
+                                "content": {
+                                  "expr": "$item.Max"
+                                },
+                                "styles": {
+                                  "width": "3em",
+                                  "textAlign": "right"
+                                }
+                              },
+                              "kind": "Text"
+                            }
+                          ],
+                          "kind": "Block"
+                        }
+                      ],
+                      "kind": "ItemSet"
+                    }
+                  ],
+                  "kind": "Block"
+                },
+                {
+                  "id": "text_105",
+                  "name": "No Selection Text",
+                  "properties": {
+                    "content": "Please select a Day",
+                    "show": {
+                      "expr": "IsNull(SelectedDate)"
+                    }
+                  },
+                  "kind": "Text"
+                },
+                {
+                  "id": "text_106",
+                  "name": "No Results Text",
+                  "properties": {
+                    "content": "No results for this day",
+                    "show": {
+                      "expr": "And(NotNull(SelectedDate), Count(SortedResults) === 0)"
+                    }
+                  },
+                  "kind": "Text"
+                }
+              ],
+              "kind": "Block"
+            }
+          ],
+          "kind": "Page"
+        },
+        {
           "id": "page_8",
           "name": "Terms",
           "properties": {},
@@ -2294,8 +2629,9 @@
           "name": "Puzzle Of The Day",
           "properties": {
             "calculation": {
-              "expr": "let dayPuzzleId = Today().toISOString().substring(0, 10)\nlet dayPuzzle = Get(DayPuzzles, dayPuzzleId)\nGet(Puzzles, dayPuzzle.puzzleId)"
-            }
+              "expr": "let puzzleDay = date ?? Today()\nlet dayPuzzleId = puzzleDay.toISOString().substring(0, 10)\nlet dayPuzzle = Get(DayPuzzles, dayPuzzleId)\nGet(Puzzles, dayPuzzle.puzzleId)"
+            },
+            "input1": "date"
           },
           "kind": "Function"
         },
@@ -2397,10 +2733,43 @@
           "name": "Potd League Data",
           "properties": {
             "calculation": {
+              "expr": "let puzzleId = PuzzleOfTheDay(date)?.id\nPuzzleDayLeagueData(puzzleId, date)"
+            },
+            "input1": "date"
+          },
+          "kind": "Function"
+        },
+        {
+          "id": "function_21",
+          "name": "Puzzle Day League Data",
+          "properties": {
+            "calculation": {
               "expr": "let dateTo = DateAdd(date, 1,  'days')\nlet plays = Query(GamePlays, [['PuzzleId', '==', puzzleId], ['DateTime', '>=', date], ['DateTime', '<', dateTo]])\nlet playerGroups = GroupBy(plays, $item.UserId)\nlet playerHighScores = ForEach(playerGroups, Record('UserId', $item[0].UserId, 'TeamId', $item[0].TeamId, 'HighScore', Max(ForEach($item, $item.Score))))\nlet teamScoreGroups = GroupBy(playerHighScores, $item.TeamId)\nlet teamStats = TeamStats(teamScoreGroups)\nlet qualifyingTeams = Select(teamStats, $item.Count > 1)\nqualifyingTeams"
             },
             "input1": "puzzleId",
             "input2": "date"
+          },
+          "kind": "Function"
+        },
+        {
+          "id": "function_22",
+          "name": "Team Names",
+          "properties": {
+            "calculation": {
+              "expr": "let allTeams = await Query(Teams, {})\nlet teamEntries = ForEach(allTeams, $item => [$item.id, $item.Name])\nreturn Object.fromEntries(teamEntries)"
+            },
+            "javascript": true
+          },
+          "kind": "Function"
+        },
+        {
+          "id": "function_23",
+          "name": "Day Puzzle Data",
+          "properties": {
+            "calculation": {
+              "expr": "let puzzles = await Query(Puzzles, {})\n\nlet today = Today().toISOString().substring(0, 10)\nfunction puzzleName(id) {\n  return puzzles.find( p => p.id === id)?.name\n}\nlet allPreviousDayPuzzles = await Query(DayPuzzles, [['id', '<', today]])\nlet entries = ForEach(allPreviousDayPuzzles, $item => [$item.id, {id: $item.id, Name: puzzleName($item.puzzleId)}])\nreturn Object.fromEntries(entries)"
+            },
+            "javascript": true
           },
           "kind": "Function"
         }

@@ -599,6 +599,80 @@ function PlayerLeagues(props) {
 }
 PlayerLeagues.notLoggedInPage = 'GeneralLogin'
 
+// PotdLeagues.js
+const PotdLeagues_LeagueItemsItem = React.memo(function PotdLeagues_LeagueItemsItem(props) {
+    const pathTo = name => props.path + '.' + name
+    const parentPathWith = name => Elemento.parentPath(props.path) + '.' + name
+    const {$item, $itemId, $index, $selected, onClick} = props
+    const {ItemSetItem, Block, TextElement} = Elemento.components
+    const _state = Elemento.useGetStore()
+    const TeamNames = _state.useObject(parentPathWith('TeamNames'))
+    const LeagueEntry = _state.setObject(pathTo('LeagueEntry'), new Block.State(stateProps(pathTo('LeagueEntry')).props))
+    const canDragItem = undefined
+    const styles = undefined
+
+    return React.createElement(ItemSetItem, {path: props.path, item: $item, itemId: $itemId, index: $index, onClick, canDragItem, styles},
+        React.createElement(Block, elProps(pathTo('LeagueEntry')).layout('horizontal').styles(elProps(pathTo('LeagueEntry.Styles')).borderWidth('2px').borderColor('black').props).props,
+            React.createElement(TextElement, elProps(pathTo('Name')).styles(elProps(pathTo('Name.Styles')).width('8em').props).content(TeamNames.value[$item.TeamId]).props),
+            React.createElement(TextElement, elProps(pathTo('Total')).styles(elProps(pathTo('Total.Styles')).textAlign('right').width('3em').props).content($item.Total).props),
+            React.createElement(TextElement, elProps(pathTo('Players')).styles(elProps(pathTo('Players.Styles')).textAlign('right').width('3em').props).content($item.Count).props),
+            React.createElement(TextElement, elProps(pathTo('Average')).styles(elProps(pathTo('Average.Styles')).width('3em').textAlign('right').props).content($item.Average).props),
+            React.createElement(TextElement, elProps(pathTo('Highest')).styles(elProps(pathTo('Highest.Styles')).width('3em').textAlign('right').props).content($item.Max).props),
+    ),
+    )
+})
+
+
+function PotdLeagues(props) {
+    const pathTo = name => props.path + '.' + name
+    const {Page, TextElement, Calculation, Block, SelectInput, ItemSet} = Elemento.components
+    const {ForEach, Sort, DateVal, DateFormat, If, IsNull, And, NotNull, Count} = Elemento.globalFunctions
+    const _state = Elemento.useGetStore()
+    const PuzzlesServerApp = _state.useObject('Puzzles.PuzzlesServerApp')
+    const DayPuzzles = _state.setObject(pathTo('DayPuzzles'), new Calculation.State(stateProps(pathTo('DayPuzzles')).value(PuzzlesServerApp.DayPuzzleData()).props))
+    const DaysAvailable = _state.setObject(pathTo('DaysAvailable'), new Calculation.State(stateProps(pathTo('DaysAvailable')).value(ForEach(DayPuzzles, ($item, $index) => $item.id)).props))
+    const DayList = _state.setObject(pathTo('DayList'), new Calculation.State(stateProps(pathTo('DayList')).value(Sort(DaysAvailable, $item => -DateVal($item))).props))
+    const SelectorLayout = _state.setObject(pathTo('SelectorLayout'), new Block.State(stateProps(pathTo('SelectorLayout')).props))
+    const DaySelector = _state.setObject(pathTo('DaySelector'), new SelectInput.State(stateProps(pathTo('DaySelector')).props))
+    const SelectedDate = _state.setObject(pathTo('SelectedDate'), new Calculation.State(stateProps(pathTo('SelectedDate')).value(DateVal(DaySelector.value,  'd MMMM')?.toISOString().substring(0, 10)).props))
+    const TeamNames = _state.setObject(pathTo('TeamNames'), new Calculation.State(stateProps(pathTo('TeamNames')).value(PuzzlesServerApp.TeamNames()).props))
+    const SortedResults = _state.setObject(pathTo('SortedResults'), new Calculation.State(stateProps(pathTo('SortedResults')).value(If(SelectedDate, () => Sort(PuzzlesServerApp.PotdLeagueData(SelectedDate.value), $item => -$item.Total), () => [])).props))
+    const LeagueTable = _state.setObject(pathTo('LeagueTable'), new Block.State(stateProps(pathTo('LeagueTable')).props))
+    const LeagueTitle = _state.setObject(pathTo('LeagueTitle'), new Block.State(stateProps(pathTo('LeagueTitle')).props))
+    const ItemLayout = _state.setObject(pathTo('ItemLayout'), new Block.State(stateProps(pathTo('ItemLayout')).props))
+    const LeagueItems = _state.setObject(pathTo('LeagueItems'), new ItemSet.State(stateProps(pathTo('LeagueItems')).items(SortedResults).props))
+    Elemento.elementoDebug(() => eval(Elemento.useDebugExpr()))
+
+    return React.createElement(Page, elProps(props.path).props,
+        React.createElement(TextElement, elProps(pathTo('Title')).styles(elProps(pathTo('Title.Styles')).fontSize('20').color('green').props).content('Puzzle of the Day Leagues').props),
+        React.createElement(Calculation, elProps(pathTo('DayPuzzles')).props),
+        React.createElement(Calculation, elProps(pathTo('DaysAvailable')).props),
+        React.createElement(Calculation, elProps(pathTo('DayList')).props),
+        React.createElement(Block, elProps(pathTo('SelectorLayout')).layout('horizontal').styles(elProps(pathTo('SelectorLayout.Styles')).width('100%').props).props,
+            React.createElement(SelectInput, elProps(pathTo('DaySelector')).label('Day').values(ForEach(DayList, ($item, $index) => DateFormat(DateVal($item), 'd MMMM'))).styles(elProps(pathTo('DaySelector.Styles')).minWidth('10em').props).props),
+            React.createElement(TextElement, elProps(pathTo('PuzzleName')).styles(elProps(pathTo('PuzzleName.Styles')).color('green').fontSize('20').props).content(DayPuzzles.value?.[SelectedDate.value]?.Name).props),
+    ),
+        React.createElement(Calculation, elProps(pathTo('SelectedDate')).props),
+        React.createElement(Calculation, elProps(pathTo('TeamNames')).props),
+        React.createElement(Calculation, elProps(pathTo('SortedResults')).props),
+        React.createElement(Block, elProps(pathTo('LeagueTable')).layout('vertical').styles(elProps(pathTo('LeagueTable.Styles')).padding('0').props).props,
+            React.createElement(Block, elProps(pathTo('LeagueTitle')).layout('horizontal').styles(elProps(pathTo('LeagueTitle.Styles')).backgroundColor('#fed867').padding('2px 5px').props).props,
+            React.createElement(TextElement, elProps(pathTo('Name')).styles(elProps(pathTo('Name.Styles')).width('8em').props).content('Team').props),
+            React.createElement(TextElement, elProps(pathTo('Total')).styles(elProps(pathTo('Total.Styles')).textAlign('center').width('3em').props).content('Total').props),
+            React.createElement(TextElement, elProps(pathTo('Players')).styles(elProps(pathTo('Players.Styles')).textAlign('center').width('3em').props).content('Players').props),
+            React.createElement(TextElement, elProps(pathTo('Average')).styles(elProps(pathTo('Average.Styles')).width('3em').textAlign('center').props).content('Average').props),
+            React.createElement(TextElement, elProps(pathTo('Highest')).styles(elProps(pathTo('Highest.Styles')).width('4em').textAlign('center').props).content('Highest').props),
+    ),
+            React.createElement(Block, elProps(pathTo('ItemLayout')).layout('vertical').props,
+            React.createElement(ItemSet, elProps(pathTo('LeagueItems')).itemContentComponent(PotdLeagues_LeagueItemsItem).props),
+    ),
+            React.createElement(TextElement, elProps(pathTo('NoSelectionText')).show(IsNull(SelectedDate)).content('Please select a Day').props),
+            React.createElement(TextElement, elProps(pathTo('NoResultsText')).show(And(NotNull(SelectedDate), Count(SortedResults) === 0)).content('No results for this day').props),
+    ),
+    )
+}
+PotdLeagues.notLoggedInPage = 'GeneralLogin'
+
 // Terms.js
 function Terms(props) {
     const pathTo = name => props.path + '.' + name
@@ -635,7 +709,7 @@ function configPuzzlesServer() {
 
         functions: {
             PuzzleOfTheDay: {
-                params: []
+                params: ['date']
             },
 
             UpdateUserData: {
@@ -676,7 +750,19 @@ function configPuzzlesServer() {
             },
 
             PotdLeagueData: {
+                params: ['date']
+            },
+
+            PuzzleDayLeagueData: {
                 params: ['puzzleId', 'date']
+            },
+
+            TeamNames: {
+                params: []
+            },
+
+            DayPuzzleData: {
+                params: []
             }
         }
     };
@@ -686,7 +772,7 @@ export default function Puzzles(props) {
     const pathTo = name => 'Puzzles' + '.' + name
     const {App, WebFileDataStore, FirestoreDataStore, ServerAppConnector, Collection, AppBar, Image, TextElement, Block, Button, Menu, MenuItem, UserLogon, Calculation} = Elemento.components
     const {If, And, Log, Record, Now, Not} = Elemento.globalFunctions
-    const pages = {HomePage, AboutPage, TodaysPuzzle, ArchivedPuzzle, PuzzleArchive, GamesPlayed, MyTeam, NewTeam, NewInvite, JoinTeam, JoinTeamLogin, GeneralLogin, LeaveTeam, PlayerLeagues, Terms, Privacy}
+    const pages = {HomePage, AboutPage, TodaysPuzzle, ArchivedPuzzle, PuzzleArchive, GamesPlayed, MyTeam, NewTeam, NewInvite, JoinTeam, JoinTeamLogin, GeneralLogin, LeaveTeam, PlayerLeagues, PotdLeagues, Terms, Privacy}
     const appContext = Elemento.useGetAppContext()
     const {CurrentUser, Query, Add, GetIfExists, Get} = Elemento.appFunctions
     const _state = Elemento.useGetStore()
