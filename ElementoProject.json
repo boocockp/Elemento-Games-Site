@@ -278,6 +278,17 @@
                       "kind": "MenuItem"
                     },
                     {
+                      "id": "menuitem_16",
+                      "name": "Potd Leagues",
+                      "properties": {
+                        "action": {
+                          "expr": "ShowPage(PotdLeagues)"
+                        },
+                        "label": "POTD Leagues"
+                      },
+                      "kind": "MenuItem"
+                    },
+                    {
                       "id": "menuitem_12",
                       "name": "My Team",
                       "properties": {
@@ -381,6 +392,28 @@
                       "expr": "ShowPage(GamesPlayed)"
                     },
                     "label": "Games Played"
+                  },
+                  "kind": "MenuItem"
+                },
+                {
+                  "id": "menuitem_17",
+                  "name": "Player Leagues 2",
+                  "properties": {
+                    "action": {
+                      "expr": "ShowPage(PlayerLeagues)"
+                    },
+                    "label": "Player Leagues"
+                  },
+                  "kind": "MenuItem"
+                },
+                {
+                  "id": "menuitem_18",
+                  "name": "Potd Leagues 2",
+                  "properties": {
+                    "action": {
+                      "expr": "ShowPage(PotdLeagues)"
+                    },
+                    "label": "POTD Leagues"
                   },
                   "kind": "MenuItem"
                 },
@@ -2205,6 +2238,16 @@
               "kind": "Calculation"
             },
             {
+              "id": "calculation_33",
+              "name": "Day Selector Items",
+              "properties": {
+                "calculation": {
+                  "expr": "ForEach(DayList, DateFormat(DateVal($item), 'd MMMM'))"
+                }
+              },
+              "kind": "Calculation"
+            },
+            {
               "id": "block_38",
               "name": "Selector Layout",
               "properties": {
@@ -2220,10 +2263,13 @@
                   "properties": {
                     "label": "Day",
                     "values": {
-                      "expr": "ForEach(DayList, DateFormat(DateVal($item), 'd MMMM'))"
+                      "expr": "DaySelectorItems"
                     },
                     "styles": {
                       "minWidth": "10em"
+                    },
+                    "initialValue": {
+                      "expr": "ItemAt(DaySelectorItems, 0)"
                     }
                   },
                   "kind": "SelectInput"
@@ -2266,11 +2312,21 @@
               "kind": "Calculation"
             },
             {
+              "id": "data_8",
+              "name": "Sort Item",
+              "properties": {
+                "initialValue": {
+                  "expr": "'Total'"
+                }
+              },
+              "kind": "Data"
+            },
+            {
               "id": "calculation_29",
               "name": "Sorted Results",
               "properties": {
                 "calculation": {
-                  "expr": "If(SelectedDate, Sort(PuzzlesServerApp.PotdLeagueData(SelectedDate.value), -$item.Total), [])"
+                  "expr": "If(SelectedDate, Sort(PuzzlesServerApp.PotdLeagueData(SelectedDate.value), -$item[SortItem]), [])"
                 }
               },
               "kind": "Calculation"
@@ -2280,7 +2336,8 @@
               "name": "League Table",
               "properties": {
                 "styles": {
-                  "padding": "0"
+                  "padding": "0",
+                  "width": "100%"
                 }
               },
               "elements": [
@@ -2291,7 +2348,10 @@
                     "layout": "horizontal",
                     "styles": {
                       "backgroundColor": "#fed867",
-                      "padding": "2px 5px"
+                      "padding": "2px 5px",
+                      "height": "30px",
+                      "gap": "0",
+                      "width": "100%"
                     }
                   },
                   "elements": [
@@ -2301,58 +2361,94 @@
                       "properties": {
                         "content": "Team",
                         "styles": {
-                          "width": "8em"
+                          "paddingRight": "16px",
+                          "flexGrow": "1",
+                          "width": "8em",
+                          "maxWidth": "15em"
                         }
                       },
                       "kind": "Text"
                     },
                     {
-                      "id": "text_100",
+                      "id": "button_33",
                       "name": "Total",
                       "properties": {
-                        "content": "Total",
+                        "appearance": "link",
                         "styles": {
+                          "borderLeft": "1px solid gray",
+                          "padding": "0 8px",
                           "textAlign": "center",
-                          "width": "3em"
+                          "width": "3em",
+                          "backgroundColor": {
+                            "expr": "If(SortItem == 'Total', 'white')"
+                          }
+                        },
+                        "action": {
+                          "expr": "Set(SortItem, 'Total')"
                         }
                       },
-                      "kind": "Text"
+                      "kind": "Button"
                     },
                     {
-                      "id": "text_107",
+                      "id": "button_30",
                       "name": "Players",
                       "properties": {
-                        "content": "Players",
+                        "appearance": "link",
                         "styles": {
+                          "borderLeft": "1px solid gray",
+                          "padding": "0 8px",
                           "textAlign": "center",
-                          "width": "3em"
+                          "width": "3.5em",
+                          "backgroundColor": {
+                            "expr": "If(SortItem == 'Count', 'white')"
+                          }
+                        },
+                        "action": {
+                          "expr": "Set(SortItem, 'Count')"
                         }
                       },
-                      "kind": "Text"
+                      "kind": "Button"
                     },
                     {
-                      "id": "text_101",
+                      "id": "button_31",
                       "name": "Average",
                       "properties": {
-                        "content": "Average",
+                        "appearance": "link",
                         "styles": {
+                          "borderLeft": "1px solid gray",
+                          "padding": "0 8px",
+                          "textAlign": "center",
                           "width": "3em",
-                          "textAlign": "center"
-                        }
+                          "backgroundColor": {
+                            "expr": "If(SortItem == 'Average', 'white')"
+                          }
+                        },
+                        "action": {
+                          "expr": "Set(SortItem, 'Average')"
+                        },
+                        "content": "Avg"
                       },
-                      "kind": "Text"
+                      "kind": "Button"
                     },
                     {
-                      "id": "text_108",
+                      "id": "button_32",
                       "name": "Highest",
                       "properties": {
-                        "content": "Highest",
+                        "appearance": "link",
                         "styles": {
-                          "width": "4em",
-                          "textAlign": "center"
+                          "borderLeft": "1px solid gray",
+                          "padding": "0 8px",
+                          "textAlign": "center",
+                          "width": "3em",
+                          "backgroundColor": {
+                            "expr": "If(SortItem == 'Max', 'white')"
+                          }
+                        },
+                        "action": {
+                          "expr": "Set(SortItem, 'Max')"
                         }
                       },
-                      "kind": "Text"
+                      "kind": "Button"
                     }
                   ],
                   "kind": "Block"
@@ -2360,7 +2456,11 @@
                 {
                   "id": "block_36",
                   "name": "Item Layout",
-                  "properties": {},
+                  "properties": {
+                    "styles": {
+                      "width": "100%"
+                    }
+                  },
                   "elements": [
                     {
                       "id": "itemset_5",
@@ -2368,6 +2468,9 @@
                       "properties": {
                         "items": {
                           "expr": "SortedResults"
+                        },
+                        "itemStyles": {
+                          "width": "100%"
                         }
                       },
                       "elements": [
@@ -2378,7 +2481,8 @@
                             "layout": "horizontal",
                             "styles": {
                               "borderWidth": "2px",
-                              "borderColor": "black"
+                              "borderColor": "black",
+                              "width": "100%"
                             }
                           },
                           "elements": [
@@ -2390,7 +2494,9 @@
                                   "expr": "TeamNames.value[$item.TeamId]"
                                 },
                                 "styles": {
-                                  "width": "8em"
+                                  "width": "8em",
+                                  "flexGrow": "1",
+                                  "maxWidth": "15em"
                                 }
                               },
                               "kind": "Text"
@@ -2418,7 +2524,7 @@
                                 },
                                 "styles": {
                                   "textAlign": "right",
-                                  "width": "3em"
+                                  "width": "3.5em"
                                 }
                               },
                               "kind": "Text"

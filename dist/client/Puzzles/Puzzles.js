@@ -609,13 +609,13 @@ const PotdLeagues_LeagueItemsItem = React.memo(function PotdLeagues_LeagueItemsI
     const TeamNames = _state.useObject(parentPathWith('TeamNames'))
     const LeagueEntry = _state.setObject(pathTo('LeagueEntry'), new Block.State(stateProps(pathTo('LeagueEntry')).props))
     const canDragItem = undefined
-    const styles = undefined
+    const styles = elProps(pathTo('LeagueItems.Styles')).width('100%').props
 
     return React.createElement(ItemSetItem, {path: props.path, item: $item, itemId: $itemId, index: $index, onClick, canDragItem, styles},
-        React.createElement(Block, elProps(pathTo('LeagueEntry')).layout('horizontal').styles(elProps(pathTo('LeagueEntry.Styles')).borderWidth('2px').borderColor('black').props).props,
-            React.createElement(TextElement, elProps(pathTo('Name')).styles(elProps(pathTo('Name.Styles')).width('8em').props).content(TeamNames.value[$item.TeamId]).props),
+        React.createElement(Block, elProps(pathTo('LeagueEntry')).layout('horizontal').styles(elProps(pathTo('LeagueEntry.Styles')).borderWidth('2px').borderColor('black').width('100%').props).props,
+            React.createElement(TextElement, elProps(pathTo('Name')).styles(elProps(pathTo('Name.Styles')).width('8em').flexGrow('1').maxWidth('15em').props).content(TeamNames.value[$item.TeamId]).props),
             React.createElement(TextElement, elProps(pathTo('Total')).styles(elProps(pathTo('Total.Styles')).textAlign('right').width('3em').props).content($item.Total).props),
-            React.createElement(TextElement, elProps(pathTo('Players')).styles(elProps(pathTo('Players.Styles')).textAlign('right').width('3em').props).content($item.Count).props),
+            React.createElement(TextElement, elProps(pathTo('Players')).styles(elProps(pathTo('Players.Styles')).textAlign('right').width('3.5em').props).content($item.Count).props),
             React.createElement(TextElement, elProps(pathTo('Average')).styles(elProps(pathTo('Average.Styles')).width('3em').textAlign('right').props).content($item.Average).props),
             React.createElement(TextElement, elProps(pathTo('Highest')).styles(elProps(pathTo('Highest.Styles')).width('3em').textAlign('right').props).content($item.Max).props),
     ),
@@ -625,22 +625,37 @@ const PotdLeagues_LeagueItemsItem = React.memo(function PotdLeagues_LeagueItemsI
 
 function PotdLeagues(props) {
     const pathTo = name => props.path + '.' + name
-    const {Page, TextElement, Calculation, Block, SelectInput, ItemSet} = Elemento.components
-    const {ForEach, Sort, DateVal, DateFormat, If, IsNull, And, NotNull, Count} = Elemento.globalFunctions
+    const {Page, TextElement, Calculation, Block, SelectInput, Data, Button, ItemSet} = Elemento.components
+    const {ForEach, Sort, DateVal, DateFormat, ItemAt, If, IsNull, And, NotNull, Count} = Elemento.globalFunctions
+    const {Set} = Elemento.appFunctions
     const _state = Elemento.useGetStore()
     const PuzzlesServerApp = _state.useObject('Puzzles.PuzzlesServerApp')
     const DayPuzzles = _state.setObject(pathTo('DayPuzzles'), new Calculation.State(stateProps(pathTo('DayPuzzles')).value(PuzzlesServerApp.DayPuzzleData()).props))
     const DaysAvailable = _state.setObject(pathTo('DaysAvailable'), new Calculation.State(stateProps(pathTo('DaysAvailable')).value(ForEach(DayPuzzles, ($item, $index) => $item.id)).props))
     const DayList = _state.setObject(pathTo('DayList'), new Calculation.State(stateProps(pathTo('DayList')).value(Sort(DaysAvailable, $item => -DateVal($item))).props))
+    const DaySelectorItems = _state.setObject(pathTo('DaySelectorItems'), new Calculation.State(stateProps(pathTo('DaySelectorItems')).value(ForEach(DayList, ($item, $index) => DateFormat(DateVal($item), 'd MMMM'))).props))
     const SelectorLayout = _state.setObject(pathTo('SelectorLayout'), new Block.State(stateProps(pathTo('SelectorLayout')).props))
-    const DaySelector = _state.setObject(pathTo('DaySelector'), new SelectInput.State(stateProps(pathTo('DaySelector')).props))
+    const DaySelector = _state.setObject(pathTo('DaySelector'), new SelectInput.State(stateProps(pathTo('DaySelector')).value(ItemAt(DaySelectorItems, 0)).props))
     const SelectedDate = _state.setObject(pathTo('SelectedDate'), new Calculation.State(stateProps(pathTo('SelectedDate')).value(DateVal(DaySelector.value,  'd MMMM')?.toISOString().substring(0, 10)).props))
     const TeamNames = _state.setObject(pathTo('TeamNames'), new Calculation.State(stateProps(pathTo('TeamNames')).value(PuzzlesServerApp.TeamNames()).props))
-    const SortedResults = _state.setObject(pathTo('SortedResults'), new Calculation.State(stateProps(pathTo('SortedResults')).value(If(SelectedDate, () => Sort(PuzzlesServerApp.PotdLeagueData(SelectedDate.value), $item => -$item.Total), () => [])).props))
+    const SortItem = _state.setObject(pathTo('SortItem'), new Data.State(stateProps(pathTo('SortItem')).value('Total').props))
+    const SortedResults = _state.setObject(pathTo('SortedResults'), new Calculation.State(stateProps(pathTo('SortedResults')).value(If(SelectedDate, () => Sort(PuzzlesServerApp.PotdLeagueData(SelectedDate.value), $item => -$item[SortItem]), () => [])).props))
     const LeagueTable = _state.setObject(pathTo('LeagueTable'), new Block.State(stateProps(pathTo('LeagueTable')).props))
     const LeagueTitle = _state.setObject(pathTo('LeagueTitle'), new Block.State(stateProps(pathTo('LeagueTitle')).props))
     const ItemLayout = _state.setObject(pathTo('ItemLayout'), new Block.State(stateProps(pathTo('ItemLayout')).props))
     const LeagueItems = _state.setObject(pathTo('LeagueItems'), new ItemSet.State(stateProps(pathTo('LeagueItems')).items(SortedResults).props))
+    const Total_action = React.useCallback(wrapFn(pathTo('Total'), 'action', () => {
+        Set(SortItem, 'Total')
+    }), [SortItem])
+    const Players_action = React.useCallback(wrapFn(pathTo('Players'), 'action', () => {
+        Set(SortItem, 'Count')
+    }), [SortItem])
+    const Average_action = React.useCallback(wrapFn(pathTo('Average'), 'action', () => {
+        Set(SortItem, 'Average')
+    }), [SortItem])
+    const Highest_action = React.useCallback(wrapFn(pathTo('Highest'), 'action', () => {
+        Set(SortItem, 'Max')
+    }), [SortItem])
     Elemento.elementoDebug(() => eval(Elemento.useDebugExpr()))
 
     return React.createElement(Page, elProps(props.path).props,
@@ -648,22 +663,24 @@ function PotdLeagues(props) {
         React.createElement(Calculation, elProps(pathTo('DayPuzzles')).props),
         React.createElement(Calculation, elProps(pathTo('DaysAvailable')).props),
         React.createElement(Calculation, elProps(pathTo('DayList')).props),
+        React.createElement(Calculation, elProps(pathTo('DaySelectorItems')).props),
         React.createElement(Block, elProps(pathTo('SelectorLayout')).layout('horizontal').styles(elProps(pathTo('SelectorLayout.Styles')).width('100%').props).props,
-            React.createElement(SelectInput, elProps(pathTo('DaySelector')).label('Day').values(ForEach(DayList, ($item, $index) => DateFormat(DateVal($item), 'd MMMM'))).styles(elProps(pathTo('DaySelector.Styles')).minWidth('10em').props).props),
+            React.createElement(SelectInput, elProps(pathTo('DaySelector')).label('Day').values(DaySelectorItems).styles(elProps(pathTo('DaySelector.Styles')).minWidth('10em').props).props),
             React.createElement(TextElement, elProps(pathTo('PuzzleName')).styles(elProps(pathTo('PuzzleName.Styles')).color('green').fontSize('20').props).content(DayPuzzles.value?.[SelectedDate.value]?.Name).props),
     ),
         React.createElement(Calculation, elProps(pathTo('SelectedDate')).props),
         React.createElement(Calculation, elProps(pathTo('TeamNames')).props),
+        React.createElement(Data, elProps(pathTo('SortItem')).display(false).props),
         React.createElement(Calculation, elProps(pathTo('SortedResults')).props),
-        React.createElement(Block, elProps(pathTo('LeagueTable')).layout('vertical').styles(elProps(pathTo('LeagueTable.Styles')).padding('0').props).props,
-            React.createElement(Block, elProps(pathTo('LeagueTitle')).layout('horizontal').styles(elProps(pathTo('LeagueTitle.Styles')).backgroundColor('#fed867').padding('2px 5px').props).props,
-            React.createElement(TextElement, elProps(pathTo('Name')).styles(elProps(pathTo('Name.Styles')).width('8em').props).content('Team').props),
-            React.createElement(TextElement, elProps(pathTo('Total')).styles(elProps(pathTo('Total.Styles')).textAlign('center').width('3em').props).content('Total').props),
-            React.createElement(TextElement, elProps(pathTo('Players')).styles(elProps(pathTo('Players.Styles')).textAlign('center').width('3em').props).content('Players').props),
-            React.createElement(TextElement, elProps(pathTo('Average')).styles(elProps(pathTo('Average.Styles')).width('3em').textAlign('center').props).content('Average').props),
-            React.createElement(TextElement, elProps(pathTo('Highest')).styles(elProps(pathTo('Highest.Styles')).width('4em').textAlign('center').props).content('Highest').props),
+        React.createElement(Block, elProps(pathTo('LeagueTable')).layout('vertical').styles(elProps(pathTo('LeagueTable.Styles')).padding('0').width('100%').props).props,
+            React.createElement(Block, elProps(pathTo('LeagueTitle')).layout('horizontal').styles(elProps(pathTo('LeagueTitle.Styles')).backgroundColor('#fed867').padding('2px 5px').height('30px').gap('0').width('100%').props).props,
+            React.createElement(TextElement, elProps(pathTo('Name')).styles(elProps(pathTo('Name.Styles')).paddingRight('16px').flexGrow('1').width('8em').maxWidth('15em').props).content('Team').props),
+            React.createElement(Button, elProps(pathTo('Total')).content('Total').appearance('link').action(Total_action).styles(elProps(pathTo('Total.Styles')).borderLeft('1px solid gray').padding('0 8px').textAlign('center').width('3em').backgroundColor(If(SortItem == 'Total', 'white')).props).props),
+            React.createElement(Button, elProps(pathTo('Players')).content('Players').appearance('link').action(Players_action).styles(elProps(pathTo('Players.Styles')).borderLeft('1px solid gray').padding('0 8px').textAlign('center').width('3.5em').backgroundColor(If(SortItem == 'Count', 'white')).props).props),
+            React.createElement(Button, elProps(pathTo('Average')).content('Avg').appearance('link').action(Average_action).styles(elProps(pathTo('Average.Styles')).borderLeft('1px solid gray').padding('0 8px').textAlign('center').width('3em').backgroundColor(If(SortItem == 'Average', 'white')).props).props),
+            React.createElement(Button, elProps(pathTo('Highest')).content('Highest').appearance('link').action(Highest_action).styles(elProps(pathTo('Highest.Styles')).borderLeft('1px solid gray').padding('0 8px').textAlign('center').width('3em').backgroundColor(If(SortItem == 'Max', 'white')).props).props),
     ),
-            React.createElement(Block, elProps(pathTo('ItemLayout')).layout('vertical').props,
+            React.createElement(Block, elProps(pathTo('ItemLayout')).layout('vertical').styles(elProps(pathTo('ItemLayout.Styles')).width('100%').props).props,
             React.createElement(ItemSet, elProps(pathTo('LeagueItems')).itemContentComponent(PotdLeagues_LeagueItemsItem).props),
     ),
             React.createElement(TextElement, elProps(pathTo('NoSelectionText')).show(IsNull(SelectedDate)).content('Please select a Day').props),
@@ -834,6 +851,9 @@ DayPuzzles`).props))
     const PlayerLeagues_action = React.useCallback(wrapFn(pathTo('PlayerLeagues'), 'action', async () => {
         await ShowPage(PlayerLeagues)
     }), [])
+    const PotdLeagues_action = React.useCallback(wrapFn(pathTo('PotdLeagues'), 'action', async () => {
+        await ShowPage(PotdLeagues)
+    }), [])
     const MyTeam_action = React.useCallback(wrapFn(pathTo('MyTeam'), 'action', async () => {
         await ShowPage(MyTeam)
     }), [])
@@ -858,6 +878,12 @@ DayPuzzles`).props))
     const GamesPlayed2_action = React.useCallback(wrapFn(pathTo('GamesPlayed2'), 'action', async () => {
         await ShowPage(GamesPlayed)
     }), [])
+    const PlayerLeagues2_action = React.useCallback(wrapFn(pathTo('PlayerLeagues2'), 'action', async () => {
+        await ShowPage(PlayerLeagues)
+    }), [])
+    const PotdLeagues2_action = React.useCallback(wrapFn(pathTo('PotdLeagues2'), 'action', async () => {
+        await ShowPage(PotdLeagues)
+    }), [])
     const MyTeam2_action = React.useCallback(wrapFn(pathTo('MyTeam2'), 'action', async () => {
         await ShowPage(MyTeam)
     }), [])
@@ -881,6 +907,7 @@ DayPuzzles`).props))
             React.createElement(Menu, elProps(pathTo('MoreMenu')).label('More...').buttonStyles(elProps(pathTo('MoreMenu.Styles')).color('white').props).props,
             React.createElement(MenuItem, elProps(pathTo('GamesPlayed')).label('Games Played').action(GamesPlayed_action).props),
             React.createElement(MenuItem, elProps(pathTo('PlayerLeagues')).label('Player Leagues').action(PlayerLeagues_action).props),
+            React.createElement(MenuItem, elProps(pathTo('PotdLeagues')).label('POTD Leagues').action(PotdLeagues_action).props),
             React.createElement(MenuItem, elProps(pathTo('MyTeam')).label('My Team').action(MyTeam_action).props),
             React.createElement(MenuItem, elProps(pathTo('AboutItem')).label('About').action(AboutItem_action).props),
             React.createElement(MenuItem, elProps(pathTo('Terms')).label('Terms & Conditions').action(Terms_action).props),
@@ -892,6 +919,8 @@ DayPuzzles`).props))
             React.createElement(MenuItem, elProps(pathTo('TodaysPuzzle2')).label('Today\'s Game').action(TodaysPuzzle2_action).props),
             React.createElement(MenuItem, elProps(pathTo('Archive2')).label('All the Games').action(Archive2_action).props),
             React.createElement(MenuItem, elProps(pathTo('GamesPlayed2')).label('Games Played').action(GamesPlayed2_action).props),
+            React.createElement(MenuItem, elProps(pathTo('PlayerLeagues2')).label('Player Leagues').action(PlayerLeagues2_action).props),
+            React.createElement(MenuItem, elProps(pathTo('PotdLeagues2')).label('POTD Leagues').action(PotdLeagues2_action).props),
             React.createElement(MenuItem, elProps(pathTo('MyTeam2')).label('My Team').action(MyTeam2_action).props),
             React.createElement(MenuItem, elProps(pathTo('AboutItem2')).label('About').action(AboutItem2_action).props),
             React.createElement(MenuItem, elProps(pathTo('Terms2')).label('Terms & Conditions').action(Terms2_action).props),

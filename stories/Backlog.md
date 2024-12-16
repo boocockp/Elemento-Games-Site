@@ -56,3 +56,12 @@ Future stuff
 - Secure score recording
 - Report abuse or offensive content
 - Limit recorded plays per day - maybe 10?
+
+
+Styling
+-------
+
+- Dark grey for text
+- End game panel to light orange, green text, green border
+- Points is green on orange
+- Button theme primary colour is green
