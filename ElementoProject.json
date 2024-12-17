@@ -164,13 +164,24 @@
           },
           "elements": [
             {
+              "id": "calculation_3",
+              "name": "Narrow Screen",
+              "properties": {
+                "calculation": {
+                  "expr": "AppWidth() < 630"
+                }
+              },
+              "kind": "Calculation"
+            },
+            {
               "id": "image_1",
               "name": "Logo",
               "properties": {
                 "source": "puzzleteams_icon_plain.svg",
                 "styles": {
                   "width": "40",
-                  "borderRadius": "3"
+                  "borderRadius": "5",
+                  "border": "2px solid #888"
                 }
               },
               "kind": "Image"
@@ -183,6 +194,9 @@
                 "styles": {
                   "fontFamily": "Road Rage",
                   "fontSize": "32"
+                },
+                "show": {
+                  "expr": "Not(NarrowScreen)"
                 }
               },
               "kind": "Text"
@@ -191,78 +205,68 @@
               "id": "block_2",
               "name": "Nav Items",
               "properties": {
-                "layout": "horizontal",
-                "show": {
-                  "expr": "Not(NarrowScreen)"
-                }
+                "layout": "horizontal"
               },
               "elements": [
                 {
-                  "id": "button_17",
-                  "name": "Home",
+                  "id": "menu_3",
+                  "name": "Puzzles Menu",
                   "properties": {
-                    "appearance": "filled",
-                    "styles": {
-                      "backgroundColor": "orange",
-                      "marginTop": "5"
+                    "label": "Puzzles",
+                    "buttonStyles": {
+                      "color": "white"
                     },
-                    "action": {
-                      "expr": "ShowPage(HomePage)"
+                    "iconName": {
+                      "expr": "If(NarrowScreen, 'extension')"
                     }
                   },
-                  "kind": "Button"
-                },
-                {
-                  "id": "button_16",
-                  "name": "Todays Puzzle",
-                  "properties": {
-                    "appearance": "filled",
-                    "styles": {
-                      "backgroundColor": "orange",
-                      "textWrap": "nowrap",
-                      "marginTop": "5"
+                  "elements": [
+                    {
+                      "id": "menuitem_21",
+                      "name": "Todays Puzzle",
+                      "properties": {
+                        "label": "Puzzle of the Day",
+                        "action": {
+                          "expr": "ShowPage(TodaysPuzzle)"
+                        }
+                      },
+                      "kind": "MenuItem"
                     },
-                    "content": "Today's Game",
-                    "action": {
-                      "expr": "ShowPage(TodaysPuzzle)"
+                    {
+                      "id": "menuitem_20",
+                      "name": "Puzzle List",
+                      "properties": {
+                        "label": "All the Puzzles",
+                        "action": {
+                          "expr": "ShowPage(PuzzleArchive)"
+                        }
+                      },
+                      "kind": "MenuItem"
                     }
-                  },
-                  "kind": "Button"
-                },
-                {
-                  "id": "button_15",
-                  "name": "Archive",
-                  "properties": {
-                    "appearance": "filled",
-                    "styles": {
-                      "backgroundColor": "orange",
-                      "marginTop": "5"
-                    },
-                    "action": {
-                      "expr": "ShowPage(PuzzleArchive)"
-                    },
-                    "content": "All the Games"
-                  },
-                  "kind": "Button"
+                  ],
+                  "kind": "Menu"
                 },
                 {
                   "id": "menu_1",
-                  "name": "More Menu",
+                  "name": "Leagues Menu",
                   "properties": {
-                    "label": "More...",
+                    "label": "Leagues",
                     "buttonStyles": {
                       "color": "white"
+                    },
+                    "iconName": {
+                      "expr": "If(NarrowScreen, 'leaderboard')"
                     }
                   },
                   "elements": [
                     {
                       "id": "menuitem_10",
-                      "name": "Games Played",
+                      "name": "Your Scores",
                       "properties": {
                         "action": {
-                          "expr": "ShowPage(GamesPlayed)"
+                          "expr": "ShowPage(YourScores)"
                         },
-                        "label": "Games Played"
+                        "label": "Your Scores"
                       },
                       "kind": "MenuItem"
                     },
@@ -287,49 +291,6 @@
                         "label": "POTD Leagues"
                       },
                       "kind": "MenuItem"
-                    },
-                    {
-                      "id": "menuitem_12",
-                      "name": "My Team",
-                      "properties": {
-                        "action": {
-                          "expr": "ShowPage(MyTeam)"
-                        }
-                      },
-                      "kind": "MenuItem"
-                    },
-                    {
-                      "id": "menuitem_1",
-                      "name": "About Item",
-                      "properties": {
-                        "action": {
-                          "expr": "ShowPage(AboutPage)"
-                        },
-                        "label": "About"
-                      },
-                      "kind": "MenuItem"
-                    },
-                    {
-                      "id": "menuitem_2",
-                      "name": "Terms",
-                      "properties": {
-                        "action": {
-                          "expr": "ShowPage(Terms)"
-                        },
-                        "label": "Terms & Conditions"
-                      },
-                      "kind": "MenuItem"
-                    },
-                    {
-                      "id": "menuitem_3",
-                      "name": "Privacy",
-                      "properties": {
-                        "action": {
-                          "expr": "ShowPage(Privacy)"
-                        },
-                        "label": "Privacy & Cookies"
-                      },
-                      "kind": "MenuItem"
                     }
                   ],
                   "kind": "Menu"
@@ -339,21 +300,28 @@
             },
             {
               "id": "menu_2",
-              "name": "Hamburger Menu",
+              "name": "Other Menu",
               "properties": {
                 "label": "Menu",
                 "buttonStyles": {
                   "color": "white"
                 },
-                "iconName": "menu",
-                "show": {
-                  "expr": "NarrowScreen"
-                }
+                "iconName": "menu"
               },
               "elements": [
                 {
+                  "id": "menuitem_25",
+                  "name": "Your Team",
+                  "properties": {
+                    "action": {
+                      "expr": "ShowPage(YourTeam)"
+                    }
+                  },
+                  "kind": "MenuItem"
+                },
+                {
                   "id": "menuitem_7",
-                  "name": "Home 2",
+                  "name": "Home",
                   "properties": {
                     "label": "Home",
                     "action": {
@@ -363,74 +331,8 @@
                   "kind": "MenuItem"
                 },
                 {
-                  "id": "menuitem_8",
-                  "name": "Todays Puzzle 2",
-                  "properties": {
-                    "label": "Today's Game",
-                    "action": {
-                      "expr": "ShowPage(TodaysPuzzle)"
-                    }
-                  },
-                  "kind": "MenuItem"
-                },
-                {
-                  "id": "menuitem_9",
-                  "name": "Archive 2",
-                  "properties": {
-                    "label": "All the Games",
-                    "action": {
-                      "expr": "ShowPage(PuzzleArchive)"
-                    }
-                  },
-                  "kind": "MenuItem"
-                },
-                {
-                  "id": "menuitem_11",
-                  "name": "Games Played 2",
-                  "properties": {
-                    "action": {
-                      "expr": "ShowPage(GamesPlayed)"
-                    },
-                    "label": "Games Played"
-                  },
-                  "kind": "MenuItem"
-                },
-                {
-                  "id": "menuitem_17",
-                  "name": "Player Leagues 2",
-                  "properties": {
-                    "action": {
-                      "expr": "ShowPage(PlayerLeagues)"
-                    },
-                    "label": "Player Leagues"
-                  },
-                  "kind": "MenuItem"
-                },
-                {
-                  "id": "menuitem_18",
-                  "name": "Potd Leagues 2",
-                  "properties": {
-                    "action": {
-                      "expr": "ShowPage(PotdLeagues)"
-                    },
-                    "label": "POTD Leagues"
-                  },
-                  "kind": "MenuItem"
-                },
-                {
-                  "id": "menuitem_14",
-                  "name": "My Team 2",
-                  "properties": {
-                    "action": {
-                      "expr": "ShowPage(MyTeam)"
-                    },
-                    "label": "My Team"
-                  },
-                  "kind": "MenuItem"
-                },
-                {
                   "id": "menuitem_4",
-                  "name": "About Item 2",
+                  "name": "About Item",
                   "properties": {
                     "action": {
                       "expr": "ShowPage(AboutPage)"
@@ -441,7 +343,7 @@
                 },
                 {
                   "id": "menuitem_5",
-                  "name": "Terms 2",
+                  "name": "Terms",
                   "properties": {
                     "action": {
                       "expr": "ShowPage(Terms)"
@@ -452,7 +354,7 @@
                 },
                 {
                   "id": "menuitem_6",
-                  "name": "Privacy 2",
+                  "name": "Privacy",
                   "properties": {
                     "action": {
                       "expr": "ShowPage(Privacy)"
@@ -469,16 +371,6 @@
               "name": "User Logon 1",
               "properties": {},
               "kind": "UserLogon"
-            },
-            {
-              "id": "calculation_3",
-              "name": "Narrow Screen",
-              "properties": {
-                "calculation": {
-                  "expr": "AppWidth() < 630"
-                }
-              },
-              "kind": "Calculation"
             }
           ],
           "kind": "AppBar"
@@ -514,7 +406,7 @@
               "id": "button_6",
               "name": "Todays Puzzle Button",
               "properties": {
-                "content": "Today's Featured Puzzle",
+                "content": "Try the Puzzle of the Day",
                 "styles": {
                   "backgroundColor": "orange",
                   "color": "white",
@@ -529,7 +421,7 @@
             },
             {
               "id": "button_7",
-              "name": "Game Archive",
+              "name": "All Puzzles",
               "properties": {
                 "appearance": "link",
                 "action": {
@@ -582,7 +474,7 @@
               "id": "text_18",
               "name": "Para 1",
               "properties": {
-                "content": "Challenge your mind with a fresh game or puzzle every day.\nWord puzzles, number games, visual brainteasers and more.\nEach takes less than 5 minutes, so you can fit it in whenever you want."
+                "content": "Challenge your mind with a fresh puzzle every day.\nWord puzzles, number games, visual brainteasers and more.\nEach takes less than 5 minutes, so you can fit it in whenever you want."
               },
               "kind": "Text"
             },
@@ -632,7 +524,7 @@
               "id": "button_10",
               "name": "Todays Puzzle Button",
               "properties": {
-                "content": "Today's Featured Game",
+                "content": "Puzzle of the Day",
                 "styles": {
                   "backgroundColor": "orange",
                   "color": "white",
@@ -656,7 +548,7 @@
                 "styles": {
                   "fontSize": "20"
                 },
-                "content": "All the Games"
+                "content": "All the Puzzles"
               },
               "kind": "Button"
             }
@@ -677,7 +569,7 @@
           "elements": [
             {
               "id": "frame_3",
-              "name": "Game Frame",
+              "name": "Puzzle Frame",
               "properties": {
                 "source": {
                   "expr": "PuzzleOfTheDay()?.url"
@@ -720,7 +612,7 @@
             },
             {
               "id": "frame_4",
-              "name": "Game Frame",
+              "name": "Puzzle Frame",
               "properties": {
                 "source": {
                   "expr": "Get(Puzzles, PuzzleId).url"
@@ -747,7 +639,7 @@
               "id": "text_14",
               "name": "Title",
               "properties": {
-                "content": "All the Games",
+                "content": "All Puzzles",
                 "styles": {
                   "fontSize": "20",
                   "color": "green"
@@ -814,14 +706,14 @@
         },
         {
           "id": "page_10",
-          "name": "Games Played",
+          "name": "Your Scores",
           "properties": {},
           "elements": [
             {
               "id": "text_27",
               "name": "Title",
               "properties": {
-                "content": "Games Played",
+                "content": "Your Scores",
                 "styles": {
                   "fontSize": "20",
                   "color": "green"
@@ -912,14 +804,14 @@
         },
         {
           "id": "page_17",
-          "name": "My Team",
+          "name": "Your Team",
           "properties": {},
           "elements": [
             {
               "id": "text_55",
               "name": "Title",
               "properties": {
-                "content": "My Team",
+                "content": "Your Team",
                 "styles": {
                   "fontSize": "20",
                   "color": "green"
@@ -1610,7 +1502,7 @@
                   "name": "Leave Team",
                   "properties": {
                     "action": {
-                      "expr": "PuzzlesServerApp.LeaveTeam()\nShowPage(MyTeam)"
+                      "expr": "PuzzlesServerApp.LeaveTeam()\nShowPage(YourTeam)"
                     }
                   },
                   "kind": "Button"
@@ -1866,19 +1758,19 @@
                   "id": "text_82",
                   "name": "Text 82",
                   "properties": {
-                    "content": "You can find out how to join or start a team on the My Team page."
+                    "content": "You can find out how to join or start a team on the Your Team page."
                   },
                   "elements": [],
                   "kind": "Text"
                 },
                 {
                   "id": "button_28",
-                  "name": "My Team Link",
+                  "name": "Your Team Link",
                   "properties": {
                     "appearance": "filled",
-                    "content": "Go To My Team",
+                    "content": "Go To Your Team",
                     "action": {
-                      "expr": "ShowPage(MyTeam)"
+                      "expr": "ShowPage(YourTeam)"
                     },
                     "styles": {
                       "display": "inline"

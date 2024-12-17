@@ -12,7 +12,7 @@ function HomePage(props) {
     const TodaysPuzzleButton_action = React.useCallback(wrapFn(pathTo('TodaysPuzzleButton'), 'action', async () => {
         await ShowPage(TodaysPuzzle)
     }), [])
-    const GameArchive_action = React.useCallback(wrapFn(pathTo('GameArchive'), 'action', async () => {
+    const AllPuzzles_action = React.useCallback(wrapFn(pathTo('AllPuzzles'), 'action', async () => {
         await ShowPage(PuzzleArchive)
     }), [])
     const AboutLink_action = React.useCallback(wrapFn(pathTo('AboutLink'), 'action', async () => {
@@ -25,8 +25,8 @@ function HomePage(props) {
         React.createElement(TextElement, elProps(pathTo('Para1')).content(`Word puzzles, number games, visual brainteasers - try a different one every day.
 
 Most take less than 5 minutes, so you can fit them in whenever you want.`).props),
-        React.createElement(Button, elProps(pathTo('TodaysPuzzleButton')).content('Today\'s Featured Puzzle').appearance('outline').action(TodaysPuzzleButton_action).styles(elProps(pathTo('TodaysPuzzleButton.Styles')).backgroundColor('orange').color('white').fontSize('28').textTransform('inherit').props).props),
-        React.createElement(Button, elProps(pathTo('GameArchive')).content('All the Puzzles').appearance('link').action(GameArchive_action).styles(elProps(pathTo('GameArchive.Styles')).fontSize('20').props).props),
+        React.createElement(Button, elProps(pathTo('TodaysPuzzleButton')).content('Try the Puzzle of the Day').appearance('outline').action(TodaysPuzzleButton_action).styles(elProps(pathTo('TodaysPuzzleButton.Styles')).backgroundColor('orange').color('white').fontSize('28').textTransform('inherit').props).props),
+        React.createElement(Button, elProps(pathTo('AllPuzzles')).content('All the Puzzles').appearance('link').action(AllPuzzles_action).styles(elProps(pathTo('AllPuzzles.Styles')).fontSize('20').props).props),
         React.createElement(Button, elProps(pathTo('AboutLink')).content('About Puzzle Teams').appearance('link').action(AboutLink_action).styles(elProps(pathTo('AboutLink.Styles')).fontSize('20').props).props),
     )
 }
@@ -48,7 +48,7 @@ function AboutPage(props) {
 
     return React.createElement(Page, elProps(props.path).props,
         React.createElement(TextElement, elProps(pathTo('Heading1')).styles(elProps(pathTo('Heading1.Styles')).fontFamily('Tahoma').fontSize('20').color('green').props).content('The No Boredom puzzle site!').props),
-        React.createElement(TextElement, elProps(pathTo('Para1')).content(`Challenge your mind with a fresh game or puzzle every day.
+        React.createElement(TextElement, elProps(pathTo('Para1')).content(`Challenge your mind with a fresh puzzle every day.
 Word puzzles, number games, visual brainteasers and more.
 Each takes less than 5 minutes, so you can fit it in whenever you want.`).props),
         React.createElement(TextElement, elProps(pathTo('Heading2')).styles(elProps(pathTo('Heading2.Styles')).fontFamily('Tahoma').fontSize('20').color('green').props).content('Team up with your friends').props),
@@ -59,8 +59,8 @@ The more people you get in your team, the better your chances!`).props),
         React.createElement(TextElement, elProps(pathTo('Text9')).content(`Puzzle Teams runs off your creativity.
 If you have an idea for a great puzzle, send it to us and you could see it on the site in a few days.
 Even better - program it yourself with the easy to use Elemento tool and get everyone playing the puzzle YOU created!`).props),
-        React.createElement(Button, elProps(pathTo('TodaysPuzzleButton')).content('Today\'s Featured Game').appearance('outline').action(TodaysPuzzleButton_action).styles(elProps(pathTo('TodaysPuzzleButton.Styles')).backgroundColor('orange').color('white').fontSize('20').textTransform('inherit').props).props),
-        React.createElement(Button, elProps(pathTo('PuzzleArchive')).content('All the Games').appearance('link').action(PuzzleArchive_action).styles(elProps(pathTo('PuzzleArchive.Styles')).fontSize('20').props).props),
+        React.createElement(Button, elProps(pathTo('TodaysPuzzleButton')).content('Puzzle of the Day').appearance('outline').action(TodaysPuzzleButton_action).styles(elProps(pathTo('TodaysPuzzleButton.Styles')).backgroundColor('orange').color('white').fontSize('20').textTransform('inherit').props).props),
+        React.createElement(Button, elProps(pathTo('PuzzleArchive')).content('All the Puzzles').appearance('link').action(PuzzleArchive_action).styles(elProps(pathTo('PuzzleArchive.Styles')).fontSize('20').props).props),
     )
 }
 
@@ -73,7 +73,7 @@ function TodaysPuzzle(props) {
     Elemento.elementoDebug(() => eval(Elemento.useDebugExpr()))
 
     return React.createElement(Page, elProps(props.path).styles(elProps(pathTo('TodaysPuzzle.Styles')).paddingLeft('0').paddingRight('0').paddingTop('0').paddingBottom('0').props).props,
-        React.createElement(Frame, elProps(pathTo('GameFrame')).source(PuzzleOfTheDay()?.url).styles(elProps(pathTo('GameFrame.Styles')).height('calc(100% + 16px)').width('calc(100% + 8px)').marginLeft('-4px').marginRight('-4px').marginTop('-8px').props).props),
+        React.createElement(Frame, elProps(pathTo('PuzzleFrame')).source(PuzzleOfTheDay()?.url).styles(elProps(pathTo('PuzzleFrame.Styles')).height('calc(100% + 16px)').width('calc(100% + 8px)').marginLeft('-4px').marginRight('-4px').marginTop('-8px').props).props),
     )
 }
 
@@ -91,7 +91,7 @@ function ArchivedPuzzle(props) {
 
     return React.createElement(Page, elProps(props.path).styles(elProps(pathTo('ArchivedPuzzle.Styles')).paddingLeft('0').paddingRight('0').paddingTop('0').padding('0').props).props,
         React.createElement(Calculation, elProps(pathTo('PuzzleId')).show(false).props),
-        React.createElement(Frame, elProps(pathTo('GameFrame')).source(Get(Puzzles, PuzzleId).url).styles(elProps(pathTo('GameFrame.Styles')).height('calc(100% + 16px)').width('calc(100% + 8px)').marginTop('-8px').marginLeft('-4px').marginRight('-4px').props).props),
+        React.createElement(Frame, elProps(pathTo('PuzzleFrame')).source(Get(Puzzles, PuzzleId).url).styles(elProps(pathTo('PuzzleFrame.Styles')).height('calc(100% + 16px)').width('calc(100% + 8px)').marginTop('-8px').marginLeft('-4px').marginRight('-4px').props).props),
     )
 }
 
@@ -130,13 +130,13 @@ function PuzzleArchive(props) {
     Elemento.elementoDebug(() => eval(Elemento.useDebugExpr()))
 
     return React.createElement(Page, elProps(props.path).props,
-        React.createElement(TextElement, elProps(pathTo('Title')).styles(elProps(pathTo('Title.Styles')).fontSize('20').color('green').props).content('All the Games').props),
+        React.createElement(TextElement, elProps(pathTo('Title')).styles(elProps(pathTo('Title.Styles')).fontSize('20').color('green').props).content('All Puzzles').props),
         React.createElement(ItemSet, elProps(pathTo('PuzzleItemSet')).itemContentComponent(PuzzleArchive_PuzzleItemSetItem).props),
     )
 }
 
-// GamesPlayed.js
-const GamesPlayed_PlaysItemSetItem = React.memo(function GamesPlayed_PlaysItemSetItem(props) {
+// YourScores.js
+const YourScores_PlaysItemSetItem = React.memo(function YourScores_PlaysItemSetItem(props) {
     const pathTo = name => props.path + '.' + name
     const parentPathWith = name => Elemento.parentPath(props.path) + '.' + name
     const {$item, $itemId, $index, $selected, onClick} = props
@@ -164,7 +164,7 @@ const GamesPlayed_PlaysItemSetItem = React.memo(function GamesPlayed_PlaysItemSe
 })
 
 
-function GamesPlayed(props) {
+function YourScores(props) {
     const pathTo = name => props.path + '.' + name
     const {Page, TextElement, ItemSet} = Elemento.components
     const {Query, CurrentUser} = Elemento.appFunctions
@@ -174,13 +174,13 @@ function GamesPlayed(props) {
     Elemento.elementoDebug(() => eval(Elemento.useDebugExpr()))
 
     return React.createElement(Page, elProps(props.path).props,
-        React.createElement(TextElement, elProps(pathTo('Title')).styles(elProps(pathTo('Title.Styles')).fontSize('20').color('green').props).content('Games Played').props),
-        React.createElement(ItemSet, elProps(pathTo('PlaysItemSet')).itemContentComponent(GamesPlayed_PlaysItemSetItem).props),
+        React.createElement(TextElement, elProps(pathTo('Title')).styles(elProps(pathTo('Title.Styles')).fontSize('20').color('green').props).content('Your Scores').props),
+        React.createElement(ItemSet, elProps(pathTo('PlaysItemSet')).itemContentComponent(YourScores_PlaysItemSetItem).props),
     )
 }
 
-// MyTeam.js
-function MyTeam(props) {
+// YourTeam.js
+function YourTeam(props) {
     const pathTo = name => props.path + '.' + name
     const {Page, TextElement, Calculation, Data, Block, Button, UserLogon} = Elemento.components
     const {NotNull, Not, And} = Elemento.globalFunctions
@@ -212,7 +212,7 @@ function MyTeam(props) {
     Elemento.elementoDebug(() => eval(Elemento.useDebugExpr()))
 
     return React.createElement(Page, elProps(props.path).props,
-        React.createElement(TextElement, elProps(pathTo('Title')).styles(elProps(pathTo('Title.Styles')).fontSize('20').color('green').props).content('My Team').props),
+        React.createElement(TextElement, elProps(pathTo('Title')).styles(elProps(pathTo('Title.Styles')).fontSize('20').color('green').props).content('Your Team').props),
         React.createElement(Calculation, elProps(pathTo('InTeam')).props),
         React.createElement(Data, elProps(pathTo('Team')).display(false).props),
         React.createElement(TextElement, elProps(pathTo('TeamsBlurb')).show(Not(InTeam)).content(`If you want to get the most out of Puzzle Teams ... join a Team!
@@ -434,7 +434,7 @@ function LeaveTeam(props) {
     const TeamOwnerBlock = _state.setObject(pathTo('TeamOwnerBlock'), new Block.State(stateProps(pathTo('TeamOwnerBlock')).props))
     const LeaveTeam_action = React.useCallback(wrapFn(pathTo('LeaveTeam'), 'action', async () => {
         await PuzzlesServerApp.LeaveTeam()
-        await ShowPage(MyTeam)
+        await ShowPage(YourTeam)
     }), [])
     Elemento.elementoDebug(() => eval(Elemento.useDebugExpr()))
 
@@ -543,8 +543,8 @@ function PlayerLeagues(props) {
     const LeagueTitle = _state.setObject(pathTo('LeagueTitle'), new Block.State(stateProps(pathTo('LeagueTitle')).props))
     const ItemLayout = _state.setObject(pathTo('ItemLayout'), new Block.State(stateProps(pathTo('ItemLayout')).props))
     const LeagueItems = _state.setObject(pathTo('LeagueItems'), new ItemSet.State(stateProps(pathTo('LeagueItems')).items(SortedResults).props))
-    const MyTeamLink_action = React.useCallback(wrapFn(pathTo('MyTeamLink'), 'action', async () => {
-        await ShowPage(MyTeam)
+    const YourTeamLink_action = React.useCallback(wrapFn(pathTo('YourTeamLink'), 'action', async () => {
+        await ShowPage(YourTeam)
     }), [])
     const Select_action = React.useCallback(wrapFn(pathTo('Select'), 'action', () => {
         Set(ShowList, true)
@@ -568,8 +568,8 @@ function PlayerLeagues(props) {
         React.createElement(Calculation, elProps(pathTo('PuzzleListVisible')).props),
         React.createElement(Block, elProps(pathTo('NoTeamLayout')).layout('vertical').show(IsNull(UsersTeam())).props,
             React.createElement(TextElement, elProps(pathTo('Text81')).content('Great that you\'re interested in the Puzzle Teams Leagues, but they are only for team members and unfortunately you don\'t seem to be in a team at the moment.').props),
-            React.createElement(TextElement, elProps(pathTo('Text82')).content('You can find out how to join or start a team on the My Team page.').props),
-            React.createElement(Button, elProps(pathTo('MyTeamLink')).content('Go To My Team').appearance('filled').action(MyTeamLink_action).styles(elProps(pathTo('MyTeamLink.Styles')).display('inline').props).props),
+            React.createElement(TextElement, elProps(pathTo('Text82')).content('You can find out how to join or start a team on the Your Team page.').props),
+            React.createElement(Button, elProps(pathTo('YourTeamLink')).content('Go To Your Team').appearance('filled').action(YourTeamLink_action).styles(elProps(pathTo('YourTeamLink.Styles')).display('inline').props).props),
     ),
         React.createElement(Block, elProps(pathTo('InTeamLayout')).layout('vertical').show(NotNull(UsersTeam())).styles(elProps(pathTo('InTeamLayout.Styles')).height('100%').width('100%').props).props,
             React.createElement(Block, elProps(pathTo('PuzzleTitleLayout')).layout('horizontal').props,
@@ -787,14 +787,14 @@ function configPuzzlesServer() {
 
 export default function Puzzles(props) {
     const pathTo = name => 'Puzzles' + '.' + name
-    const {App, WebFileDataStore, FirestoreDataStore, ServerAppConnector, Collection, AppBar, Image, TextElement, Block, Button, Menu, MenuItem, UserLogon, Calculation} = Elemento.components
+    const {App, WebFileDataStore, FirestoreDataStore, ServerAppConnector, Collection, AppBar, Calculation, Image, TextElement, Block, Menu, MenuItem, UserLogon} = Elemento.components
     const {If, And, Log, Record, Now, Not} = Elemento.globalFunctions
-    const pages = {HomePage, AboutPage, TodaysPuzzle, ArchivedPuzzle, PuzzleArchive, GamesPlayed, MyTeam, NewTeam, NewInvite, JoinTeam, JoinTeamLogin, GeneralLogin, LeaveTeam, PlayerLeagues, PotdLeagues, Terms, Privacy}
+    const pages = {HomePage, AboutPage, TodaysPuzzle, ArchivedPuzzle, PuzzleArchive, YourScores, YourTeam, NewTeam, NewInvite, JoinTeam, JoinTeamLogin, GeneralLogin, LeaveTeam, PlayerLeagues, PotdLeagues, Terms, Privacy}
     const appContext = Elemento.useGetAppContext()
     const {CurrentUser, Query, Add, GetIfExists, Get} = Elemento.appFunctions
     const _state = Elemento.useGetStore()
     const app = _state.setObject('Puzzles', new App.State({pages, appContext}))
-    const {ShowPage, AppWidth} = app
+    const {AppWidth, ShowPage} = app
     const SiteDataStore = _state.setObject('Puzzles.SiteDataStore', new WebFileDataStore.State(stateProps('Puzzles.SiteDataStore').url('https://firebasestorage.googleapis.com/v0/b/elemento-games-site.appspot.com/o/public%2FsiteData.json?alt=media').props))
     const PlayerDataStore = _state.setObject('Puzzles.PlayerDataStore', new FirestoreDataStore.State(stateProps('Puzzles.PlayerDataStore').collections(`GamePlays
 Users
@@ -831,22 +831,19 @@ DayPuzzles`).props))
     const IsTeamOwner = _state.setObject('Puzzles.IsTeamOwner', React.useCallback(wrapFn(pathTo('IsTeamOwner'), 'calculation', () => {
         return And(CurrentUser(), UsersTeam()?.OwnerId == CurrentUser()?.uid)
     }), [UsersTeam]))
-    const NavItems = _state.setObject('Puzzles.NavItems', new Block.State(stateProps('Puzzles.NavItems').props))
     const NarrowScreen = _state.setObject('Puzzles.NarrowScreen', new Calculation.State(stateProps('Puzzles.NarrowScreen').value(AppWidth() < 630).props))
+    const NavItems = _state.setObject('Puzzles.NavItems', new Block.State(stateProps('Puzzles.NavItems').props))
     const Puzzles_messageAction = React.useCallback(wrapFn(pathTo('Puzzles'), 'messageAction', async ($sender, $message) => {
         await If(And($message.score, CurrentUser()), async () => await StoreGamePlay($message))
     }), [StoreGamePlay])
-    const Home_action = React.useCallback(wrapFn(pathTo('Home'), 'action', async () => {
-        await ShowPage(HomePage)
-    }), [])
     const TodaysPuzzle_action = React.useCallback(wrapFn(pathTo('TodaysPuzzle'), 'action', async () => {
         await ShowPage(TodaysPuzzle)
     }), [])
-    const Archive_action = React.useCallback(wrapFn(pathTo('Archive'), 'action', async () => {
+    const PuzzleList_action = React.useCallback(wrapFn(pathTo('PuzzleList'), 'action', async () => {
         await ShowPage(PuzzleArchive)
     }), [])
-    const GamesPlayed_action = React.useCallback(wrapFn(pathTo('GamesPlayed'), 'action', async () => {
-        await ShowPage(GamesPlayed)
+    const YourScores_action = React.useCallback(wrapFn(pathTo('YourScores'), 'action', async () => {
+        await ShowPage(YourScores)
     }), [])
     const PlayerLeagues_action = React.useCallback(wrapFn(pathTo('PlayerLeagues'), 'action', async () => {
         await ShowPage(PlayerLeagues)
@@ -854,8 +851,11 @@ DayPuzzles`).props))
     const PotdLeagues_action = React.useCallback(wrapFn(pathTo('PotdLeagues'), 'action', async () => {
         await ShowPage(PotdLeagues)
     }), [])
-    const MyTeam_action = React.useCallback(wrapFn(pathTo('MyTeam'), 'action', async () => {
-        await ShowPage(MyTeam)
+    const YourTeam_action = React.useCallback(wrapFn(pathTo('YourTeam'), 'action', async () => {
+        await ShowPage(YourTeam)
+    }), [])
+    const Home_action = React.useCallback(wrapFn(pathTo('Home'), 'action', async () => {
+        await ShowPage(HomePage)
     }), [])
     const AboutItem_action = React.useCallback(wrapFn(pathTo('AboutItem'), 'action', async () => {
         await ShowPage(AboutPage)
@@ -866,68 +866,30 @@ DayPuzzles`).props))
     const Privacy_action = React.useCallback(wrapFn(pathTo('Privacy'), 'action', async () => {
         await ShowPage(Privacy)
     }), [])
-    const Home2_action = React.useCallback(wrapFn(pathTo('Home2'), 'action', async () => {
-        await ShowPage(HomePage)
-    }), [])
-    const TodaysPuzzle2_action = React.useCallback(wrapFn(pathTo('TodaysPuzzle2'), 'action', async () => {
-        await ShowPage(TodaysPuzzle)
-    }), [])
-    const Archive2_action = React.useCallback(wrapFn(pathTo('Archive2'), 'action', async () => {
-        await ShowPage(PuzzleArchive)
-    }), [])
-    const GamesPlayed2_action = React.useCallback(wrapFn(pathTo('GamesPlayed2'), 'action', async () => {
-        await ShowPage(GamesPlayed)
-    }), [])
-    const PlayerLeagues2_action = React.useCallback(wrapFn(pathTo('PlayerLeagues2'), 'action', async () => {
-        await ShowPage(PlayerLeagues)
-    }), [])
-    const PotdLeagues2_action = React.useCallback(wrapFn(pathTo('PotdLeagues2'), 'action', async () => {
-        await ShowPage(PotdLeagues)
-    }), [])
-    const MyTeam2_action = React.useCallback(wrapFn(pathTo('MyTeam2'), 'action', async () => {
-        await ShowPage(MyTeam)
-    }), [])
-    const AboutItem2_action = React.useCallback(wrapFn(pathTo('AboutItem2'), 'action', async () => {
-        await ShowPage(AboutPage)
-    }), [])
-    const Terms2_action = React.useCallback(wrapFn(pathTo('Terms2'), 'action', async () => {
-        await ShowPage(Terms)
-    }), [])
-    const Privacy2_action = React.useCallback(wrapFn(pathTo('Privacy2'), 'action', async () => {
-        await ShowPage(Privacy)
-    }), [])
 
     return React.createElement(App, {...elProps('Puzzles').maxWidth('600px').messageAction(Puzzles_messageAction).cookieMessage('We use cookies for the usual things - to make the site work properly and learn how people use it.').faviconUrl('puzzleteams_icon_plain.svg').fonts(['Road Rage', 'Grape Nuts']).props, topChildren: React.createElement( React.Fragment, null, React.createElement(AppBar, elProps(pathTo('MainAppBar')).styles(elProps(pathTo('MainAppBar.Styles')).backgroundColor('orange').color('green').fontSize('32').fontFamily('Road Rage').props).props,
-            React.createElement(Image, elProps(pathTo('Logo')).source('puzzleteams_icon_plain.svg').styles(elProps(pathTo('Logo.Styles')).width('40').borderRadius('3').props).props),
-            React.createElement(TextElement, elProps(pathTo('AppTitle')).styles(elProps(pathTo('AppTitle.Styles')).fontFamily('Road Rage').fontSize('32').props).content('Puzzle Teams').props),
-            React.createElement(Block, elProps(pathTo('NavItems')).layout('horizontal').show(Not(NarrowScreen)).props,
-            React.createElement(Button, elProps(pathTo('Home')).content('Home').appearance('filled').action(Home_action).styles(elProps(pathTo('Home.Styles')).backgroundColor('orange').marginTop('5').props).props),
-            React.createElement(Button, elProps(pathTo('TodaysPuzzle')).content('Today\'s Game').appearance('filled').action(TodaysPuzzle_action).styles(elProps(pathTo('TodaysPuzzle.Styles')).backgroundColor('orange').textWrap('nowrap').marginTop('5').props).props),
-            React.createElement(Button, elProps(pathTo('Archive')).content('All the Games').appearance('filled').action(Archive_action).styles(elProps(pathTo('Archive.Styles')).backgroundColor('orange').marginTop('5').props).props),
-            React.createElement(Menu, elProps(pathTo('MoreMenu')).label('More...').buttonStyles(elProps(pathTo('MoreMenu.Styles')).color('white').props).props,
-            React.createElement(MenuItem, elProps(pathTo('GamesPlayed')).label('Games Played').action(GamesPlayed_action).props),
+            React.createElement(Calculation, elProps(pathTo('NarrowScreen')).props),
+            React.createElement(Image, elProps(pathTo('Logo')).source('puzzleteams_icon_plain.svg').styles(elProps(pathTo('Logo.Styles')).width('40').borderRadius('5').border('2px solid #888').props).props),
+            React.createElement(TextElement, elProps(pathTo('AppTitle')).show(Not(NarrowScreen)).styles(elProps(pathTo('AppTitle.Styles')).fontFamily('Road Rage').fontSize('32').props).content('Puzzle Teams').props),
+            React.createElement(Block, elProps(pathTo('NavItems')).layout('horizontal').props,
+            React.createElement(Menu, elProps(pathTo('PuzzlesMenu')).label('Puzzles').iconName(If(NarrowScreen, 'extension')).buttonStyles(elProps(pathTo('PuzzlesMenu.Styles')).color('white').props).props,
+            React.createElement(MenuItem, elProps(pathTo('TodaysPuzzle')).label('Puzzle of the Day').action(TodaysPuzzle_action).props),
+            React.createElement(MenuItem, elProps(pathTo('PuzzleList')).label('All the Puzzles').action(PuzzleList_action).props),
+    ),
+            React.createElement(Menu, elProps(pathTo('LeaguesMenu')).label('Leagues').iconName(If(NarrowScreen, 'leaderboard')).buttonStyles(elProps(pathTo('LeaguesMenu.Styles')).color('white').props).props,
+            React.createElement(MenuItem, elProps(pathTo('YourScores')).label('Your Scores').action(YourScores_action).props),
             React.createElement(MenuItem, elProps(pathTo('PlayerLeagues')).label('Player Leagues').action(PlayerLeagues_action).props),
             React.createElement(MenuItem, elProps(pathTo('PotdLeagues')).label('POTD Leagues').action(PotdLeagues_action).props),
-            React.createElement(MenuItem, elProps(pathTo('MyTeam')).label('My Team').action(MyTeam_action).props),
+    ),
+    ),
+            React.createElement(Menu, elProps(pathTo('OtherMenu')).label('Menu').iconName('menu').buttonStyles(elProps(pathTo('OtherMenu.Styles')).color('white').props).props,
+            React.createElement(MenuItem, elProps(pathTo('YourTeam')).label('Your Team').action(YourTeam_action).props),
+            React.createElement(MenuItem, elProps(pathTo('Home')).label('Home').action(Home_action).props),
             React.createElement(MenuItem, elProps(pathTo('AboutItem')).label('About').action(AboutItem_action).props),
             React.createElement(MenuItem, elProps(pathTo('Terms')).label('Terms & Conditions').action(Terms_action).props),
             React.createElement(MenuItem, elProps(pathTo('Privacy')).label('Privacy & Cookies').action(Privacy_action).props),
     ),
-    ),
-            React.createElement(Menu, elProps(pathTo('HamburgerMenu')).label('Menu').iconName('menu').show(NarrowScreen).buttonStyles(elProps(pathTo('HamburgerMenu.Styles')).color('white').props).props,
-            React.createElement(MenuItem, elProps(pathTo('Home2')).label('Home').action(Home2_action).props),
-            React.createElement(MenuItem, elProps(pathTo('TodaysPuzzle2')).label('Today\'s Game').action(TodaysPuzzle2_action).props),
-            React.createElement(MenuItem, elProps(pathTo('Archive2')).label('All the Games').action(Archive2_action).props),
-            React.createElement(MenuItem, elProps(pathTo('GamesPlayed2')).label('Games Played').action(GamesPlayed2_action).props),
-            React.createElement(MenuItem, elProps(pathTo('PlayerLeagues2')).label('Player Leagues').action(PlayerLeagues2_action).props),
-            React.createElement(MenuItem, elProps(pathTo('PotdLeagues2')).label('POTD Leagues').action(PotdLeagues2_action).props),
-            React.createElement(MenuItem, elProps(pathTo('MyTeam2')).label('My Team').action(MyTeam2_action).props),
-            React.createElement(MenuItem, elProps(pathTo('AboutItem2')).label('About').action(AboutItem2_action).props),
-            React.createElement(MenuItem, elProps(pathTo('Terms2')).label('Terms & Conditions').action(Terms2_action).props),
-            React.createElement(MenuItem, elProps(pathTo('Privacy2')).label('Privacy & Cookies').action(Privacy2_action).props),
-    ),
             React.createElement(UserLogon, elProps(pathTo('UserLogon1')).props),
-            React.createElement(Calculation, elProps(pathTo('NarrowScreen')).props),
     ))
     },
         React.createElement(WebFileDataStore, elProps(pathTo('SiteDataStore')).props),
