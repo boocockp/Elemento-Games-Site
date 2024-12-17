@@ -152,12 +152,21 @@
           "kind": "Function"
         },
         {
+          "id": "function_24",
+          "name": "Theme Primary",
+          "properties": {
+            "calculation": {
+              "expr": "Theme().palette.primary.main"
+            }
+          },
+          "kind": "Function"
+        },
+        {
           "id": "appbar_1",
           "name": "Main App Bar",
           "properties": {
             "styles": {
               "backgroundColor": "orange",
-              "color": "green",
               "fontSize": "32",
               "fontFamily": "Road Rage"
             }
@@ -202,101 +211,91 @@
               "kind": "Text"
             },
             {
-              "id": "block_2",
-              "name": "Nav Items",
+              "id": "menu_1",
+              "name": "Leagues Menu",
               "properties": {
-                "layout": "horizontal"
+                "label": "Leagues",
+                "buttonStyles": {
+                  "color": "white"
+                },
+                "iconName": {
+                  "expr": "If(NarrowScreen, 'leaderboard')"
+                }
               },
               "elements": [
                 {
-                  "id": "menu_3",
-                  "name": "Puzzles Menu",
+                  "id": "menuitem_10",
+                  "name": "Your Scores",
                   "properties": {
-                    "label": "Puzzles",
-                    "buttonStyles": {
-                      "color": "white"
+                    "action": {
+                      "expr": "ShowPage(YourScores)"
                     },
-                    "iconName": {
-                      "expr": "If(NarrowScreen, 'extension')"
-                    }
+                    "label": "Your Scores"
                   },
-                  "elements": [
-                    {
-                      "id": "menuitem_21",
-                      "name": "Todays Puzzle",
-                      "properties": {
-                        "label": "Puzzle of the Day",
-                        "action": {
-                          "expr": "ShowPage(TodaysPuzzle)"
-                        }
-                      },
-                      "kind": "MenuItem"
-                    },
-                    {
-                      "id": "menuitem_20",
-                      "name": "Puzzle List",
-                      "properties": {
-                        "label": "All the Puzzles",
-                        "action": {
-                          "expr": "ShowPage(PuzzleArchive)"
-                        }
-                      },
-                      "kind": "MenuItem"
-                    }
-                  ],
-                  "kind": "Menu"
+                  "kind": "MenuItem"
                 },
                 {
-                  "id": "menu_1",
-                  "name": "Leagues Menu",
+                  "id": "menuitem_15",
+                  "name": "Player Leagues",
                   "properties": {
-                    "label": "Leagues",
-                    "buttonStyles": {
-                      "color": "white"
+                    "action": {
+                      "expr": "ShowPage(PlayerLeagues)"
                     },
-                    "iconName": {
-                      "expr": "If(NarrowScreen, 'leaderboard')"
-                    }
+                    "label": "Player Leagues"
                   },
-                  "elements": [
-                    {
-                      "id": "menuitem_10",
-                      "name": "Your Scores",
-                      "properties": {
-                        "action": {
-                          "expr": "ShowPage(YourScores)"
-                        },
-                        "label": "Your Scores"
-                      },
-                      "kind": "MenuItem"
+                  "kind": "MenuItem"
+                },
+                {
+                  "id": "menuitem_16",
+                  "name": "Potd Leagues",
+                  "properties": {
+                    "action": {
+                      "expr": "ShowPage(PotdLeagues)"
                     },
-                    {
-                      "id": "menuitem_15",
-                      "name": "Player Leagues",
-                      "properties": {
-                        "action": {
-                          "expr": "ShowPage(PlayerLeagues)"
-                        },
-                        "label": "Player Leagues"
-                      },
-                      "kind": "MenuItem"
-                    },
-                    {
-                      "id": "menuitem_16",
-                      "name": "Potd Leagues",
-                      "properties": {
-                        "action": {
-                          "expr": "ShowPage(PotdLeagues)"
-                        },
-                        "label": "POTD Leagues"
-                      },
-                      "kind": "MenuItem"
-                    }
-                  ],
-                  "kind": "Menu"
+                    "label": "POTD Leagues"
+                  },
+                  "kind": "MenuItem"
                 }
               ],
-              "kind": "Block"
+              "kind": "Menu"
+            },
+            {
+              "id": "menu_3",
+              "name": "Puzzles Menu",
+              "properties": {
+                "label": "Puzzles",
+                "buttonStyles": {
+                  "color": "white"
+                },
+                "iconName": {
+                  "expr": "If(NarrowScreen, 'extension')"
+                }
+              },
+              "elements": [
+                {
+                  "id": "menuitem_21",
+                  "name": "Todays Puzzle",
+                  "properties": {
+                    "label": "Puzzle of the Day",
+                    "action": {
+                      "expr": "ShowPage(TodaysPuzzle)"
+                    }
+                  },
+                  "kind": "MenuItem"
+                },
+                {
+                  "id": "menuitem_20",
+                  "name": "Puzzle List",
+                  "properties": {
+                    "label": "All the Puzzles",
+                    "action": {
+                      "expr": "ShowPage(PuzzleArchive)"
+                    }
+                  },
+                  "kind": "MenuItem"
+                }
+              ],
+              "kind": "Menu"
             },
             {
               "id": "menu_2",
@@ -332,12 +331,23 @@
                 },
                 {
                   "id": "menuitem_4",
-                  "name": "About Item",
+                  "name": "About",
                   "properties": {
                     "action": {
                       "expr": "ShowPage(AboutPage)"
                     },
                     "label": "About"
+                  },
+                  "kind": "MenuItem"
+                },
+                {
+                  "id": "menuitem_26",
+                  "name": "Contact",
+                  "properties": {
+                    "action": {
+                      "expr": "ShowPage(ContactPage)"
+                    },
+                    "label": "Contact"
                   },
                   "kind": "MenuItem"
                 },
@@ -551,6 +561,36 @@
                 "content": "All the Puzzles"
               },
               "kind": "Button"
+            }
+          ],
+          "kind": "Page"
+        },
+        {
+          "id": "page_20",
+          "name": "Contact Page",
+          "properties": {},
+          "elements": [
+            {
+              "id": "text_112",
+              "name": "Heading 1",
+              "properties": {
+                "content": "Please get in touch!",
+                "styles": {
+                  "fontFamily": "Tahoma",
+                  "fontSize": "20",
+                  "color": "green"
+                }
+              },
+              "kind": "Text"
+            },
+            {
+              "id": "text_113",
+              "name": "Para 1",
+              "properties": {
+                "content": "We would love to hear from you if you have\n\n<ul>\n<li>Questions</li>\n<li>Ideas for new puzzles</li>\n<li>Suggestions to improve the site</li>\n<li>Problems using the site</li>\n<li>Complaints</li>\n<li>Compliments</li>\n</ul>\n...or anything else you would like to talk to us about.\n\n\nPlease email us at <a href=\"mailto:hello@puzzleteams.com\">hello@puzzleteams.com</a>",
+                "allowHtml": true
+              },
+              "kind": "Text"
             }
           ],
           "kind": "Page"

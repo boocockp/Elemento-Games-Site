@@ -56,6 +56,7 @@ Future stuff
 - Secure score recording
 - Report abuse or offensive content
 - Limit recorded plays per day - maybe 10?
+- Send email from puzzleteams.com - https://mailtrap.io/blog/gmail-smtp/
 
 
 Styling
