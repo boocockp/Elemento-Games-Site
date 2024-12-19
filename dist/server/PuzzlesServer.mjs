@@ -5,7 +5,7 @@ const {appFunctions} = serverRuntime
 const {components} = serverRuntime
 
 const {Today, If, Record, Log, Check, Not, Now, IsNull, ForEach, Max, Count, Sum, Floor, DateAdd, GroupBy, Select} = globalFunctions
-const {Get, CurrentUser, Update, Add, GetIfExists, Query} = appFunctions
+const {Get, GetIfExists, CurrentUser, Update, Add, Query} = appFunctions
 const {FirestoreDataStore, Collection} = components
 
 const ServerDataStore = new FirestoreDataStore({collections: `Teams
@@ -29,7 +29,7 @@ async function PuzzleOfTheDay(date) {
     let puzzleDay = date ?? Today()
     let dayPuzzleId = await (await puzzleDay.toISOString()).substring(0, 10)
     let dayPuzzle = await Get(DayPuzzles, dayPuzzleId)
-    return await Get(Puzzles, dayPuzzle.puzzleId)
+    return await GetIfExists (Puzzles, dayPuzzle.puzzleId)
 }
 
 async function UpdateUserData(changes) {

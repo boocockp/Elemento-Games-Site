@@ -17,14 +17,6 @@
       },
       "elements": [
         {
-          "id": "webfiledatastore_1",
-          "name": "Site Data Store",
-          "properties": {
-            "url": "https://firebasestorage.googleapis.com/v0/b/elemento-games-site.appspot.com/o/public%2FsiteData.json?alt=media"
-          },
-          "kind": "WebFileDataStore"
-        },
-        {
           "id": "firestoredatastore_1",
           "name": "Player Data Store",
           "properties": {
@@ -211,6 +203,44 @@
               "kind": "Text"
             },
             {
+              "id": "menu_3",
+              "name": "Puzzles Menu",
+              "properties": {
+                "label": "Puzzles",
+                "buttonStyles": {
+                  "color": "white"
+                },
+                "iconName": {
+                  "expr": "If(NarrowScreen, 'extension')"
+                }
+              },
+              "elements": [
+                {
+                  "id": "menuitem_21",
+                  "name": "Todays Puzzle",
+                  "properties": {
+                    "label": "Puzzle of the Day",
+                    "action": {
+                      "expr": "ShowPage(TodaysPuzzle)"
+                    }
+                  },
+                  "kind": "MenuItem"
+                },
+                {
+                  "id": "menuitem_20",
+                  "name": "Puzzle List",
+                  "properties": {
+                    "label": "All the Puzzles",
+                    "action": {
+                      "expr": "ShowPage(PuzzleArchive)"
+                    }
+                  },
+                  "kind": "MenuItem"
+                }
+              ],
+              "kind": "Menu"
+            },
+            {
               "id": "menu_1",
               "name": "Leagues Menu",
               "properties": {
@@ -253,44 +283,6 @@
                       "expr": "ShowPage(PotdLeagues)"
                     },
                     "label": "POTD Leagues"
-                  },
-                  "kind": "MenuItem"
-                }
-              ],
-              "kind": "Menu"
-            },
-            {
-              "id": "menu_3",
-              "name": "Puzzles Menu",
-              "properties": {
-                "label": "Puzzles",
-                "buttonStyles": {
-                  "color": "white"
-                },
-                "iconName": {
-                  "expr": "If(NarrowScreen, 'extension')"
-                }
-              },
-              "elements": [
-                {
-                  "id": "menuitem_21",
-                  "name": "Todays Puzzle",
-                  "properties": {
-                    "label": "Puzzle of the Day",
-                    "action": {
-                      "expr": "ShowPage(TodaysPuzzle)"
-                    }
-                  },
-                  "kind": "MenuItem"
-                },
-                {
-                  "id": "menuitem_20",
-                  "name": "Puzzle List",
-                  "properties": {
-                    "label": "All the Puzzles",
-                    "action": {
-                      "expr": "ShowPage(PuzzleArchive)"
-                    }
                   },
                   "kind": "MenuItem"
                 }
@@ -391,15 +383,27 @@
           "properties": {},
           "elements": [
             {
+              "id": "text_114",
+              "name": "Title",
+              "properties": {
+                "content": "Welcome to Puzzle Teams!",
+                "styles": {
+                  "fontSize": "22",
+                  "fontFamily": "Tahoma",
+                  "color": "green"
+                }
+              },
+              "kind": "Text"
+            },
+            {
               "id": "text_4",
               "name": "Heading 1",
               "properties": {
-                "content": "The No Boredom games and puzzles site!",
+                "content": "The No Boredom games and puzzles site",
                 "styles": {
                   "fontFamily": "Tahoma",
-                  "fontSize": "20",
-                  "color": "green",
-                  "marginTop": "20px"
+                  "fontSize": "18",
+                  "color": "green"
                 }
               },
               "kind": "Text"
@@ -505,13 +509,34 @@
               "id": "text_20",
               "name": "Para 2",
               "properties": {
-                "content": "You're welcome to play by yourself, but the real fun begins when you  start a team.  \nTeams compete with each other in leagues and one-off showdowns.  \nThe more people you get in your team, the better your chances!"
+                "content": "You're welcome to play by yourself, but the real fun begins when you join a team - or start your own.\nTeams compete with each other in leagues and one-off showdowns.  \nThe more people you get in your team, the better your chances!"
               },
               "kind": "Text"
             },
             {
               "id": "text_21",
               "name": "Heading 3",
+              "properties": {
+                "content": "Enjoy your competitive streak",
+                "styles": {
+                  "fontFamily": "Tahoma",
+                  "fontSize": "20",
+                  "color": "green"
+                }
+              },
+              "kind": "Text"
+            },
+            {
+              "id": "text_117",
+              "name": "Para 3",
+              "properties": {
+                "content": "Everyone likes a bit of friendly rivalry.  \nOnce you're in a team, you can see how the other players  are doing, and help to boost your team's chances in the inter-team leagues.\nThere are lots of competitions - so everyone is going to be really good at something."
+              },
+              "kind": "Text"
+            },
+            {
+              "id": "text_116",
+              "name": "Heading 4",
               "properties": {
                 "content": "Showcase your ideas",
                 "styles": {
@@ -524,10 +549,24 @@
             },
             {
               "id": "text_22",
-              "name": "Text 9",
+              "name": "Para 4",
               "properties": {
-                "content": "Puzzle Teams runs off your creativity.\nIf you have an idea for a great puzzle, send it to us and you could see it on the site in a few days.\nEven better - program it yourself with the easy to use Elemento tool and get everyone playing the puzzle YOU created!"
+                "content": "Puzzle Teams runs off your creativity.\nIf you have an idea for a great puzzle, send it to us and you could see it on the site in a few days.\n"
               },
+              "elements": [
+                {
+                  "id": "button_34",
+                  "name": "Button 34",
+                  "properties": {
+                    "appearance": "link",
+                    "content": "Get in touch",
+                    "action": {
+                      "expr": "ShowPage(ContactPage)"
+                    }
+                  },
+                  "kind": "Button"
+                }
+              ],
               "kind": "Text"
             },
             {
@@ -607,6 +646,34 @@
             }
           },
           "elements": [
+            {
+              "id": "text_115",
+              "name": "No Puzzle Today",
+              "properties": {
+                "content": "OK - you've caught us out - there isn't a puzzle set for today yet.\n\nSo why not pick one for yourself on the @AllPuzzlesLink@ page?",
+                "styles": {
+                  "marginTop": "20px"
+                },
+                "show": {
+                  "expr": "IsNull(PuzzleOfTheDay())"
+                }
+              },
+              "elements": [
+                {
+                  "id": "button_35",
+                  "name": "AllPuzzlesLink",
+                  "properties": {
+                    "appearance": "link",
+                    "content": "All Puzzles",
+                    "action": {
+                      "expr": "ShowPage(PuzzleArchive)"
+                    }
+                  },
+                  "kind": "Button"
+                }
+              ],
+              "kind": "Text"
+            },
             {
               "id": "frame_3",
               "name": "Puzzle Frame",
@@ -747,7 +814,11 @@
         {
           "id": "page_10",
           "name": "Your Scores",
-          "properties": {},
+          "properties": {
+            "notLoggedInPage": {
+              "expr": "GeneralLogin"
+            }
+          },
           "elements": [
             {
               "id": "text_27",
@@ -767,7 +838,7 @@
               "properties": {
                 "selectable": "none",
                 "items": {
-                  "expr": "Query(GamePlays, {UserId: CurrentUser().uid})"
+                  "expr": "Query(GamePlays, {UserId: CurrentUser()?.uid})"
                 },
                 "itemStyles": {
                   "width": "100%"
@@ -1865,7 +1936,8 @@
                         },
                         "show": {
                           "expr": "PopupListNeeded"
-                        }
+                        },
+                        "content": "Select Puzzle"
                       },
                       "kind": "Button"
                     }
@@ -2667,7 +2739,7 @@
           "name": "Puzzle Of The Day",
           "properties": {
             "calculation": {
-              "expr": "let puzzleDay = date ?? Today()\nlet dayPuzzleId = puzzleDay.toISOString().substring(0, 10)\nlet dayPuzzle = Get(DayPuzzles, dayPuzzleId)\nGet(Puzzles, dayPuzzle.puzzleId)"
+              "expr": "let puzzleDay = date ?? Today()\nlet dayPuzzleId = puzzleDay.toISOString().substring(0, 10)\nlet dayPuzzle = Get(DayPuzzles, dayPuzzleId)\nGetIfExists (Puzzles, dayPuzzle.puzzleId)"
             },
             "input1": "date"
           },
