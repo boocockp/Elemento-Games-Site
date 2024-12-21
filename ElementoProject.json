@@ -722,7 +722,7 @@
               "name": "Puzzle Frame",
               "properties": {
                 "source": {
-                  "expr": "Get(Puzzles, PuzzleId).url"
+                  "expr": "Get(Puzzles, PuzzleId)?.url"
                 },
                 "styles": {
                   "height": "calc(100% + 16px)",

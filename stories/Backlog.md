@@ -4,7 +4,10 @@ Puzzle Teams backlog
 Problems
 --------
 
-- If logout, get blow-up with Error: Cannot read properties of null (reading 'uid')
+- Error message if no POTD
+- Blowup if refresh while on Puzzle page with error:  Cannot read properties of null (reading 'url')
+- ✅ Photo jigsaw does not include score of current round in Send Score
+- ✅ Tile Diamonds does not include score of current round in Send Score
 
 Stories
 -------
@@ -22,9 +25,9 @@ Teams MVP
 
 - ✅ View team scores
 - ✅ League tables by day
-- Help
 - Google Analytics
 - Facebook Login
+- Help
 - Tighten up all the security rules so can only read own data
 
 
@@ -34,6 +37,7 @@ Future stuff
 - Transfer Team Ownership
 - Secure score recording
 - Report abuse or offensive content
+- GDPR compliance inc data deletion
 - Limit recorded plays per day - maybe 10?
 - Send email from puzzleteams.com - https://mailtrap.io/blog/gmail-smtp/
 
